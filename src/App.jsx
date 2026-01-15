@@ -1901,7 +1901,7 @@ const Footer = () => {
             <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59]" />
             <span className="text-sm sm:text-base">CogCare</span>
         </div>
-        <p className="text-[10px] sm:text-xs md:text-sm text-center md:text-left">© 2026 CogCare Inc. All rights reserved.</p>
+        <p className="text-[10px] sm:text-xs md:text-sm text-center md:text-left">© 2026 Cognitive Care Alliance Inc All rights reserved.</p>
       </div>
     </footer>
   );

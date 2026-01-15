@@ -1665,7 +1665,7 @@ const BrainScore = () => {
           <RevealOnScroll>
             <div className="inline-flex items-center space-x-2 bg-[#1a3c34]/5 text-[#1a3c34] px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4 sm:mb-6 border border-[#1a3c34]/10"><ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4" /><span>Retention Mechanism</span></div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a3c34] mb-4 sm:mb-6 leading-tight">The Credit Score for Your Mind.</h2>
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 sm:p-6 rounded-r-xl mb-6 sm:mb-8"><p className="text-xs sm:text-sm font-bold text-yellow-900 mb-2">Why most brain training fails:</p><p className="text-xs sm:text-sm text-yellow-800">You take a course, feel motivated for a week, then slide back. CogCare is different because we <strong>measure</strong> if it's actually working.</p></div>
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 sm:p-6 rounded-r-xl mb-6 sm:mb-8"><p className="text-xs sm:text-sm font-bold text-yellow-900 mb-2">Why most brain training fails:</p><p className="text-xs sm:text-sm text-yellow-800">You take a program, feel motivated for a week, then slide back. CogCare is different because we <strong>measure</strong> if it's actually working.</p></div>
             <div className="space-y-3 sm:space-y-4 mb-8 sm:mb-10">
               <div className="flex items-start"><div className="bg-[#4a7c59] rounded-full p-1 mr-4 mt-1"><Check className="w-3 h-3 text-white" /></div><div><h4 className="font-bold text-[#1a3c34]">Proof that works</h4><p className="text-sm text-[#5c7a70]">See your improvement in real numbers, not just feelings.</p></div></div>
               <div className="flex items-start"><div className="bg-[#4a7c59] rounded-full p-1 mr-4 mt-1"><Check className="w-3 h-3 text-white" /></div><div><h4 className="font-bold text-[#1a3c34]">Accountability that sticks</h4><p className="text-sm text-[#5c7a70]">Monthly check-ins keep you on track.</p></div></div>
@@ -1744,7 +1744,7 @@ const Pricing = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
           <RevealOnScroll className="bg-[#2a5c4f] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 border border-white/5 flex flex-col relative overflow-hidden">
-             <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">Single Course</h3>
+             <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">Single Program</h3>
              <div className="text-3xl sm:text-4xl font-bold text-white mb-4 sm:mb-6">$147</div>
              <p className="text-gray-300 text-xs sm:text-sm mb-6 sm:mb-8 flex-grow">Perfect for solving one specific problem immediately (e.g. Focus or Sleep).</p>
              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-200">
@@ -1752,7 +1752,7 @@ const Pricing = () => {
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> 4-Week Protocol</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Basic Community Access</li>
              </ul>
-             <button className="w-full py-2.5 sm:py-3 rounded-full bg-[#1a3c34] text-white font-medium hover:bg-[#132e27] transition-colors border border-white/10 text-sm sm:text-base">Select Course</button>
+             <button className="w-full py-2.5 sm:py-3 rounded-full bg-[#1a3c34] text-white font-medium hover:bg-[#132e27] transition-colors border border-white/10 text-sm sm:text-base">Select Program</button>
           </RevealOnScroll>
           <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 border border-transparent flex flex-col relative overflow-hidden transform md:-translate-y-4 shadow-2xl">
              <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-b-lg">MOST POPULAR</div>
@@ -1761,7 +1761,7 @@ const Pricing = () => {
              <div className="text-[10px] sm:text-xs text-[#4a7c59] mb-4 sm:mb-6 font-medium">or $175/mo x 3</div>
              <p className="text-[#5c7a70] text-xs sm:text-sm mb-6 sm:mb-8 flex-grow">For those serious about total cognitive restructuring.</p>
              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm text-[#5c7a70]">
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 3 Courses of Choice</li>
+               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 3 Programs of Choice</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 3 Deep Dive Reports</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 1 Consultation Session</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> Priority Support</li>
@@ -1773,7 +1773,7 @@ const Pricing = () => {
              <div className="text-3xl sm:text-4xl font-bold text-white mb-4 sm:mb-6">$47<span className="text-base sm:text-lg font-normal text-gray-400">/mo</span></div>
              <p className="text-gray-300 text-xs sm:text-sm mb-6 sm:mb-8 flex-grow">The gym membership for your brain.</p>
              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-200">
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> 1 New Course / Month</li>
+               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> 1 New Program / Month</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Unlimited Quiz Retakes</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Score Tracking Dashboard</li>
                <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Monthly Expert Q&A</li>
@@ -1867,13 +1867,13 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Courses</h4>
+          <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Programs</h4>
           <ul className="space-y-2">
             <li className="hover:text-white cursor-pointer transition-colors">Deep Work & Cognitive Control</li>
             <li className="hover:text-white cursor-pointer transition-colors">Vagus Nerve Reset</li>
             <li className="hover:text-white cursor-pointer transition-colors">Brain Longevity Blueprint</li>
             <li className="hover:text-white cursor-pointer transition-colors">Anxiety Protocols</li>
-            <li className="hover:text-white cursor-pointer transition-colors text-[#4a7c59]">View all courses →</li>
+            <li className="hover:text-white cursor-pointer transition-colors text-[#4a7c59]">View all programs →</li>
           </ul>
         </div>
         <div>

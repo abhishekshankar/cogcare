@@ -193,6 +193,13 @@ const Navbar = ({ activePage, setActivePage }) => {
             Find a Professional
           </button>
           
+          <button 
+            onClick={() => setActivePage('programs')}
+            className={`transition-colors ${activePage === 'programs' ? 'text-[#1a3c34] font-bold' : 'hover:text-[#1a3c34]'}`}
+          >
+            Programs
+          </button>
+          
           <div className="group relative cursor-pointer h-16 flex items-center">
             <span className="hover:text-[#1a3c34] transition-colors flex items-center">
               Assessments <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
@@ -225,7 +232,6 @@ const Navbar = ({ activePage, setActivePage }) => {
                </div>
             </div>
           </div>
-          <a href="#courses" className="hover:text-[#1a3c34] transition-colors">Courses</a>
           
           <button className="bg-[#1a3c34] text-white px-5 py-2 rounded-full hover:bg-[#2a5c4f] transition-colors shadow-lg shadow-[#1a3c34]/10 text-xs font-bold">
             Login
@@ -242,8 +248,8 @@ const Navbar = ({ activePage, setActivePage }) => {
       {mobileMenuOpen && (
         <div className="absolute top-14 sm:top-16 left-0 w-full bg-[#eff2ef] backdrop-blur-xl border-b border-[#1a3c34]/10 p-4 sm:p-6 flex flex-col space-y-3 md:hidden shadow-xl max-h-[calc(100vh-3.5rem)] overflow-y-auto">
           <button onClick={() => { setActivePage('directory'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Find a Professional</button>
+          <button onClick={() => { setActivePage('programs'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Programs</button>
           <a href="#assessments" className="text-[#1a3c34] font-medium py-2 text-base">Assessments</a>
-          <a href="#courses" className="text-[#1a3c34] font-medium py-2 text-base">Courses</a>
           <button className="bg-[#1a3c34] text-white px-4 py-3.5 rounded-full w-full text-base font-medium mt-2">
             Take a Quiz
           </button>
@@ -597,8 +603,712 @@ const ProfessionalDirectory = ({ setActivePage }) => {
    MAIN APP COMPONENT
    ========================================= */
 
+/**
+ * Programs Directory Component
+ * Based on PROGRAMS_DIRECTORY_PAGE_ARCHITECTURE.md
+ */
+const ProgramsDirectory = ({ setActivePage }) => {
+  const [activeTab, setActiveTab] = useState('all');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Mock program data
+  const programs = [
+    {
+      id: 1,
+      name: "Deep Work & Cognitive Control Systems",
+      price: 197,
+      duration: "4 weeks",
+      videoHours: 6,
+      rating: 4.9,
+      reviews: 2847,
+      students: 2847,
+      difficulty: "Beginner to Intermediate",
+      bestFor: "ADHD, focus issues, task completion",
+      description: "Master focus and productivity for ADHD and scattered brains",
+      outcomes: [
+        "Focus for 2+ hours without distraction",
+        "Complete projects you start",
+        "Build sustainable work systems"
+      ],
+      problem: "focus",
+      system: "processing",
+      level: "beginner",
+      badges: ["Bestseller", "Updated 2026"]
+    },
+    {
+      id: 2,
+      name: "Deep Sleep Neuro-Architecture",
+      price: 247,
+      duration: "4 weeks",
+      videoHours: 5,
+      rating: 4.9,
+      reviews: 3421,
+      students: 3421,
+      difficulty: "Beginner",
+      bestFor: "Insomnia, poor sleep quality",
+      description: "Transform your sleep and restore natural circadian rhythms",
+      outcomes: [
+        "Fall asleep in 15 minutes",
+        "Sleep 7-8 hours consistently",
+        "Wake up refreshed"
+      ],
+      problem: "sleep",
+      system: "energy",
+      level: "beginner",
+      badges: ["Bestseller"]
+    },
+    {
+      id: 3,
+      name: "Elite Neuro-Performance Optimization",
+      price: 497,
+      duration: "6 weeks",
+      videoHours: 8,
+      rating: 4.8,
+      reviews: 1234,
+      students: 1234,
+      difficulty: "Intermediate to Advanced",
+      bestFor: "High-performers wanting optimization",
+      description: "Reach peak cognitive performance and eliminate brain fog",
+      outcomes: [
+        "90-minute deep work blocks",
+        "All-day energy consistency",
+        "Peak mental clarity"
+      ],
+      problem: "performance",
+      system: "processing",
+      level: "advanced",
+      badges: ["New"]
+    }
+  ];
+
+  return (
+    <div className="pt-14 sm:pt-16 md:pt-20">
+      {/* HERO SECTION - Cold Traffic Version */}
+      <section className="bg-[#eff2ef] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <RevealOnScroll className="text-center mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] mb-4 sm:mb-6 leading-tight">
+              Which Brain Transformation Program Matches Your Goals?
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-[#5c7a70] max-w-3xl mx-auto mb-8 sm:mb-12">
+              Take our free 5-minute assessment to get a personalized recommendation
+              — or browse our complete program library below.
+            </p>
+          </RevealOnScroll>
+
+          {/* Dual CTA Layout */}
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto mb-8 sm:mb-12">
+            <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-[#4a7c59] shadow-lg">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3">RECOMMENDED PATH</h3>
+              <p className="text-[#5c7a70] mb-4 sm:mb-6 text-sm sm:text-base">
+                Not sure which program you need? Take our free quiz and we'll recommend the perfect program based on your brain profile.
+              </p>
+              <button 
+                onClick={() => setActivePage('home')}
+                className="w-full bg-[#1a3c34] text-white py-3 sm:py-4 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base"
+              >
+                TAKE 5-MIN QUIZ →
+              </button>
+              <p className="text-xs sm:text-sm text-[#5c7a70] mt-3 sm:mt-4">⭐ 247,000+ people matched</p>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={200} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 shadow-lg">
+              <div className="text-4xl mb-4">📚</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3">BROWSE PROGRAMS</h3>
+              <p className="text-[#5c7a70] mb-4 sm:mb-6 text-sm sm:text-base">
+                Know what you're looking for? Browse by problem, system, or outcome below.
+              </p>
+              <button 
+                onClick={() => document.getElementById('programs-grid')?.scrollIntoView({ behavior: 'smooth' })}
+                className="w-full bg-[#4a7c59] text-white py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base"
+              >
+                SCROLL TO PROGRAMS ↓
+              </button>
+            </RevealOnScroll>
+          </div>
+
+          {/* Trust Bar */}
+          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 text-xs sm:text-sm text-[#5c7a70]">
+            <div className="flex items-center">
+              <span className="text-yellow-400 mr-1">★★★★★</span>
+              <span className="font-bold">4.8/5</span>
+              <span className="ml-1">12,847 reviews</span>
+            </div>
+            <span>•</span>
+            <span>30-Day Money-Back Guarantee</span>
+            <span>•</span>
+            <span>Instant Access</span>
+            <span>•</span>
+            <span>Lifetime Updates</span>
+          </div>
+        </div>
+      </section>
+
+      {/* NAVIGATION TABS */}
+      <section className="bg-white border-b border-gray-200 sticky top-14 sm:top-16 md:top-20 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex overflow-x-auto scrollbar-hide -mb-px">
+            {[
+              { id: 'all', label: 'All Programs', count: 33 },
+              { id: 'problem', label: 'By Problem', count: 12 },
+              { id: 'system', label: 'By System', count: 5 },
+              { id: 'outcome', label: 'By Outcome', count: 8 },
+              { id: 'level', label: 'By Level', count: 3 }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 sm:px-6 py-4 sm:py-5 text-sm sm:text-base font-medium whitespace-nowrap border-b-2 transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-[#4a7c59] text-[#1a3c34] font-bold'
+                    : 'border-transparent text-[#5c7a70] hover:text-[#1a3c34] hover:border-gray-300'
+                }`}
+              >
+                {tab.label} <span className="text-xs text-gray-400">({tab.count})</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEARCH BAR */}
+      <section className="bg-white py-6 sm:py-8 px-4 sm:px-6 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative max-w-2xl mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search programs, problems, or topics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-full border-2 border-gray-200 focus:border-[#4a7c59] focus:outline-none text-sm sm:text-base"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* MAIN CONTENT AREA */}
+      <section id="programs-grid" className="bg-[#eff2ef] py-8 sm:py-12 md:py-16 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
+            {/* FILTERS SIDEBAR */}
+            <aside className="lg:w-64 flex-shrink-0">
+              <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm sticky top-24 sm:top-28">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h3 className="font-bold text-[#1a3c34] text-sm sm:text-base">FILTERS</h3>
+                  <button 
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="lg:hidden"
+                  >
+                    <Filter className="w-5 h-5 text-[#5c7a70]" />
+                  </button>
+                </div>
+                
+                <div className={`space-y-4 sm:space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+                  {/* Price Filter */}
+                  <div>
+                    <h4 className="font-semibold text-[#1a3c34] mb-3 text-sm">Price</h4>
+                    <div className="space-y-2 text-sm">
+                      {['Free (0)', 'Under $100 (3)', '$100-$200 (18)', '$200-$500 (9)', '$500+ (3)'].map((option, idx) => (
+                        <label key={idx} className="flex items-center cursor-pointer">
+                          <input type="checkbox" className="mr-2" defaultChecked={idx === 2} />
+                          <span className="text-[#5c7a70]">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Duration Filter */}
+                  <div>
+                    <h4 className="font-semibold text-[#1a3c34] mb-3 text-sm">Duration</h4>
+                    <div className="space-y-2 text-sm">
+                      {['Under 2 weeks (5)', '2-4 weeks (15)', '4-8 weeks (10)', '8+ weeks (3)'].map((option, idx) => (
+                        <label key={idx} className="flex items-center cursor-pointer">
+                          <input type="checkbox" className="mr-2" defaultChecked={idx === 1} />
+                          <span className="text-[#5c7a70]">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Level Filter */}
+                  <div>
+                    <h4 className="font-semibold text-[#1a3c34] mb-3 text-sm">Level</h4>
+                    <div className="space-y-2 text-sm">
+                      {['Beginner (12)', 'Intermediate (15)', 'Advanced (6)'].map((option, idx) => (
+                        <label key={idx} className="flex items-center cursor-pointer">
+                          <input type="checkbox" className="mr-2" defaultChecked={idx < 2} />
+                          <span className="text-[#5c7a70]">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button className="w-full text-sm text-[#4a7c59] hover:text-[#1a3c34] font-medium">
+                    RESET FILTERS
+                  </button>
+                </div>
+              </div>
+            </aside>
+
+            {/* PROGRAM CARDS GRID */}
+            <div className="flex-1">
+              {/* Tab-specific content */}
+              {activeTab === 'problem' && (
+                <div className="mb-8 sm:mb-12">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-6 sm:mb-8">
+                    Browse By Problem - Find The Program For Your Challenge
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+                    {[
+                      {
+                        problem: "🎯 CAN'T FOCUS OR FINISH TASKS",
+                        bestFor: "ADHD, scattered attention, task-switching",
+                        quiz: "Focus & Concentration Diagnostic (4 min)",
+                        programs: [
+                          { name: "Deep Work & Cognitive Control Systems", price: 197, rating: 4.9, students: 2847, weeks: 4, for: "moderate-severe focus issues" },
+                          { name: "Elite Neuro-Performance Optimization", price: 497, rating: 4.8, students: 1234, weeks: 6, for: "high-performers wanting optimization" }
+                        ],
+                        totalPrograms: 5
+                      },
+                      {
+                        problem: "😴 SLEEP PROBLEMS OR INSOMNIA",
+                        bestFor: "Can't fall asleep, can't stay asleep, low energy",
+                        quiz: "Sleep Quality Index (3 min)",
+                        programs: [
+                          { name: "Deep Sleep Neuro-Architecture", price: 247, rating: 4.9, students: 3421, weeks: 4, for: "chronic sleep issues" }
+                        ],
+                        totalPrograms: 3
+                      }
+                    ].map((category, idx) => (
+                      <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border-2 border-gray-200 hover:border-[#4a7c59] transition-all shadow-lg">
+                        <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3 sm:mb-4">{category.problem}</h3>
+                        <p className="text-sm sm:text-base text-[#5c7a70] mb-3"><strong>Best for:</strong> {category.bestFor}</p>
+                        <p className="text-sm sm:text-base text-[#5c7a70] mb-4 sm:mb-6"><strong>Related quiz:</strong> {category.quiz}</p>
+                        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                          <p className="font-semibold text-[#1a3c34] text-sm sm:text-base">Recommended Programs:</p>
+                          {category.programs.map((prog, pIdx) => (
+                            <div key={pIdx} className="bg-[#eff2ef] rounded-lg p-3 sm:p-4">
+                              <div className="flex items-start justify-between mb-2">
+                                <div className="flex-1">
+                                  <p className="font-bold text-[#1a3c34] text-sm sm:text-base">{pIdx + 1}. {prog.name}</p>
+                                  <p className="text-xs sm:text-sm text-[#5c7a70]">${prog.price} | {prog.weeks} weeks | {prog.students.toLocaleString()} students</p>
+                                </div>
+                                <div className="flex items-center ml-2">
+                                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                                  <span className="text-xs sm:text-sm font-bold ml-1">{prog.rating}</span>
+                                </div>
+                              </div>
+                              <p className="text-xs sm:text-sm text-[#5c7a70]">→ For {prog.for}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <button className="w-full bg-[#4a7c59] text-white py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base">
+                          VIEW ALL {category.problem.split(' ')[1]} PROGRAMS ({category.totalPrograms}) →
+                        </button>
+                      </RevealOnScroll>
+                    ))}
+                  </div>
+                  <div className="mt-8 sm:mt-12 text-center bg-[#eff2ef] rounded-xl sm:rounded-2xl p-6 sm:p-8">
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">NOT SURE WHICH PROBLEM YOU HAVE?</h3>
+                    <p className="text-[#5c7a70] mb-6 text-sm sm:text-base">
+                      Get a full diagnosis across all 5 brain systems and discover which programs will help you most.
+                    </p>
+                    <button 
+                      onClick={() => setActivePage('home')}
+                      className="bg-[#1a3c34] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base"
+                    >
+                      TAKE THE COMPREHENSIVE BRAIN WELLNESS QUIZ (15 MIN) →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'all' && (
+                <>
+                  {/* Sort and View Toggle */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+                    <p className="text-sm sm:text-base text-[#5c7a70]">
+                      Showing {programs.length} programs
+                    </p>
+                <div className="flex items-center gap-4">
+                  <select className="px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-[#4a7c59]">
+                    <option>Sort by: Recommended</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Rating</option>
+                    <option>Newest</option>
+                  </select>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setViewMode('grid')}
+                      className={`p-2 ${viewMode === 'grid' ? 'bg-[#4a7c59] text-white' : 'bg-white text-gray-600'}`}
+                    >
+                      <div className="w-4 h-4 grid grid-cols-2 gap-0.5">
+                        <div className="bg-current"></div>
+                        <div className="bg-current"></div>
+                        <div className="bg-current"></div>
+                        <div className="bg-current"></div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className={`p-2 ${viewMode === 'list' ? 'bg-[#4a7c59] text-white' : 'bg-white text-gray-600'}`}
+                    >
+                      <div className="w-4 h-4 flex flex-col gap-0.5">
+                        <div className="h-0.5 bg-current"></div>
+                        <div className="h-0.5 bg-current"></div>
+                        <div className="h-0.5 bg-current"></div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Program Cards */}
+              <div className={viewMode === 'grid' 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+                : "space-y-6 sm:space-y-8"
+              }>
+                {programs.map(program => (
+                  <RevealOnScroll key={program.id} className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all border border-gray-100">
+                    {/* Program Image Placeholder */}
+                    <div className="relative h-48 sm:h-56 bg-gradient-to-br from-[#4a7c59] to-[#1a3c34]">
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        {program.badges.map((badge, idx) => (
+                          <span key={idx} className="bg-white/90 text-[#1a3c34] px-2 py-1 rounded-full text-[10px] sm:text-xs font-bold">
+                            {badge}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                        <Play className="w-16 h-16" />
+                      </div>
+                    </div>
+
+                    <div className="p-4 sm:p-6">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-2">{program.name}</h3>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="text-sm font-bold text-[#1a3c34] ml-1">{program.rating}</span>
+                        </div>
+                        <span className="text-xs sm:text-sm text-[#5c7a70]">({program.reviews.toLocaleString()} reviews)</span>
+                      </div>
+
+                      <p className="text-sm sm:text-base text-[#5c7a70] mb-4">{program.description}</p>
+
+                      <div className="space-y-2 mb-4 text-xs sm:text-sm">
+                        <div className="flex items-center text-[#5c7a70]">
+                          <span className="mr-2">💡</span>
+                          <span>Best for: {program.bestFor}</span>
+                        </div>
+                        <div className="flex items-center text-[#5c7a70]">
+                          <Clock className="w-4 h-4 mr-2" />
+                          <span>{program.duration} | {program.videoHours} hours video</span>
+                        </div>
+                        <div className="flex items-center text-[#5c7a70]">
+                          <span className="mr-2">📊</span>
+                          <span>Difficulty: {program.difficulty}</span>
+                        </div>
+                        <div className="flex items-center text-[#5c7a70]">
+                          <Users className="w-4 h-4 mr-2" />
+                          <span>{program.students.toLocaleString()} students enrolled</span>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-gray-200 pt-4 mb-4">
+                        <p className="text-xs sm:text-sm font-semibold text-[#1a3c34] mb-2">What you'll achieve:</p>
+                        <ul className="space-y-1 text-xs sm:text-sm text-[#5c7a70]">
+                          {program.outcomes.map((outcome, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" />
+                              <span>{outcome}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div>
+                          <span className="text-2xl sm:text-3xl font-bold text-[#1a3c34]">${program.price}</span>
+                        </div>
+                        <button className="bg-[#1a3c34] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base">
+                          ENROLL NOW →
+                        </button>
+                      </div>
+                    </div>
+                  </RevealOnScroll>
+                ))}
+              </div>
+
+              {/* Load More / Pagination */}
+              <div className="mt-8 sm:mt-12 text-center">
+                <button className="bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#4a7c59] hover:text-white transition-colors text-sm sm:text-base">
+                  Load More Programs
+                </button>
+              </div>
+                </>
+              )}
+
+              {/* Placeholder for other tabs */}
+              {(activeTab === 'system' || activeTab === 'outcome' || activeTab === 'level') && (
+                <div className="text-center py-12 sm:py-16">
+                  <p className="text-lg sm:text-xl text-[#5c7a70] mb-4">
+                    {activeTab === 'system' && 'Browse by Brain System - The Brain OS Framework'}
+                    {activeTab === 'outcome' && 'Browse by Outcome - What Do You Want to Achieve?'}
+                    {activeTab === 'level' && 'Browse by Level - Match Your Current Knowledge'}
+                  </p>
+                  <p className="text-sm sm:text-base text-[#5c7a70] mb-6">
+                    This section is coming soon. Browse all programs above in the meantime.
+                  </p>
+                  <button 
+                    onClick={() => setActiveTab('all')}
+                    className="bg-[#4a7c59] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base"
+                  >
+                    VIEW ALL PROGRAMS
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS SECTION */}
+      <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#1a3c34] mb-8 sm:mb-12">
+            Student Success Stories
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+            {[
+              {
+                name: "Sarah M.",
+                role: "Marketing Director",
+                quote: "I've had ADHD my whole life but was only diagnosed at 34. This program gave me the systems I needed to finally feel in control. I'm completing projects, meeting deadlines, and my boss noticed the difference.",
+                program: "Deep Work & Cognitive Control Systems",
+                result: "10X productivity improvement in 4 weeks"
+              },
+              {
+                name: "Michael R.",
+                role: "Software Engineer",
+                quote: "I was skeptical about online programs but this exceeded expectations. Not just theory—actual protocols I use every day. Went from 3-4 hours of focus per day to 7-8.",
+                program: "Elite Neuro-Performance Optimization",
+                result: "Doubled productive hours, eliminated crashes"
+              }
+            ].map((testimonial, idx) => (
+              <RevealOnScroll key={idx} delay={idx * 100} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border border-transparent hover:border-[#1a3c34]/10 transition-all">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#1a3c34] rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 text-sm sm:text-base">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#1a3c34] text-sm sm:text-base">{testimonial.name}</p>
+                    <p className="text-xs sm:text-sm text-[#5c7a70]">{testimonial.role}</p>
+                  </div>
+                </div>
+                <div className="flex mb-3 sm:mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-[#1a3c34] text-sm sm:text-base md:text-lg italic leading-relaxed mb-4">
+                  "{testimonial.quote}"
+                </p>
+                <div className="text-xs sm:text-sm text-[#5c7a70] space-y-1">
+                  <p><strong>Program:</strong> {testimonial.program}</p>
+                  <p><strong>Result:</strong> {testimonial.result}</p>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BUNDLES SECTION */}
+      <section className="bg-[#eff2ef] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#1a3c34] mb-4 sm:mb-6">
+            Program Bundles - Save Up to 40%
+          </h2>
+          <p className="text-center text-[#5c7a70] mb-8 sm:mb-12 text-sm sm:text-base">
+            Everything you need for total brain transformation
+          </p>
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                badge: "Most Popular",
+                save: 488,
+                name: "THE COMPLETE BRAIN OPTIMIZATION BUNDLE",
+                rating: 4.9,
+                reviews: 847,
+                programs: [
+                  "Deep Work & Cognitive Control ($197)",
+                  "Deep Sleep Neuro-Architecture ($247)",
+                  "Vagus Nerve & Nervous System Reset ($197)",
+                  "Neuro-Nutrition Masterclass ($297)",
+                  "The Brain Longevity Blueprint ($247)"
+                ],
+                totalValue: 1185,
+                bundlePrice: 697,
+                bonus: "1 free consultation session ($297 value)",
+                perfectFor: "Anyone serious about comprehensive brain health transformation"
+              },
+              {
+                badge: "Best Value",
+                save: 344,
+                name: "THE FOCUS & PRODUCTIVITY BUNDLE",
+                rating: 4.8,
+                reviews: 423,
+                programs: [
+                  "Deep Work & Cognitive Control ($197)",
+                  "The Neuroscience of Behavior Change ($247)",
+                  "Elite Neuro-Performance Optimization ($497)"
+                ],
+                totalValue: 941,
+                bundlePrice: 597,
+                perfectFor: "Master focus, eliminate distraction, achieve peak output"
+              }
+            ].map((bundle, idx) => (
+              <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border-2 border-[#4a7c59] shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 bg-[#4a7c59] text-white px-3 sm:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-bold rounded-br-lg">
+                  {bundle.badge}
+                </div>
+                <div className="absolute top-0 right-0 bg-yellow-400 text-[#1a3c34] px-3 sm:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-bold rounded-bl-lg">
+                  Save ${bundle.save}
+                </div>
+                <div className="mt-6 sm:mt-8">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1a3c34] mb-3 sm:mb-4">{bundle.name}</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="text-sm font-bold text-[#1a3c34] ml-1">{bundle.rating}</span>
+                    </div>
+                    <span className="text-xs sm:text-sm text-[#5c7a70]">({bundle.reviews} reviews)</span>
+                  </div>
+                  <p className="text-sm sm:text-base text-[#5c7a70] mb-4 sm:mb-6">{bundle.perfectFor}</p>
+                  <div className="bg-[#eff2ef] rounded-lg p-4 sm:p-5 mb-4 sm:mb-6">
+                    <p className="font-bold text-[#1a3c34] mb-3 text-sm sm:text-base">INCLUDES {bundle.programs.length} PROGRAMS:</p>
+                    <ul className="space-y-2 text-xs sm:text-sm text-[#5c7a70]">
+                      {bundle.programs.map((prog, pIdx) => (
+                        <li key={pIdx} className="flex items-start">
+                          <Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" />
+                          <span>{prog}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mb-4 sm:mb-6">
+                    <p className="text-xs sm:text-sm text-[#5c7a70] mb-1">TOTAL VALUE: <span className="line-through">${bundle.totalValue}</span></p>
+                    <p className="text-2xl sm:text-3xl font-bold text-[#1a3c34] mb-1">
+                      BUNDLE PRICE: ${bundle.bundlePrice}
+                      <span className="text-base sm:text-lg text-[#4a7c59] ml-2">
+                        (Save ${bundle.save} - {Math.round((bundle.save / bundle.totalValue) * 100)}% off)
+                      </span>
+                    </p>
+                    {bundle.bonus && (
+                      <p className="text-xs sm:text-sm text-[#4a7c59] font-semibold">BONUS: {bundle.bonus}</p>
+                    )}
+                  </div>
+                  <button className="w-full bg-[#1a3c34] text-white py-3 sm:py-4 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base mb-2">
+                    ENROLL IN BUNDLE - ${bundle.bundlePrice} →
+                  </button>
+                  <p className="text-xs text-center text-[#5c7a70]">Payment plans available: 3 × ${Math.round(bundle.bundlePrice / 3)}/month</p>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#1a3c34] mb-8 sm:mb-12">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4 sm:space-y-6">
+            {[
+              {
+                q: "How do I know which program is right for me?",
+                a: "We recommend taking our free 5-minute quiz first. It will assess your symptoms, brain patterns, and goals, then recommend the specific program(s) best suited for your needs. If you prefer to browse, look at the 'Best For' description on each program card—it will tell you exactly who that program is designed for."
+              },
+              {
+                q: "What if I buy the wrong program?",
+                a: "All programs come with a 30-day money-back guarantee. If you realize the program isn't the right fit, just email us within 30 days for a full refund—no questions asked. We can also help you switch to a different program if needed."
+              },
+              {
+                q: "How long do I have access to the program?",
+                a: "Lifetime access. Once you enroll, the program is yours forever, including all future updates and additions."
+              },
+              {
+                q: "Are these programs live or self-paced?",
+                a: "All programs are 100% self-paced. Learn on your own schedule—pause, rewind, rewatch as many times as you need. Some programs include optional live Q&A sessions or community calls, but attendance is never required."
+              },
+              {
+                q: "Can I take multiple programs at once?",
+                a: "Absolutely! Many students take 2-3 programs simultaneously. However, we recommend starting with one program and adding others once you've established a routine. Our bundles are perfect if you know you want to work on multiple areas."
+              }
+            ].map((faq, idx) => (
+              <RevealOnScroll key={idx} delay={idx * 50} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200">
+                <h3 className="font-bold text-[#1a3c34] mb-3 text-base sm:text-lg">{faq.q}</h3>
+                <p className="text-sm sm:text-base text-[#5c7a70] leading-relaxed">{faq.a}</p>
+              </RevealOnScroll>
+            ))}
+          </div>
+          <div className="mt-8 sm:mt-12 text-center">
+            <p className="text-sm sm:text-base text-[#5c7a70] mb-4">
+              Still have questions?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="mailto:programs@cogcare.com" className="text-[#4a7c59] hover:text-[#1a3c34] font-semibold text-sm sm:text-base">
+                📧 EMAIL US
+              </a>
+              <span className="hidden sm:inline text-[#5c7a70]">•</span>
+              <a href="#" className="text-[#4a7c59] hover:text-[#1a3c34] font-semibold text-sm sm:text-base">
+                💬 LIVE CHAT
+              </a>
+              <span className="hidden sm:inline text-[#5c7a70]">•</span>
+              <a href="#" className="text-[#4a7c59] hover:text-[#1a3c34] font-semibold text-sm sm:text-base">
+                📞 SCHEDULE CALL
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="bg-[#1a3c34] py-12 sm:py-16 md:py-24 px-4 sm:px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 sm:mb-8">
+            Ready to Start Your Brain Transformation?
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto">
+            <button 
+              onClick={() => setActivePage('home')}
+              className="bg-white text-[#1a3c34] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm sm:text-base"
+            >
+              🎯 GET PERSONALIZED MATCH
+            </button>
+            <button 
+              onClick={() => document.getElementById('programs-grid')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-[#4a7c59] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base"
+            >
+              📚 BROWSE ALL PROGRAMS
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
 const App = () => {
-  // Router State: 'home' | 'directory'
+  // Router State: 'home' | 'directory' | 'programs'
   const [activePage, setActivePage] = useState('home');
 
   return (
@@ -622,6 +1332,10 @@ const App = () => {
 
       {activePage === 'directory' && (
         <ProfessionalDirectory setActivePage={setActivePage} />
+      )}
+
+      {activePage === 'programs' && (
+        <ProgramsDirectory setActivePage={setActivePage} />
       )}
 
       <Footer />

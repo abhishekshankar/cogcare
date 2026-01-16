@@ -207,40 +207,15 @@ const Navbar = ({ activePage, setActivePage }) => {
           >
             Assessments <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
           </button>
-          <div className="group relative cursor-pointer h-16 flex items-center hidden">
-            <span className="hover:text-[#1a3c34] transition-colors flex items-center">
-              Assessments <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
-            </span>
-            {/* Mega Menu Mockup */}
-            <div className="absolute top-14 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-xl shadow-xl p-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100 grid grid-cols-3 gap-6 z-50">
-               <div>
-                 <p className="text-xs font-bold text-[#4a7c59] uppercase mb-3">Quick Diagnostics</p>
-                 <ul className="space-y-2 text-xs text-gray-600">
-                   <li className="hover:text-[#1a3c34] hover:underline">Focus & Concentration</li>
-                   <li className="hover:text-[#1a3c34] hover:underline">Sleep Quality</li>
-                   <li className="hover:text-[#1a3c34] hover:underline">Anxiety Type</li>
-                   <li className="hover:text-[#1a3c34] hover:underline">Brain Fog Detector</li>
-                 </ul>
-               </div>
-               <div>
-                 <p className="text-xs font-bold text-[#4a7c59] uppercase mb-3">System Assessments</p>
-                 <ul className="space-y-2 text-xs text-gray-600">
-                   <li className="hover:text-[#1a3c34] hover:underline">Cognitive Performance</li>
-                   <li className="hover:text-[#1a3c34] hover:underline">Emotional Brain</li>
-                   <li className="hover:text-[#1a3c34] hover:underline">Brain-Body Connect</li>
-                 </ul>
-               </div>
-               <div>
-                 <p className="text-xs font-bold text-[#4a7c59] uppercase mb-3">Comprehensive</p>
-                 <ul className="space-y-2 text-xs text-gray-600">
-                   <li className="hover:text-[#1a3c34] hover:underline font-bold">Brain Wellness Quiz</li>
-                   <li className="text-[10px] text-gray-400">15-minute full analysis</li>
-                 </ul>
-               </div>
-            </div>
-          </div>
           
-          <button className="bg-[#1a3c34] text-white px-5 py-2 rounded-full hover:bg-[#2a5c4f] transition-colors shadow-lg shadow-[#1a3c34]/10 text-xs font-bold">
+          <button 
+            onClick={() => setActivePage('certification')}
+            className={`transition-colors ${activePage === 'certification' ? 'text-[#1a3c34] font-bold' : 'hover:text-[#1a3c34]'}`}
+          >
+            Get Certified
+          </button>
+          
+          <button className="bg-[#1a3c34] text-white px-5 py-2.5 sm:py-2 rounded-full hover:bg-[#2a5c4f] transition-colors shadow-lg shadow-[#1a3c34]/10 text-xs sm:text-sm font-bold min-h-[44px]">
             Login
           </button>
         </div>
@@ -257,6 +232,7 @@ const Navbar = ({ activePage, setActivePage }) => {
           <button onClick={() => { setActivePage('directory'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Find a Professional</button>
           <button onClick={() => { setActivePage('programs'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Programs</button>
           <button onClick={() => { setActivePage('assessments'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Assessments</button>
+          <button onClick={() => { setActivePage('certification'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Get Certified</button>
           <button className="bg-[#1a3c34] text-white px-4 py-3.5 rounded-full w-full text-base font-medium mt-2">
             Take a Quiz
           </button>
@@ -347,7 +323,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                 <Search className="w-5 h-5" />
               </div>
-              <select className="w-full pl-12 pr-4 py-4 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4a7c59] appearance-none text-[#1a3c34] font-medium">
+              <select className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4a7c59] appearance-none text-sm sm:text-base text-[#1a3c34] font-medium">
                 <option>What are you looking for?</option>
                 <option>ADHD & Focus Specialists</option>
                 <option>Anxiety & Stress Therapists</option>
@@ -364,7 +340,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
               <input 
                 type="text" 
                 placeholder="ZIP Code or City" 
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4a7c59] text-[#1a3c34]"
+                className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4a7c59] text-sm sm:text-base text-[#1a3c34]"
               />
             </div>
             <button className="bg-[#1a3c34] hover:bg-[#2a5c4f] text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold transition-colors whitespace-nowrap text-sm sm:text-base">
@@ -417,7 +393,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
             </div>
             <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto -mx-4 sm:mx-0 px-4 sm:px-0">
               {['Popular', 'Mental Health', 'Cognitive', 'Performance'].map(tab => (
-                <button key={tab} className="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-white text-[#5c7a70] border border-gray-200 hover:border-[#1a3c34] hover:text-[#1a3c34] transition-all whitespace-nowrap flex-shrink-0">
+                  <button key={tab} className="px-3 sm:px-4 py-2.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold bg-white text-[#5c7a70] border border-gray-200 hover:border-[#1a3c34] hover:text-[#1a3c34] transition-all whitespace-nowrap flex-shrink-0 min-h-[44px]">
                   {tab}
                 </button>
               ))}
@@ -512,8 +488,8 @@ const ProfessionalDirectory = ({ setActivePage }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <button className="py-2 rounded-xl border border-gray-200 text-[#1a3c34] font-bold text-xs hover:bg-gray-50">View Profile</button>
-                  <button className="py-2 rounded-xl bg-[#1a3c34] text-white font-bold text-xs hover:bg-[#2a5c4f]">Book Now</button>
+                  <button className="py-2.5 sm:py-2 rounded-xl border border-gray-200 text-[#1a3c34] font-bold text-xs sm:text-sm hover:bg-gray-50 min-h-[44px]">View Profile</button>
+                  <button className="py-2.5 sm:py-2 rounded-xl bg-[#1a3c34] text-white font-bold text-xs sm:text-sm hover:bg-[#2a5c4f] min-h-[44px]">Book Now</button>
                 </div>
               </div>
             ))}
@@ -1755,8 +1731,434 @@ const AssessmentsPage = ({ setActivePage }) => {
   );
 };
 
+/* =========================================
+   CERTIFICATION PAGE COMPONENT
+   ========================================= */
+const CertificationPage = ({ setActivePage }) => {
+  const [selectedProgram, setSelectedProgram] = useState(null);
+
+  const certificationPrograms = [
+    {
+      id: 1,
+      name: "CogCare Certified Brain Health Trainer",
+      level: "Foundation",
+      duration: "8 weeks",
+      price: 1297,
+      paymentPlan: "3 × $449/month",
+      description: "Become a certified trainer in brain health transformation protocols",
+      bestFor: "Caregivers, coaches, wellness professionals",
+      includes: [
+        "Complete CogCare methodology training",
+        "Access to all 33 core programs",
+        "Certification exam and credential",
+        "Trainer dashboard and resources",
+        "Marketing support and listing",
+        "Ongoing continuing education",
+        "Community access"
+      ],
+      outcomes: [
+        "Certified to deliver CogCare programs",
+        "Listed in professional directory",
+        "Access to client management tools",
+        "Revenue sharing opportunities"
+      ],
+      curriculum: [
+        { week: 1, topic: "Introduction to Brain Systems & Cognitive Health" },
+        { week: 2, topic: "Assessment & Diagnostic Protocols" },
+        { week: 3, topic: "Focus & Attention Training Methods" },
+        { week: 4, topic: "Sleep & Energy Optimization" },
+        { week: 5, topic: "Anxiety & Stress Management" },
+        { week: 6, topic: "Memory & Learning Enhancement" },
+        { week: 7, topic: "Client Coaching & Implementation" },
+        { week: 8, topic: "Certification Exam & Business Setup" }
+      ]
+    },
+    {
+      id: 2,
+      name: "Advanced Specialist Certification",
+      level: "Advanced",
+      duration: "12 weeks",
+      price: 2497,
+      paymentPlan: "4 × $649/month",
+      description: "Advanced certification for licensed professionals (MD, PhD, LCSW, etc.)",
+      bestFor: "Licensed therapists, psychiatrists, psychologists",
+      includes: [
+        "All Foundation program benefits",
+        "Clinical application protocols",
+        "Medication integration training",
+        "Complex case management",
+        "Insurance billing support",
+        "Premium directory placement",
+        "1:1 mentorship sessions",
+        "Research access"
+      ],
+      outcomes: [
+        "Advanced certification credential",
+        "Featured specialist status",
+        "Higher revenue share (80%)",
+        "Clinical case consultation access"
+      ],
+      curriculum: [
+        { week: 1, topic: "Clinical Foundations & Evidence Base" },
+        { week: 2, topic: "Differential Diagnosis & Assessment" },
+        { week: 3, topic: "Integration with Traditional Treatment" },
+        { week: 4, topic: "Medication & Protocol Coordination" },
+        { week: 5, topic: "Complex Comorbidity Management" },
+        { week: 6, topic: "Trauma-Informed Approaches" },
+        { week: 7, topic: "Advanced Coaching Techniques" },
+        { week: 8, topic: "Ethics & Professional Standards" },
+        { week: 9, topic: "Business Development & Marketing" },
+        { week: 10, topic: "Case Studies & Practice" },
+        { week: 11, topic: "Supervision & Consultation" },
+        { week: 12, topic: "Advanced Certification Exam" }
+      ]
+    }
+  ];
+
+  const benefits = [
+    {
+      icon: Award,
+      title: "Industry-Recognized Certification",
+      description: "Earn a credential recognized by healthcare and wellness organizations"
+    },
+    {
+      icon: Users,
+      title: "Access to Client Network",
+      description: "Get matched with clients seeking certified brain health trainers"
+    },
+    {
+      icon: TrendingUp,
+      title: "Revenue Opportunities",
+      description: "Earn income through consultations, programs, and client referrals"
+    },
+    {
+      icon: Brain,
+      title: "Cutting-Edge Training",
+      description: "Learn the latest neuroscience-based protocols and methodologies"
+    },
+    {
+      icon: ShieldCheck,
+      title: "Ongoing Support",
+      description: "Access to continuing education, resources, and community"
+    },
+    {
+      icon: Zap,
+      title: "Marketing Support",
+      description: "Get featured in our directory with professional profile and branding"
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: "Dr. Sarah Martinez, LCSW",
+      role: "Certified Brain Health Trainer",
+      quote: "The certification program transformed my practice. I now have evidence-based tools that actually work, and my clients see real results. The ongoing support is invaluable.",
+      result: "Doubled client base in 6 months"
+    },
+    {
+      name: "Michael Chen, Certified Coach",
+      role: "Wellness Professional",
+      quote: "As a caregiver, I wanted to help others but didn't have the clinical background. This program gave me the knowledge and credentials to make a real difference.",
+      result: "Started private practice, 50+ clients"
+    },
+    {
+      name: "Dr. James Wilson, MD",
+      role: "Psychiatrist",
+      quote: "The advanced certification allowed me to integrate these protocols with my medical practice. My patients love the holistic approach, and outcomes have improved significantly.",
+      result: "40% improvement in patient outcomes"
+    }
+  ];
+
+  const faqs = [
+    {
+      q: "Who is this certification program for?",
+      a: "The Foundation program is ideal for caregivers, coaches, wellness professionals, and anyone passionate about brain health. The Advanced program is designed for licensed professionals (MD, PhD, LCSW, LPC, etc.) who want to integrate these protocols into clinical practice."
+    },
+    {
+      q: "What are the prerequisites?",
+      a: "Foundation: No formal prerequisites, but a background in healthcare, coaching, or wellness is helpful. Advanced: Requires a current license (MD, DO, PhD, PsyD, LCSW, LPC, LMFT, or equivalent)."
+    },
+    {
+      q: "How long does certification take?",
+      a: "Foundation: 8 weeks of training + certification exam. Advanced: 12 weeks of training + advanced exam. Both programs are self-paced with weekly live sessions."
+    },
+    {
+      q: "What happens after I'm certified?",
+      a: "You'll be listed in our professional directory, get access to client referrals, can create and sell programs (with revenue sharing), and have access to ongoing training and support."
+    },
+    {
+      q: "Is there ongoing support after certification?",
+      a: "Yes! Certified trainers get access to monthly continuing education sessions, a private community, case consultation, and updates on new protocols and research."
+    },
+    {
+      q: "What's the revenue potential?",
+      a: "Certified trainers can earn through: 1) Consultation bookings (70-80% revenue share), 2) Program sales (70-80% revenue share), 3) Client referrals. Many trainers earn $50K-$150K+ annually."
+    }
+  ];
+
+  return (
+    <div className="pt-14 sm:pt-16 md:pt-20">
+      {/* HERO SECTION */}
+      <section className="relative bg-gradient-to-br from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] py-16 sm:py-20 md:py-24 px-4 sm:px-6 overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-[100px] opacity-50 pointer-events-none" />
+        <RevealOnScroll className="z-10 max-w-6xl mx-auto text-center">
+          <Award className="w-16 h-16 sm:w-20 sm:h-20 text-white mx-auto mb-6" />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
+            Become a Certified Brain Health Trainer
+          </h1>
+          <p className="text-white/90 text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-8 sm:mb-10">
+            Join a network of certified professionals transforming lives through evidence-based brain health protocols. 
+            Get the training, credentials, and support you need to build a successful practice.
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 text-xs sm:text-sm text-white/80">
+            <div className="flex items-center">
+              <Check className="w-4 h-4 text-[#4a7c59] mr-2 flex-shrink-0" />
+              <span className="whitespace-nowrap">Industry-recognized certification</span>
+            </div>
+            <span className="hidden sm:inline">•</span>
+            <div className="flex items-center">
+              <Check className="w-4 h-4 text-[#4a7c59] mr-2 flex-shrink-0" />
+              <span className="whitespace-nowrap">Revenue opportunities</span>
+            </div>
+            <span className="hidden sm:inline">•</span>
+            <div className="flex items-center">
+              <Check className="w-4 h-4 text-[#4a7c59] mr-2 flex-shrink-0" />
+              <span className="whitespace-nowrap">Ongoing support</span>
+            </div>
+          </div>
+        </RevealOnScroll>
+      </section>
+
+      {/* BENEFITS SECTION */}
+      <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <RevealOnScroll className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              Why Get Certified?
+            </h2>
+            <p className="text-[#5c7a70] text-base sm:text-lg max-w-2xl mx-auto">
+              Join a growing community of certified professionals making a real difference
+            </p>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {benefits.map((benefit, idx) => {
+              const IconComponent = benefit.icon;
+              return (
+                <RevealOnScroll key={idx} delay={idx * 100} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-200 hover:border-[#4a7c59] transition-all">
+                  <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-[#4a7c59] mb-4" />
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3">{benefit.title}</h3>
+                  <p className="text-[#5c7a70] text-sm sm:text-base">{benefit.description}</p>
+                </RevealOnScroll>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CERTIFICATION PROGRAMS */}
+      <section className="bg-[#eff2ef] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <RevealOnScroll className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              Choose Your Certification Path
+            </h2>
+            <p className="text-[#5c7a70] text-base sm:text-lg max-w-2xl mx-auto">
+              Two comprehensive programs designed for different professional backgrounds
+            </p>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 max-w-6xl mx-auto">
+            {certificationPrograms.map((program, idx) => (
+              <RevealOnScroll
+                key={program.id}
+                delay={idx * 100}
+                className={`bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border-2 ${
+                  idx === 0 ? 'border-gray-200' : 'border-[#4a7c59]'
+                } shadow-lg flex flex-col relative`}
+              >
+                {idx === 1 && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-xs font-bold px-4 py-1 rounded-b-lg">
+                    MOST POPULAR
+                  </div>
+                )}
+                <div className="mb-6">
+                  <span className="text-xs font-bold text-[#4a7c59] uppercase tracking-wider mb-2 block">
+                    {program.level} Level
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-[#1a3c34] mb-3">{program.name}</h3>
+                  <p className="text-[#5c7a70] text-sm sm:text-base mb-4">{program.description}</p>
+                  <p className="text-sm font-semibold text-[#1a3c34] mb-2">Best For:</p>
+                  <p className="text-sm text-[#5c7a70] mb-6">{program.bestFor}</p>
+                </div>
+
+                <div className="mb-6">
+                  <div className="flex flex-wrap items-baseline mb-2 gap-2">
+                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a3c34]">${program.price}</span>
+                    <span className="text-sm sm:text-lg text-gray-500">one-time</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#5c7a70] mb-4">or {program.paymentPlan}</p>
+                  <p className="text-xs text-gray-500 mb-4">{program.duration} program</p>
+                </div>
+
+                <div className="mb-6 flex-grow">
+                  <p className="font-bold text-[#1a3c34] text-sm mb-3">What's Included:</p>
+                  <ul className="space-y-2 mb-6">
+                    {program.includes.map((item, i) => (
+                      <li key={i} className="flex items-start text-sm text-[#5c7a70]">
+                        <Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="font-bold text-[#1a3c34] text-sm mb-3">You'll Be Able To:</p>
+                  <ul className="space-y-2">
+                    {program.outcomes.map((outcome, i) => (
+                      <li key={i} className="flex items-start text-sm text-[#5c7a70]">
+                        <ArrowRight className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{outcome}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="border-t border-gray-200 pt-6">
+                  <button
+                    onClick={() => setSelectedProgram(program.id)}
+                    className={`w-full py-3 sm:py-4 rounded-full font-bold transition-colors text-sm sm:text-base ${
+                      idx === 0
+                        ? 'bg-[#1a3c34] text-white hover:bg-[#2a5c4f]'
+                        : 'bg-[#4a7c59] text-white hover:bg-[#3a6347]'
+                    }`}
+                  >
+                    ENROLL IN {program.level.toUpperCase()} PROGRAM →
+                  </button>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CURRICULUM PREVIEW */}
+      <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <RevealOnScroll className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              Curriculum Overview
+            </h2>
+            <p className="text-[#5c7a70] text-base sm:text-lg max-w-2xl mx-auto">
+              Comprehensive training covering all aspects of brain health transformation
+            </p>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {certificationPrograms.map((program) => (
+              <div key={program.id} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-6 sm:p-8">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">{program.name}</h3>
+                <div className="space-y-3">
+                  {program.curriculum.map((item, idx) => (
+                    <div key={idx} className="flex items-start">
+                      <div className="bg-[#4a7c59] text-white rounded-lg px-3 py-1 text-xs font-bold mr-3 flex-shrink-0">
+                        Week {item.week}
+                      </div>
+                      <p className="text-sm text-[#5c7a70] pt-1">{item.topic}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="bg-[#eff2ef] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <RevealOnScroll className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              Success Stories from Certified Trainers
+            </h2>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {testimonials.map((testimonial, idx) => (
+              <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-200">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-[#1a3c34] rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#1a3c34] text-sm">{testimonial.name}</p>
+                    <p className="text-xs text-[#5c7a70]">{testimonial.role}</p>
+                  </div>
+                </div>
+                <p className="text-[#1a3c34] text-sm sm:text-base italic mb-4 leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex text-yellow-400 mb-3">
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                </div>
+                <p className="text-xs font-semibold text-[#4a7c59]">Result: {testimonial.result}</p>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto">
+          <RevealOnScroll className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              Frequently Asked Questions
+            </h2>
+          </RevealOnScroll>
+
+          <div className="space-y-6 sm:space-y-8">
+            {faqs.map((faq, idx) => (
+              <RevealOnScroll key={idx} delay={idx * 50} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200">
+                <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-3">{faq.q}</h3>
+                <p className="text-[#5c7a70] text-sm sm:text-base">{faq.a}</p>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="bg-gradient-to-r from-[#1a3c34] to-[#2a5c4f] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <Award className="w-16 h-16 sm:w-20 sm:h-20 text-white mx-auto mb-6" />
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+            Ready to Transform Lives?
+          </h2>
+          <p className="text-white/90 text-base sm:text-lg md:text-xl mb-8 sm:mb-10 max-w-2xl mx-auto">
+            Join hundreds of certified professionals helping people achieve better brain health. 
+            Start your certification journey today.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-white text-[#1a3c34] px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-xl text-base sm:text-lg">
+              ENROLL IN FOUNDATION PROGRAM →
+            </button>
+            <button className="bg-[#4a7c59] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-xl text-base sm:text-lg">
+              ENROLL IN ADVANCED PROGRAM →
+            </button>
+          </div>
+          <p className="text-white/70 text-xs sm:text-sm mt-6">Questions? Contact us at certification@cogcare.com</p>
+        </div>
+      </section>
+    </div>
+  );
+};
+
 const App = () => {
-  // Router State: 'home' | 'directory' | 'programs' | 'assessments'
+  // Router State: 'home' | 'directory' | 'programs' | 'assessments' | 'certification'
   const [activePage, setActivePage] = useState('home');
 
   return (
@@ -1788,6 +2190,10 @@ const App = () => {
 
       {activePage === 'assessments' && (
         <AssessmentsPage setActivePage={setActivePage} />
+      )}
+
+      {activePage === 'certification' && (
+        <CertificationPage setActivePage={setActivePage} />
       )}
 
       <Footer />

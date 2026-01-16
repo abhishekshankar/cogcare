@@ -34,7 +34,8 @@ import {
   Award,
   Stethoscope,
   Phone,
-  Filter
+  Filter,
+  Heart
 } from 'lucide-react';
 
 /**
@@ -200,7 +201,13 @@ const Navbar = ({ activePage, setActivePage }) => {
             Programs
           </button>
           
-          <div className="group relative cursor-pointer h-16 flex items-center">
+          <button 
+            onClick={() => setActivePage('assessments')}
+            className={`transition-colors flex items-center ${activePage === 'assessments' ? 'text-[#1a3c34] font-bold' : 'hover:text-[#1a3c34]'}`}
+          >
+            Assessments <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
+          </button>
+          <div className="group relative cursor-pointer h-16 flex items-center hidden">
             <span className="hover:text-[#1a3c34] transition-colors flex items-center">
               Assessments <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
             </span>
@@ -249,7 +256,7 @@ const Navbar = ({ activePage, setActivePage }) => {
         <div className="absolute top-14 sm:top-16 left-0 w-full bg-[#eff2ef] backdrop-blur-xl border-b border-[#1a3c34]/10 p-4 sm:p-6 flex flex-col space-y-3 md:hidden shadow-xl max-h-[calc(100vh-3.5rem)] overflow-y-auto">
           <button onClick={() => { setActivePage('directory'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Find a Professional</button>
           <button onClick={() => { setActivePage('programs'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Programs</button>
-          <a href="#assessments" className="text-[#1a3c34] font-medium py-2 text-base">Assessments</a>
+          <button onClick={() => { setActivePage('assessments'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Assessments</button>
           <button className="bg-[#1a3c34] text-white px-4 py-3.5 rounded-full w-full text-base font-medium mt-2">
             Take a Quiz
           </button>
@@ -1307,8 +1314,449 @@ const ProgramsDirectory = ({ setActivePage }) => {
   );
 };
 
+/* =========================================
+   ASSESSMENTS PAGE COMPONENT
+   ========================================= */
+const AssessmentsPage = ({ setActivePage }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+
+  const categories = [
+    { id: 'all', name: 'All Assessments', count: 74 },
+    { id: 'focus', name: 'Focus & Attention', count: 12 },
+    { id: 'sleep', name: 'Sleep & Energy', count: 8 },
+    { id: 'anxiety', name: 'Anxiety & Stress', count: 15 },
+    { id: 'mood', name: 'Mood & Depression', count: 10 },
+    { id: 'memory', name: 'Memory & Learning', count: 9 },
+    { id: 'performance', name: 'Peak Performance', count: 10 }
+  ];
+
+  const assessmentTypes = [
+    { id: 'all', name: 'All Types' },
+    { id: 'quick', name: 'Quick Diagnostics (3-5 min)' },
+    { id: 'system', name: 'System Assessments (8-12 min)' },
+    { id: 'comprehensive', name: 'Comprehensive (15+ min)' }
+  ];
+
+  const assessments = [
+    {
+      id: 1,
+      title: "Focus & Concentration Diagnostic",
+      category: 'focus',
+      type: 'quick',
+      duration: "4 min",
+      description: "Identify why you can't stay on task or finish projects",
+      icon: Target,
+      color: "red",
+      questions: 12,
+      completed: 12450,
+      rating: 4.9,
+      bestFor: "ADHD, scattered attention, task-switching"
+    },
+    {
+      id: 2,
+      title: "Sleep Quality Index",
+      category: 'sleep',
+      type: 'quick',
+      duration: "3 min",
+      description: "Evaluate your sleep patterns and circadian rhythm health",
+      icon: Moon,
+      color: "indigo",
+      questions: 10,
+      completed: 18920,
+      rating: 4.8,
+      bestFor: "Insomnia, poor sleep quality, low energy"
+    },
+    {
+      id: 3,
+      title: "Anxiety Type Assessment",
+      category: 'anxiety',
+      type: 'quick',
+      duration: "5 min",
+      description: "Discover your specific anxiety pattern and triggers",
+      icon: Activity,
+      color: "orange",
+      questions: 15,
+      completed: 21560,
+      rating: 4.9,
+      bestFor: "Generalized anxiety, panic, worry patterns"
+    },
+    {
+      id: 4,
+      title: "Brain Fog Detector",
+      category: 'focus',
+      type: 'quick',
+      duration: "4 min",
+      description: "Identify the root causes of mental clarity issues",
+      icon: CloudFog,
+      color: "gray",
+      questions: 12,
+      completed: 9870,
+      rating: 4.7,
+      bestFor: "Mental clarity, cognitive decline, brain fog"
+    },
+    {
+      id: 5,
+      title: "Energy Optimization Assessment",
+      category: 'sleep',
+      type: 'quick',
+      duration: "3 min",
+      description: "Evaluate your energy patterns and metabolic health",
+      icon: Battery,
+      color: "yellow",
+      questions: 10,
+      completed: 11230,
+      rating: 4.8,
+      bestFor: "Chronic fatigue, low energy, energy crashes"
+    },
+    {
+      id: 6,
+      title: "Mood Regulation Check",
+      category: 'mood',
+      type: 'quick',
+      duration: "4 min",
+      description: "Assess your emotional stability and mood patterns",
+      icon: Smile,
+      color: "blue",
+      questions: 12,
+      completed: 15680,
+      rating: 4.8,
+      bestFor: "Depression, mood swings, emotional instability"
+    },
+    {
+      id: 7,
+      title: "Cognitive Performance System",
+      category: 'performance',
+      type: 'system',
+      duration: "10 min",
+      description: "Comprehensive evaluation of all cognitive systems",
+      icon: Brain,
+      color: "purple",
+      questions: 35,
+      completed: 8750,
+      rating: 4.9,
+      bestFor: "Peak performance, executive function, cognitive optimization"
+    },
+    {
+      id: 8,
+      title: "Emotional Brain Assessment",
+      category: 'anxiety',
+      type: 'system',
+      duration: "12 min",
+      description: "Deep dive into emotional regulation and processing",
+      icon: Heart,
+      color: "pink",
+      questions: 40,
+      completed: 10240,
+      rating: 4.8,
+      bestFor: "Emotional regulation, trauma, emotional processing"
+    },
+    {
+      id: 9,
+      title: "Brain-Body Connection",
+      category: 'performance',
+      type: 'system',
+      duration: "8 min",
+      description: "Evaluate the connection between physical and mental health",
+      icon: Activity,
+      color: "green",
+      questions: 28,
+      completed: 6540,
+      rating: 4.7,
+      bestFor: "Physical health impact on cognition, holistic wellness"
+    },
+    {
+      id: 10,
+      title: "Memory & Learning Profile",
+      category: 'memory',
+      type: 'system',
+      duration: "10 min",
+      description: "Assess your memory systems and learning patterns",
+      icon: Brain,
+      color: "teal",
+      questions: 32,
+      completed: 7890,
+      rating: 4.8,
+      bestFor: "Memory issues, learning difficulties, cognitive decline"
+    },
+    {
+      id: 11,
+      title: "Comprehensive Brain Wellness Quiz",
+      category: 'all',
+      type: 'comprehensive',
+      duration: "15 min",
+      description: "Complete analysis across all 5 brain systems",
+      icon: Brain,
+      color: "dark",
+      questions: 60,
+      completed: 34210,
+      rating: 4.9,
+      bestFor: "Full brain health evaluation, comprehensive diagnosis"
+    },
+    {
+      id: 12,
+      title: "Peak Performance Assessment",
+      category: 'performance',
+      type: 'comprehensive',
+      duration: "18 min",
+      description: "Elite-level cognitive optimization evaluation",
+      icon: TrendingUp,
+      color: "gold",
+      questions: 70,
+      completed: 5670,
+      rating: 4.9,
+      bestFor: "High-performers, executives, optimization seekers"
+    }
+  ];
+
+  const colorClasses = {
+    red: { bg: 'bg-red-100', text: 'text-red-600' },
+    orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
+    indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+    gray: { bg: 'bg-gray-100', text: 'text-gray-600' },
+    yellow: { bg: 'bg-yellow-100', text: 'text-yellow-600' },
+    blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+    purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
+    pink: { bg: 'bg-pink-100', text: 'text-pink-600' },
+    green: { bg: 'bg-green-100', text: 'text-green-600' },
+    teal: { bg: 'bg-teal-100', text: 'text-teal-600' },
+    dark: { bg: 'bg-gray-800', text: 'text-white' },
+    gold: { bg: 'bg-yellow-200', text: 'text-yellow-800' }
+  };
+
+  const filteredAssessments = assessments.filter(assessment => {
+    const matchesSearch = assessment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         assessment.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || assessment.category === selectedCategory;
+    const matchesType = selectedType === 'all' || assessment.type === selectedType;
+    return matchesSearch && matchesCategory && matchesType;
+  });
+
+  const popularAssessments = assessments.filter(a => a.completed > 15000).slice(0, 6);
+
+  return (
+    <div className="pt-14 sm:pt-16 md:pt-20">
+      {/* HERO SECTION */}
+      <section className="relative bg-gradient-to-br from-[#eff2ef] via-white to-[#eff2ef] py-12 sm:py-16 md:py-24 px-4 sm:px-6 overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-white/80 via-[#dce6dc]/50 to-[#c8d9c8]/30 rounded-full blur-[100px] opacity-80 animate-pulse pointer-events-none" />
+        <RevealOnScroll className="z-10 max-w-6xl mx-auto text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] mb-4 sm:mb-6 leading-tight">
+            Discover Your Brain's Hidden Patterns
+          </h1>
+          <p className="text-[#5c7a70] text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-8 sm:mb-10">
+            Take science-backed assessments to understand your cognitive type, identify issues, and get personalized recommendations.
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-4 text-sm text-[#5c7a70]">
+            <div className="flex items-center">
+              <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+              <span>4.8/5 average rating</span>
+            </div>
+            <span>•</span>
+            <span>247,000+ assessments completed</span>
+            <span>•</span>
+            <span>74 specialized assessments</span>
+          </div>
+        </RevealOnScroll>
+      </section>
+
+      {/* SEARCH & FILTERS */}
+      <section className="bg-white border-b border-gray-200 sticky top-14 sm:top-16 md:top-20 z-30 py-4 sm:py-6 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+            {/* Search Bar */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search assessments by name or topic..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-full border-2 border-gray-200 focus:border-[#4a7c59] focus:outline-none text-sm sm:text-base"
+              />
+            </div>
+
+            {/* Category Filter */}
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 sm:px-6 py-3 sm:py-4 rounded-full border-2 border-gray-200 focus:border-[#4a7c59] focus:outline-none text-sm sm:text-base bg-white"
+            >
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name} ({cat.count})
+                </option>
+              ))}
+            </select>
+
+            {/* Type Filter */}
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="px-4 sm:px-6 py-3 sm:py-4 rounded-full border-2 border-gray-200 focus:border-[#4a7c59] focus:outline-none text-sm sm:text-base bg-white"
+            >
+              {assessmentTypes.map(type => (
+                <option key={type.id} value={type.id}>{type.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {/* POPULAR ASSESSMENTS */}
+      <section className="bg-[#eff2ef] py-8 sm:py-12 md:py-16 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-6 sm:mb-8">Most Popular Assessments</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
+            {popularAssessments.map(assessment => {
+              const IconComponent = assessment.icon;
+              return (
+                <RevealOnScroll
+                  key={assessment.id}
+                  className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-all cursor-pointer group"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 ${colorClasses[assessment.color]?.bg || 'bg-gray-100'} rounded-xl flex items-center justify-center`}>
+                      <IconComponent className={`w-6 h-6 sm:w-7 sm:h-7 ${colorClasses[assessment.color]?.text || 'text-gray-600'}`} />
+                    </div>
+                    <span className="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{assessment.duration}</span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-2 group-hover:text-[#4a7c59] transition-colors">
+                    {assessment.title}
+                  </h3>
+                  <p className="text-sm text-[#5c7a70] mb-4">{assessment.description}</p>
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <span>{assessment.questions} questions</span>
+                    <span>{assessment.completed.toLocaleString()} completed</span>
+                  </div>
+                  <button className="w-full bg-[#4a7c59] text-white px-4 py-2.5 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm">
+                    START ASSESSMENT →
+                  </button>
+                </RevealOnScroll>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ALL ASSESSMENTS GRID */}
+      <section className="bg-white py-8 sm:py-12 md:py-16 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34]">
+              All Assessments
+            </h2>
+            <p className="text-sm text-[#5c7a70]">
+              Showing {filteredAssessments.length} of {assessments.length} assessments
+            </p>
+          </div>
+
+          {filteredAssessments.length === 0 ? (
+            <div className="text-center py-16">
+              <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-[#1a3c34] mb-2">No assessments found</h3>
+              <p className="text-[#5c7a70] mb-6">Try adjusting your search or filters</p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                  setSelectedType('all');
+                }}
+                className="bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {filteredAssessments.map(assessment => {
+                const IconComponent = assessment.icon;
+                return (
+                  <RevealOnScroll
+                    key={assessment.id}
+                    className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 hover:border-[#4a7c59] shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 ${colorClasses[assessment.color]?.bg || 'bg-gray-100'} rounded-xl flex items-center justify-center`}>
+                        <IconComponent className={`w-6 h-6 sm:w-7 sm:h-7 ${colorClasses[assessment.color]?.text || 'text-gray-600'}`} />
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs font-bold bg-white text-gray-600 px-2 py-1 rounded-full">{assessment.duration}</span>
+                        {assessment.type === 'comprehensive' && (
+                          <span className="text-[10px] font-bold bg-[#4a7c59] text-white px-2 py-0.5 rounded-full">COMPREHENSIVE</span>
+                        )}
+                      </div>
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-2 group-hover:text-[#4a7c59] transition-colors">
+                      {assessment.title}
+                    </h3>
+                    <p className="text-sm text-[#5c7a70] mb-4">{assessment.description}</p>
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-[#1a3c34] mb-1">Best For:</p>
+                      <p className="text-xs text-[#5c7a70]">{assessment.bestFor}</p>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4 pb-4 border-b border-gray-200">
+                      <div className="flex items-center">
+                        <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
+                        <span>{assessment.rating}</span>
+                      </div>
+                      <span>{assessment.questions} questions</span>
+                      <span>{assessment.completed.toLocaleString()} completed</span>
+                    </div>
+                    <button className="w-full bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-4 py-2.5 rounded-full font-bold hover:bg-[#4a7c59] hover:text-white transition-colors text-sm">
+                      START ASSESSMENT →
+                    </button>
+                  </RevealOnScroll>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* COMPREHENSIVE QUIZ CTA */}
+      <section className="bg-gradient-to-r from-[#1a3c34] to-[#2a5c4f] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <Brain className="w-16 h-16 sm:w-20 sm:h-20 text-white mx-auto mb-6" />
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+            Need a Complete Brain Health Analysis?
+          </h2>
+          <p className="text-white/90 text-base sm:text-lg md:text-xl mb-8 sm:mb-10 max-w-2xl mx-auto">
+            Take our Comprehensive Brain Wellness Quiz for a full evaluation across all 5 brain systems. Get personalized recommendations for programs and specialists.
+          </p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 mb-8 inline-block">
+            <p className="text-white text-sm sm:text-base mb-2">Assessment Details:</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-white text-xs sm:text-sm">
+              <div>
+                <p className="font-bold text-lg sm:text-xl">60</p>
+                <p className="text-white/80">Questions</p>
+              </div>
+              <div>
+                <p className="font-bold text-lg sm:text-xl">15 min</p>
+                <p className="text-white/80">Duration</p>
+              </div>
+              <div>
+                <p className="font-bold text-lg sm:text-xl">5</p>
+                <p className="text-white/80">Systems</p>
+              </div>
+              <div>
+                <p className="font-bold text-lg sm:text-xl">34K+</p>
+                <p className="text-white/80">Completed</p>
+              </div>
+            </div>
+          </div>
+          <button className="bg-white text-[#1a3c34] px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-xl text-base sm:text-lg">
+            START COMPREHENSIVE QUIZ →
+          </button>
+          <p className="text-white/70 text-xs sm:text-sm mt-4">Free • No sign-up required • Instant results</p>
+        </div>
+      </section>
+    </div>
+  );
+};
+
 const App = () => {
-  // Router State: 'home' | 'directory' | 'programs'
+  // Router State: 'home' | 'directory' | 'programs' | 'assessments'
   const [activePage, setActivePage] = useState('home');
 
   return (
@@ -1336,6 +1784,10 @@ const App = () => {
 
       {activePage === 'programs' && (
         <ProgramsDirectory setActivePage={setActivePage} />
+      )}
+
+      {activePage === 'assessments' && (
+        <AssessmentsPage setActivePage={setActivePage} />
       )}
 
       <Footer />

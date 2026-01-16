@@ -1326,7 +1326,7 @@ const App = () => {
           <Testimonials />
           <BrainScore />
           <CategoryExplorer />
-          <Pricing />
+          <Pricing setActivePage={setActivePage} />
         </>
       )}
 
@@ -1349,7 +1349,7 @@ const App = () => {
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#eff2ef] overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-16">
+    <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center bg-[#eff2ef] overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-16">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[800px] h-[600px] sm:h-[800px] bg-gradient-to-r from-white/80 via-[#dce6dc]/50 to-[#c8d9c8]/30 rounded-full blur-[100px] opacity-80 animate-pulse pointer-events-none" />
       <RevealOnScroll className="z-10 text-center px-4 sm:px-6 max-w-6xl mx-auto w-full">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] tracking-tight mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto">
@@ -1725,61 +1725,234 @@ const Testimonials = () => {
   );
 };
 
-const Pricing = () => {
+const Pricing = ({ setActivePage }) => {
   return (
-    <section id="pricing" className="bg-[#1a3c34] py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6">
+    <section id="pricing" className="bg-[#eff2ef] py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
         <RevealOnScroll>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white text-center mb-6 sm:mb-8">Invest in your infrastructure.</h2>
-          <div className="bg-white/10 border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-2xl mx-auto mb-10 sm:mb-12 md:mb-16 text-center backdrop-blur-sm">
-            <ShieldCheck className="w-10 h-10 sm:w-12 sm:h-12 text-[#8fb89c] mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-2">30-Day Money-Back Guarantee</h3>
-            <p className="text-gray-300 text-xs sm:text-sm">Complete the first 5 modules. If your focus doesn't improve, we'll refund 100%—no questions asked.</p>
+          <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              Transform Your Brain - Choose Your Path
+            </h2>
+            <p className="text-[#5c7a70] text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-6 sm:mb-8">
+              Not sure which path is right for you? Take our free 5-minute assessment first to get a personalized recommendation.
+            </p>
+            <button 
+              onClick={() => {
+                setActivePage('home');
+                setTimeout(() => {
+                  document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="bg-[#4a7c59] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-sm sm:text-base"
+            >
+              TAKE FREE QUIZ →
+            </button>
           </div>
         </RevealOnScroll>
-        <div className="max-w-4xl mx-auto mb-6 sm:mb-8 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-[10px] sm:text-xs text-center opacity-80">
-           <p className="text-white">Best for: One specific problem</p>
-           <p className="text-[#4a7c59] font-bold bg-white px-2 py-1 rounded-full">Best for: Total Transformation</p>
-           <p className="text-white">Best for: Ongoing maintenance</p>
+
+        {/* Three Main Pathways */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto mb-12 sm:mb-16">
+          {/* PATHWAY 1: CogCare Programs */}
+          <RevealOnScroll className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-lg flex flex-col">
+            <div className="mb-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">📚</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-2">CogCare Programs</h3>
+              <p className="text-[#5c7a70] text-sm sm:text-base mb-4">
+                Research-backed transformation programs designed by our clinical team
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Best For:</p>
+              <ul className="space-y-2 text-sm text-[#5c7a70] mb-4">
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Self-motivated learners</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Single-issue focus</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Budget-conscious</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Structured approach</li>
+              </ul>
+            </div>
+
+            <div className="mb-6 flex-grow">
+              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Includes:</p>
+              <ul className="space-y-2 text-sm text-[#5c7a70]">
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Quiz-matched personalized path</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> 4-12 week programs</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Self-paced learning</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Implementation tools</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Community access</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Lifetime access</li>
+              </ul>
+            </div>
+
+            <div className="border-t border-gray-200 pt-6 mt-auto">
+              <div className="mb-4">
+                <p className="text-sm text-[#5c7a70] mb-2">Pricing:</p>
+                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Programs: $197-497</p>
+                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Bundles: $447-697</p>
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-[#4a7c59] mb-4">FROM $197</p>
+              <button 
+                onClick={() => setActivePage('programs')}
+                className="w-full bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-sm sm:text-base"
+              >
+                BROWSE PROGRAMS →
+              </button>
+              <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
+                <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
+                <span>247,000+ enrolled</span>
+                <span className="mx-2">•</span>
+                <span>68% completion rate</span>
+              </div>
+            </div>
+          </RevealOnScroll>
+
+          {/* PATHWAY 2: Specialist Programs */}
+          <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-[#4a7c59] shadow-xl flex flex-col relative transform md:-translate-y-2">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-xs font-bold px-3 py-1 rounded-b-lg">MOST POPULAR</div>
+            <div className="mb-4 mt-2">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">👨‍⚕️</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-2">Specialist Programs</h3>
+              <p className="text-[#5c7a70] text-sm sm:text-base mb-4">
+                Created by licensed specialists (MDs, PhDs, therapists)
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Best For:</p>
+              <ul className="space-y-2 text-sm text-[#5c7a70] mb-4">
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Specific specialist methodologies</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Expert guidance</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Proven frameworks</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Niche approaches</li>
+              </ul>
+            </div>
+
+            <div className="mb-6 flex-grow">
+              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Includes:</p>
+              <ul className="space-y-2 text-sm text-[#5c7a70]">
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Specialist's unique methodology</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> 4-12 week programs</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Self-paced learning</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Optional 1:1 support</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Private communities</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Lifetime access</li>
+              </ul>
+            </div>
+
+            <div className="border-t border-gray-200 pt-6 mt-auto">
+              <div className="mb-4">
+                <p className="text-sm text-[#5c7a70] mb-2">Pricing:</p>
+                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Programs: $247-997</p>
+                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Bundles: $500-1,500</p>
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-[#4a7c59] mb-4">FROM $247</p>
+              <button 
+                onClick={() => setActivePage('directory')}
+                className="w-full bg-[#1a3c34] text-white px-6 py-3 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors shadow-lg text-sm sm:text-base"
+              >
+                FIND SPECIALISTS →
+              </button>
+              <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
+                <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
+                <span>500+ specialists</span>
+                <span className="mx-2">•</span>
+                <span>All licensed/certified</span>
+              </div>
+            </div>
+          </RevealOnScroll>
+
+          {/* PATHWAY 3: Direct Consultation */}
+          <RevealOnScroll delay={200} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-lg flex flex-col">
+            <div className="mb-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">💬</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-2">Direct Consultation</h3>
+              <p className="text-[#5c7a70] text-sm sm:text-base mb-4">
+                1:1 sessions with board-certified professionals
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Best For:</p>
+              <ul className="space-y-2 text-sm text-[#5c7a70] mb-4">
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Complex cases</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Need diagnosis</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Medication management</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Personalized care</li>
+              </ul>
+            </div>
+
+            <div className="mb-6 flex-grow">
+              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Includes:</p>
+              <ul className="space-y-2 text-sm text-[#5c7a70]">
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Comprehensive evaluation</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Treatment planning</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Ongoing support</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Insurance accepted</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Virtual or in-person</li>
+                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Session packages</li>
+              </ul>
+            </div>
+
+            <div className="border-t border-gray-200 pt-6 mt-auto">
+              <div className="mb-4">
+                <p className="text-sm text-[#5c7a70] mb-2">Pricing:</p>
+                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Initial: $250-500</p>
+                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Follow-up: $150-350</p>
+                <p className="text-sm text-[#5c7a70]">Packages: 10-20% savings</p>
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-[#4a7c59] mb-4">FROM $150/session</p>
+              <button 
+                onClick={() => setActivePage('directory')}
+                className="w-full bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-sm sm:text-base"
+              >
+                BOOK CONSULT →
+              </button>
+              <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
+                <ShieldCheck className="w-3 h-3 text-[#4a7c59] mr-1" />
+                <span>Insurance accepted</span>
+                <span className="mx-2">•</span>
+                <span>Same-week appointments</span>
+              </div>
+            </div>
+          </RevealOnScroll>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
-          <RevealOnScroll className="bg-[#2a5c4f] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 border border-white/5 flex flex-col relative overflow-hidden">
-             <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">Single Program</h3>
-             <div className="text-3xl sm:text-4xl font-bold text-white mb-4 sm:mb-6">$147</div>
-             <p className="text-gray-300 text-xs sm:text-sm mb-6 sm:mb-8 flex-grow">Perfect for solving one specific problem immediately (e.g. Focus or Sleep).</p>
-             <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-200">
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Lifetime Access</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> 4-Week Protocol</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Basic Community Access</li>
-             </ul>
-             <button className="w-full py-2.5 sm:py-3 rounded-full bg-[#1a3c34] text-white font-medium hover:bg-[#132e27] transition-colors border border-white/10 text-sm sm:text-base">Select Program</button>
-          </RevealOnScroll>
-          <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 border border-transparent flex flex-col relative overflow-hidden transform md:-translate-y-4 shadow-2xl">
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-b-lg">MOST POPULAR</div>
-             <h3 className="text-lg sm:text-xl font-semibold text-[#1a3c34] mb-2">Accelerator Bundle</h3>
-             <div className="text-3xl sm:text-4xl font-bold text-[#1a3c34] mb-1">$497</div>
-             <div className="text-[10px] sm:text-xs text-[#4a7c59] mb-4 sm:mb-6 font-medium">or $175/mo x 3</div>
-             <p className="text-[#5c7a70] text-xs sm:text-sm mb-6 sm:mb-8 flex-grow">For those serious about total cognitive restructuring.</p>
-             <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm text-[#5c7a70]">
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 3 Programs of Choice</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 3 Deep Dive Reports</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> 1 Consultation Session</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59]"/> Priority Support</li>
-             </ul>
-             <button className="w-full py-2.5 sm:py-3 rounded-full bg-[#1a3c34] text-white font-medium hover:bg-[#2a5c4f] transition-colors shadow-lg shadow-[#1a3c34]/20 text-sm sm:text-base">Start Accelerator</button>
-          </RevealOnScroll>
-          <RevealOnScroll delay={200} className="bg-[#2a5c4f] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 border border-white/5 flex flex-col relative overflow-hidden">
-             <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">Brain Health Monthly</h3>
-             <div className="text-3xl sm:text-4xl font-bold text-white mb-4 sm:mb-6">$47<span className="text-base sm:text-lg font-normal text-gray-400">/mo</span></div>
-             <p className="text-gray-300 text-xs sm:text-sm mb-6 sm:mb-8 flex-grow">The gym membership for your brain.</p>
-             <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-200">
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> 1 New Program / Month</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Unlimited Quiz Retakes</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Score Tracking Dashboard</li>
-               <li className="flex items-center"><Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#8fb89c]"/> Monthly Expert Q&A</li>
-             </ul>
-             <button className="w-full py-2.5 sm:py-3 rounded-full bg-[#1a3c34] text-white font-medium hover:bg-[#132e27] transition-colors border border-white/10 text-sm sm:text-base">Join Membership</button>
-          </RevealOnScroll>
+
+        {/* Hybrid Option Section */}
+        <RevealOnScroll className="max-w-4xl mx-auto">
+          <div className="bg-gradient-to-r from-[#4a7c59] to-[#3a6347] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-center text-white shadow-xl">
+            <div className="text-3xl sm:text-4xl mb-4">💡</div>
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">Want The Best Of Both Worlds?</h3>
+            <p className="text-base sm:text-lg mb-6 text-white/90 max-w-2xl mx-auto">
+              Combine programs with specialist support for faster, more personalized results
+            </p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 mb-6 inline-block">
+              <p className="text-2xl sm:text-3xl font-bold mb-2">HYBRID PACKAGES</p>
+              <p className="text-lg sm:text-xl">start at $747</p>
+              <p className="text-sm text-white/80 mt-2">(program + 3 specialist sessions)</p>
+            </div>
+            <button 
+              onClick={() => setActivePage('programs')}
+              className="bg-white text-[#4a7c59] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-lg text-sm sm:text-base"
+            >
+              EXPLORE HYBRID OPTIONS →
+            </button>
+          </div>
+        </RevealOnScroll>
+
+        {/* Trust Bar */}
+        <div className="mt-12 sm:mt-16 flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-sm text-[#5c7a70] font-medium">
+          <div className="flex items-center">
+            <ShieldCheck className="w-4 h-4 text-[#4a7c59] mr-1" />
+            <span>30-Day Money-Back Guarantee</span>
+          </div>
+          <span>•</span>
+          <span>Instant Access</span>
+          <span>•</span>
+          <span>Lifetime Updates</span>
+          <span>•</span>
+          <span>Insurance Accepted</span>
         </div>
       </div>
     </section>

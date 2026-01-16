@@ -35,7 +35,11 @@ import {
   Stethoscope,
   Phone,
   Filter,
-  Heart
+  Heart,
+  ExternalLink,
+  BookOpen,
+  FileText,
+  GraduationCap
 } from 'lucide-react';
 
 /**
@@ -68,8 +72,8 @@ const RevealOnScroll = ({ children, className = "", delay = 0 }) => {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-1000 ease-out transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+      className={`transition-all duration-700 ease-out transform ${
+        isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -140,7 +144,7 @@ const ExitIntentPopup = () => {
           className="w-full px-4 py-2.5 sm:py-3 rounded-full border-2 border-gray-200 mb-3 sm:mb-4 focus:outline-none focus:border-[#4a7c59] transition-colors text-sm sm:text-base"
         />
 
-        <button className="w-full bg-[#1a3c34] text-white py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors shadow-lg text-sm sm:text-base">
+        <button className="w-full bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white py-2.5 sm:py-3 rounded-full font-bold hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base">
           SEND ME THE GUIDE
         </button>
 
@@ -149,6 +153,394 @@ const ExitIntentPopup = () => {
         </p>
       </div>
     </div>
+  );
+};
+
+/**
+ * Medical Disclaimer Component
+ */
+const MedicalDisclaimer = () => {
+  return (
+    <div className="bg-amber-50 border-l-4 border-amber-400 p-4 sm:p-5 mb-6 sm:mb-8 rounded-r-lg">
+      <div className="flex items-start">
+        <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 mr-3 mt-0.5 flex-shrink-0" />
+        <div className="flex-1">
+          <p className="text-xs sm:text-sm font-semibold text-amber-900 mb-2">
+            ⚠️ Important: CogCare provides educational wellness information and is not a substitute for professional medical advice, diagnosis, or treatment.
+          </p>
+          <p className="text-xs sm:text-sm text-amber-800 mb-3">
+            If you're experiencing severe symptoms, suicidal thoughts, or mental health crisis, contact a healthcare provider immediately.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-xs text-amber-700">
+            <a href="tel:988" className="flex items-center hover:text-amber-900 font-medium">
+              🇺🇸 US: 988 Suicide & Crisis Lifeline
+            </a>
+            <a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-amber-900 font-medium">
+              🌍 International: Find local resources at findahelpline.com
+              <ExternalLink className="w-3 h-3 ml-1" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Privacy & Data Security Banner
+ */
+const PrivacyBanner = ({ setActivePage }) => {
+  return (
+    <div className="bg-[#1a3c34] text-white p-4 sm:p-5 mb-6 sm:mb-8 rounded-lg">
+      <div className="flex items-start">
+        <Lock className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-0.5 flex-shrink-0" />
+        <div className="flex-1">
+          <p className="text-sm sm:text-base font-bold mb-2">🔒 Your Data is Private & Secure</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm mb-3">
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight">HIPAA-Level Encryption (AES-256)</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight">Zero Data Selling - Never shared with advertisers</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight">Anonymous Results - No personally identifiable information required</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight">GDPR & CCPA Compliant</span>
+                </div>
+              </div>
+          <div className="flex flex-wrap gap-3 text-xs sm:text-sm">
+            <button 
+              onClick={() => setActivePage('privacy')}
+              className="text-[#8fb89c] hover:text-white underline font-medium"
+            >
+              View Privacy Policy
+            </button>
+            <span className="text-gray-400">•</span>
+            <button 
+              onClick={() => setActivePage('privacy')}
+              className="text-[#8fb89c] hover:text-white underline font-medium"
+            >
+              Data Security Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Research Foundation Section
+ */
+const ResearchFoundation = () => {
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-[#eff2ef] border-y border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll>
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg border border-gray-100">
+            <div className="text-center mb-8 sm:mb-10">
+              <div className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+                PEER-REVIEWED SCIENCE
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+                Built on Peer-Reviewed Neuroscience
+              </h2>
+              <p className="text-base sm:text-lg text-[#5c7a70] max-w-3xl mx-auto">
+                Our protocols synthesize findings from leading research institutions and published studies.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <h3 className="font-bold text-[#1a3c34] mb-3 sm:mb-4 text-base sm:text-lg md:text-xl">Research Institutions</h3>
+                <ul className="space-y-3 text-xs sm:text-sm md:text-base text-[#5c7a70]">
+                  <li className="flex items-start">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[#1a3c34] text-xs sm:text-sm md:text-base">Stanford Neurobiology Lab</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed">Dr. Andrew Huberman - Circadian optimization, dopamine regulation research</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[#1a3c34] text-xs sm:text-sm md:text-base">McGill University Department of Psychiatry</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed">Light exposure effects on motivation & mood</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[#1a3c34] text-xs sm:text-sm md:text-base">NIH National Institute of Mental Health</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed">Cortisol regulation, stress response systems</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <h3 className="font-bold text-[#1a3c34] mb-3 sm:mb-4 text-base sm:text-lg md:text-xl">Key Research Studies</h3>
+                <ul className="space-y-3 text-xs sm:text-sm md:text-base text-[#5c7a70]">
+                  <li className="flex items-start">
+                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[#1a3c34] text-xs sm:text-sm md:text-base">Tsai et al. (2011)</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed">Sunshine-exposure variation of human striatal dopamine D2/D3 receptor availability</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[#1a3c34] text-xs sm:text-sm md:text-base">Šrámek et al. (2000)</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed">Cold water immersion increases dopamine by 250%</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[#1a3c34] text-xs sm:text-sm md:text-base">Ma et al. (2017)</p>
+                      <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed">Diaphragmatic breathing reduces cortisol by 23% after 20 sessions</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="bg-[#1a3c34] text-white rounded-xl p-4 sm:p-5 md:p-6 text-center">
+              <p className="text-xs sm:text-sm md:text-base mb-4 leading-relaxed px-2">
+                127+ peer-reviewed studies in Journal of Psychiatry & Neuroscience, Frontiers in Psychology, Psychoneuroendocrinology, and Smart Health
+              </p>
+              <button className="text-[#8fb89c] hover:text-white font-semibold text-xs sm:text-sm md:text-base underline">
+                View Complete Research Bibliography →
+              </button>
+            </div>
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Comparison Matrix Component
+ */
+const ComparisonMatrix = () => {
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-white border-y border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+              COMPETITIVE COMPARISON
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              CogCare vs. Traditional Approaches
+            </h2>
+            <p className="text-base sm:text-lg text-[#5c7a70] max-w-3xl mx-auto">
+              See how CogCare compares to other solutions you might be considering
+            </p>
+          </div>
+          
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="w-full border-collapse bg-white rounded-xl shadow-lg overflow-hidden">
+                <thead className="bg-[#1a3c34] text-white">
+                  <tr>
+                    <th className="p-3 sm:p-4 text-left text-xs sm:text-sm md:text-base font-bold whitespace-nowrap">Solution</th>
+                    <th className="p-3 sm:p-4 text-left text-xs sm:text-sm md:text-base font-bold">Best For</th>
+                    <th className="p-3 sm:p-4 text-left text-xs sm:text-sm md:text-base font-bold hidden md:table-cell">Method</th>
+                    <th className="p-3 sm:p-4 text-left text-xs sm:text-sm md:text-base font-bold whitespace-nowrap">Cost</th>
+                    <th className="p-3 sm:p-4 text-left text-xs sm:text-sm md:text-base font-bold hidden lg:table-cell">Timeline</th>
+                  </tr>
+                </thead>
+              <tbody className="text-xs sm:text-sm md:text-base">
+                <tr className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm">Therapy<br className="hidden sm:block"/><span className="sm:hidden">(BetterHelp)</span></td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm">Emotional processing, relationship issues</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden md:table-cell">Talk therapy, mindset work</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm whitespace-nowrap">$100-300/session</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden lg:table-cell">6-12 months</td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm">Psychiatry</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm">Clinical depression, severe anxiety</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden md:table-cell">Medication trials</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm whitespace-nowrap">$150-400 + meds</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden lg:table-cell">3-6 months</td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm">Meditation Apps<br className="hidden sm:block"/><span className="sm:hidden">(Calm, etc.)</span></td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm">General stress relief, relaxation</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden md:table-cell">Guided meditation</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm whitespace-nowrap">$70-100/year</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden lg:table-cell">Ongoing</td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm">Brain Training<br className="hidden sm:block"/><span className="sm:hidden">(Lumosity)</span></td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm">Cognitive games, memory practice</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden md:table-cell">Gamified exercises</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm whitespace-nowrap">$60-120/year</td>
+                  <td className="p-3 sm:p-4 text-[#5c7a70] text-xs sm:text-sm hidden lg:table-cell">3-6 months</td>
+                </tr>
+                <tr className="border-b-2 border-[#4a7c59] bg-[#eff2ef]">
+                  <td className="p-3 sm:p-4 font-bold text-[#1a3c34] text-sm sm:text-base md:text-lg">CogCare</td>
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm">"Functional but not optimal" (focus, energy, clarity)</td>
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm hidden md:table-cell">Diagnostic → optimization protocols</td>
+                  <td className="p-3 sm:p-4 font-bold text-[#4a7c59] text-sm sm:text-base md:text-lg whitespace-nowrap">$147 one-time</td>
+                  <td className="p-3 sm:p-4 font-semibold text-[#1a3c34] text-xs sm:text-sm hidden lg:table-cell">2-4 weeks</td>
+                </tr>
+              </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div className="mt-6 sm:mt-8 md:mt-12 bg-[#eff2ef] rounded-xl p-4 sm:p-6 md:p-8">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1a3c34] mb-3 sm:mb-4">🔍 The CogCare Difference:</h3>
+            <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm md:text-base text-[#5c7a70]">
+              <li className="flex items-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed"><strong className="text-[#1a3c34]">Not therapy replacement</strong> → Complement for biology optimization</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed"><strong className="text-[#1a3c34]">Not medication</strong> → But works synergistically with prescribed treatments</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed"><strong className="text-[#1a3c34]">Not generic content</strong> → Diagnostic precision for YOUR specific deficits</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed"><strong className="text-[#1a3c34]">Not gamified distraction</strong> → Evidence-based protocols with measurable outcomes</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div className="mt-6 sm:mt-8 md:mt-12 bg-white border-2 border-[#4a7c59] rounded-xl p-4 sm:p-6 md:p-8">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1a3c34] mb-3 sm:mb-4">When to Use What:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-xs sm:text-sm md:text-base">
+              <div>
+                <p className="font-bold text-[#1a3c34] mb-3 text-sm sm:text-base">Use CogCare IF:</p>
+                <ul className="space-y-2 text-[#5c7a70]">
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">You're high-functioning but hitting cognitive bottlenecks</span></li>
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">You've tried "just focus harder" and it doesn't stick</span></li>
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">You want measurable improvement in 2-4 weeks</span></li>
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">You prefer lifestyle optimization over medication</span></li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-bold text-[#1a3c34] mb-3 text-sm sm:text-base">Use Therapy IF:</p>
+                <ul className="space-y-2 text-[#5c7a70]">
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">You need to process trauma, grief, relationship issues</span></li>
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">You're working on mindset, self-worth, emotional patterns</span></li>
+                </ul>
+                <p className="font-bold text-[#1a3c34] mb-3 mt-4 text-sm sm:text-base">Use Psychiatry IF:</p>
+                <ul className="space-y-2 text-[#5c7a70]">
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Clinical depression/anxiety requiring pharmaceutical intervention</span></li>
+                  <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Bipolar disorder, schizophrenia, severe conditions</span></li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-xs sm:text-sm md:text-base text-[#5c7a70] text-center leading-relaxed px-2">
+                <strong className="text-[#1a3c34]">Use All Three Together:</strong> Therapy (mindset) + Psychiatry (medication if needed) + CogCare (biology)
+                <br className="hidden sm:block"/>This integrated approach addresses: psychology, pharmacology, AND physiology
+              </p>
+            </div>
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Assessment Validation Methodology
+ */
+const AssessmentValidation = () => {
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-block bg-green-100 text-green-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+              VALIDATION METHODOLOGY
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              How We Validate Our Assessments
+            </h2>
+            <p className="text-base sm:text-lg text-[#5c7a70] max-w-3xl mx-auto">
+              Unlike generic personality quizzes, our assessment engine uses validated scientific methods.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-6 md:p-8">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mr-3 sm:mr-4 flex-shrink-0">
+                  1
+                </div>
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-[#1a3c34] leading-tight">Temporal Pattern Analysis</h3>
+              </div>
+              <p className="text-xs sm:text-sm md:text-base text-[#5c7a70] mb-3 sm:mb-4 leading-relaxed">
+                Maps WHEN symptoms occur → Identifies specific neurochemical dysfunction patterns
+              </p>
+              <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 italic leading-relaxed">
+                Based on: Circadian neuroscience research (Diehl et al., 1994)
+              </p>
+            </div>
+            
+            <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-6 md:p-8">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mr-3 sm:mr-4 flex-shrink-0">
+                  2
+                </div>
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-[#1a3c34] leading-tight">Context-Dependent Profiling</h3>
+              </div>
+              <p className="text-xs sm:text-sm md:text-base text-[#5c7a70] mb-3 sm:mb-4 leading-relaxed">
+                Analyzes triggers, not just severity. Distinguishes between dopamine depletion vs. cortisol dysregulation.
+              </p>
+            </div>
+            
+            <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-6 md:p-8">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mr-3 sm:mr-4 flex-shrink-0">
+                  3
+                </div>
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-[#1a3c34] leading-tight">Validated Against Clinical Outcomes</h3>
+              </div>
+              <p className="text-xs sm:text-sm md:text-base text-[#5c7a70] mb-3 sm:mb-4 leading-relaxed">
+                Profiles refined using data from 247,000+ users. Cross-referenced with standardized psychological assessments (PSS, GAD-7), objective biomarkers (HRV, cortisol curves), and 90-day outcome tracking.
+              </p>
+            </div>
+            
+            <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-6 md:p-8">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mr-3 sm:mr-4 flex-shrink-0">
+                  4
+                </div>
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-[#1a3c34] leading-tight">Machine Learning Refinement</h3>
+              </div>
+              <p className="text-xs sm:text-sm md:text-base text-[#5c7a70] mb-3 sm:mb-4 leading-relaxed">
+                Algorithm continuously improves prediction accuracy. Current classification precision: <strong className="text-[#1a3c34]">87% match to clinical phenotypes</strong>.
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-6 sm:mt-8 md:mt-12 text-center px-4">
+            <p className="text-sm sm:text-base md:text-lg font-semibold text-[#1a3c34] leading-relaxed">
+              Your results aren't based on "what sounds right"—they're derived from measurable neurobiological patterns.
+            </p>
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
   );
 };
 
@@ -215,7 +607,7 @@ const Navbar = ({ activePage, setActivePage }) => {
             Get Certified
           </button>
           
-          <button className="bg-[#1a3c34] text-white px-5 py-2.5 sm:py-2 rounded-full hover:bg-[#2a5c4f] transition-colors shadow-lg shadow-[#1a3c34]/10 text-xs sm:text-sm font-bold min-h-[44px]">
+          <button className="bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white px-5 py-2.5 sm:py-2 rounded-full hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-xs sm:text-sm font-bold min-h-[44px]">
             Login
           </button>
         </div>
@@ -233,7 +625,7 @@ const Navbar = ({ activePage, setActivePage }) => {
           <button onClick={() => { setActivePage('programs'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Programs</button>
           <button onClick={() => { setActivePage('assessments'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Assessments</button>
           <button onClick={() => { setActivePage('certification'); setMobileMenuOpen(false); }} className="text-[#1a3c34] font-medium text-left py-2 text-base">Get Certified</button>
-          <button className="bg-[#1a3c34] text-white px-4 py-3.5 rounded-full w-full text-base font-medium mt-2">
+          <button className="bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white px-4 py-3.5 rounded-full w-full text-base font-medium mt-2 hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02]">
             Take a Quiz
           </button>
         </div>
@@ -343,7 +735,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
                 className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4a7c59] text-sm sm:text-base text-[#1a3c34]"
               />
             </div>
-            <button className="bg-[#1a3c34] hover:bg-[#2a5c4f] text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold transition-colors whitespace-nowrap text-sm sm:text-base">
+            <button className="bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] whitespace-nowrap text-sm sm:text-base">
               Search Now
             </button>
           </div>
@@ -368,7 +760,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button 
                   onClick={() => setActivePage('home')} // Should scroll to quiz usually
-                  className="bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-all flex items-center justify-center"
+                  className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-6 py-3 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] flex items-center justify-center"
                 >
                   <Target className="w-4 h-4 mr-2" /> Quick Symptom Checker
                 </button>
@@ -489,7 +881,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <button className="py-2.5 sm:py-2 rounded-xl border border-gray-200 text-[#1a3c34] font-bold text-xs sm:text-sm hover:bg-gray-50 min-h-[44px]">View Profile</button>
-                  <button className="py-2.5 sm:py-2 rounded-xl bg-[#1a3c34] text-white font-bold text-xs sm:text-sm hover:bg-[#2a5c4f] min-h-[44px]">Book Now</button>
+                  <button className="py-2.5 sm:py-2 rounded-xl bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white font-bold text-xs sm:text-sm hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:scale-[1.02] min-h-[44px]">Book Now</button>
                 </div>
               </div>
             ))}
@@ -537,7 +929,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
             Receive pre-qualified referrals based on our clinical assessments.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-            <button className="bg-[#1a3c34] text-white px-8 py-4 rounded-full font-bold hover:bg-[#2a5c4f] transition-all shadow-lg">
+            <button className="bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white px-8 py-4 rounded-full font-bold hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-xl hover:shadow-elegant-2xl transform hover:scale-[1.02]">
               Apply to Join Network
             </button>
             <button className="bg-transparent border border-[#1a3c34] text-[#1a3c34] px-8 py-4 rounded-full font-bold hover:bg-gray-50 transition-all">
@@ -574,7 +966,7 @@ const ProfessionalDirectory = ({ setActivePage }) => {
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 sm:mb-8 leading-tight">Ready to Find Your Specialist?</h2>
           <div className="bg-white p-1.5 sm:p-2 rounded-full max-w-xl mx-auto flex flex-col sm:flex-row gap-2">
              <input type="text" placeholder="Enter your ZIP code..." className="flex-grow px-4 sm:px-6 py-2.5 sm:py-3 rounded-full focus:outline-none text-[#1a3c34] text-sm sm:text-base"/>
-             <button className="bg-[#4a7c59] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#3a6347] text-sm sm:text-base whitespace-nowrap">Search</button>
+             <button className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base whitespace-nowrap">Search</button>
           </div>
         </div>
       </section>
@@ -672,7 +1064,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
       <section className="bg-[#eff2ef] py-12 sm:py-16 md:py-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <RevealOnScroll className="text-center mb-8 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] mb-4 sm:mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] mb-4 sm:mb-6 leading-tight tracking-tight text-shadow-sm">
               Which Brain Transformation Program Matches Your Goals?
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-[#5c7a70] max-w-3xl mx-auto mb-8 sm:mb-12">
@@ -683,7 +1075,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
 
           {/* Dual CTA Layout */}
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto mb-8 sm:mb-12">
-            <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-[#4a7c59] shadow-lg">
+            <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-[#4a7c59] shadow-elegant-lg hover:shadow-elegant-xl transition-smooth transform hover:scale-[1.02]">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3">RECOMMENDED PATH</h3>
               <p className="text-[#5c7a70] mb-4 sm:mb-6 text-sm sm:text-base">
@@ -691,14 +1083,14 @@ const ProgramsDirectory = ({ setActivePage }) => {
               </p>
               <button 
                 onClick={() => setActivePage('home')}
-                className="w-full bg-[#1a3c34] text-white py-3 sm:py-4 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base"
+                className="w-full bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white py-3 sm:py-4 rounded-full font-bold hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base"
               >
                 TAKE 5-MIN QUIZ →
               </button>
               <p className="text-xs sm:text-sm text-[#5c7a70] mt-3 sm:mt-4">⭐ 247,000+ people matched</p>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={200} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 shadow-lg">
+            <RevealOnScroll delay={200} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 shadow-elegant-lg hover:shadow-elegant-xl transition-smooth transform hover:scale-[1.02]">
               <div className="text-4xl mb-4">📚</div>
               <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3">BROWSE PROGRAMS</h3>
               <p className="text-[#5c7a70] mb-4 sm:mb-6 text-sm sm:text-base">
@@ -706,7 +1098,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
               </p>
               <button 
                 onClick={() => document.getElementById('programs-grid')?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full bg-[#4a7c59] text-white py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base"
+                className="w-full bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white py-3 sm:py-4 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base"
               >
                 SCROLL TO PROGRAMS ↓
               </button>
@@ -867,7 +1259,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                         totalPrograms: 3
                       }
                     ].map((category, idx) => (
-                      <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border-2 border-gray-200 hover:border-[#4a7c59] transition-all shadow-lg">
+                      <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border-2 border-gray-200 hover:border-[#4a7c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] hover:-translate-y-1">
                         <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-3 sm:mb-4">{category.problem}</h3>
                         <p className="text-sm sm:text-base text-[#5c7a70] mb-3"><strong>Best for:</strong> {category.bestFor}</p>
                         <p className="text-sm sm:text-base text-[#5c7a70] mb-4 sm:mb-6"><strong>Related quiz:</strong> {category.quiz}</p>
@@ -889,7 +1281,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                             </div>
                           ))}
                         </div>
-                        <button className="w-full bg-[#4a7c59] text-white py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base">
+                        <button className="w-full bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white py-2.5 sm:py-3 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base">
                           VIEW ALL {category.problem.split(' ')[1]} PROGRAMS ({category.totalPrograms}) →
                         </button>
                       </RevealOnScroll>
@@ -957,7 +1349,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                 : "space-y-6 sm:space-y-8"
               }>
                 {programs.map(program => (
-                  <RevealOnScroll key={program.id} className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all border border-gray-100">
+                  <RevealOnScroll key={program.id} className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant-lg hover:shadow-elegant-xl transition-smooth transform hover:scale-[1.02] hover:-translate-y-1 border border-gray-100">
                     {/* Program Image Placeholder */}
                     <div className="relative h-48 sm:h-56 bg-gradient-to-br from-[#4a7c59] to-[#1a3c34]">
                       <div className="absolute top-3 left-3 flex gap-2">
@@ -1019,7 +1411,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                         <div>
                           <span className="text-2xl sm:text-3xl font-bold text-[#1a3c34]">${program.price}</span>
                         </div>
-                        <button className="bg-[#1a3c34] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base">
+                        <button className="bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base">
                           ENROLL NOW →
                         </button>
                       </div>
@@ -1030,7 +1422,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
 
               {/* Load More / Pagination */}
               <div className="mt-8 sm:mt-12 text-center">
-                <button className="bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#4a7c59] hover:text-white transition-colors text-sm sm:text-base">
+                <button className="bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-gradient-to-r hover:from-[#4a7c59] hover:to-[#5a9c69] hover:text-white hover:border-transparent transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:scale-[1.02] text-sm sm:text-base">
                   Load More Programs
                 </button>
               </div>
@@ -1050,7 +1442,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                   </p>
                   <button 
                     onClick={() => setActiveTab('all')}
-                    className="bg-[#4a7c59] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base"
+                    className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base"
                   >
                     VIEW ALL PROGRAMS
                   </button>
@@ -1064,7 +1456,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
       {/* TESTIMONIALS SECTION */}
       <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#1a3c34] mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#1a3c34] mb-8 sm:mb-12 tracking-tight text-shadow-sm">
             Student Success Stories
           </h2>
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
@@ -1084,9 +1476,9 @@ const ProgramsDirectory = ({ setActivePage }) => {
                 result: "Doubled productive hours, eliminated crashes"
               }
             ].map((testimonial, idx) => (
-              <RevealOnScroll key={idx} delay={idx * 100} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border border-transparent hover:border-[#1a3c34]/10 transition-all">
+              <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border border-gray-200 hover:border-[#4a7c59] shadow-elegant hover:shadow-elegant-lg transition-smooth transform hover:scale-[1.02] hover:-translate-y-1">
                 <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#1a3c34] rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 text-sm sm:text-base">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 text-sm sm:text-base shadow-elegant">
                     {testimonial.name.charAt(0)}
                   </div>
                   <div>
@@ -1157,7 +1549,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                 perfectFor: "Master focus, eliminate distraction, achieve peak output"
               }
             ].map((bundle, idx) => (
-              <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border-2 border-[#4a7c59] shadow-xl relative overflow-hidden">
+              <RevealOnScroll key={idx} delay={idx * 100} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border-2 border-[#4a7c59] shadow-elegant-xl hover:shadow-elegant-2xl transition-smooth transform hover:scale-[1.01] relative overflow-hidden">
                 <div className="absolute top-0 left-0 bg-[#4a7c59] text-white px-3 sm:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-bold rounded-br-lg">
                   {bundle.badge}
                 </div>
@@ -1197,7 +1589,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
                       <p className="text-xs sm:text-sm text-[#4a7c59] font-semibold">BONUS: {bundle.bonus}</p>
                     )}
                   </div>
-                  <button className="w-full bg-[#1a3c34] text-white py-3 sm:py-4 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors text-sm sm:text-base mb-2">
+                  <button className="w-full bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white py-3 sm:py-4 rounded-full font-bold hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base mb-2">
                     ENROLL IN BUNDLE - ${bundle.bundlePrice} →
                   </button>
                   <p className="text-xs text-center text-[#5c7a70]">Payment plans available: 3 × ${Math.round(bundle.bundlePrice / 3)}/month</p>
@@ -1235,6 +1627,46 @@ const ProgramsDirectory = ({ setActivePage }) => {
               {
                 q: "Can I take multiple programs at once?",
                 a: "Absolutely! Many students take 2-3 programs simultaneously. However, we recommend starting with one program and adding others once you've established a routine. Our bundles are perfect if you know you want to work on multiple areas."
+              },
+              {
+                q: "I've tried supplements, therapy, and 50 productivity apps. Why would THIS be different?",
+                a: "Because you never diagnosed the root cause. You treated symptoms. Think about it: If you have low baseline dopamine (rapid depletion pattern), no amount of 'focus apps' will work. You're trying to willpower your way through a biological deficit. Our quiz maps your SPECIFIC neurochemical pattern—most people discover they've been optimizing the WRONG system. Example: You tried focus techniques, but your real issue was elevated cortisol blocking cognition. Different problem = different solution."
+              },
+              {
+                q: "Can I use CogCare while seeing a therapist or taking medication?",
+                a: "Yes—and 80% of our users do exactly that. CogCare focuses on lifestyle optimization (light exposure, breathing, nutrition, sleep architecture) which complements medical treatment. We're NOT replacing therapy or medication. We're optimizing the biological foundation that makes them work better. ⚠️ Always consult your provider before major lifestyle changes, especially if you're on psychiatric medications that affect neurotransmitter systems."
+              },
+              {
+                q: "What if my quiz results don't match how I feel?",
+                a: "Email us within 7 days for manual clinical review. ~5% of users need assessment recalibration due to: comorbid conditions (ADHD + anxiety, for example), medication effects masking underlying patterns, or atypical circadian rhythms (shift workers, etc.). Our clinical team will review your results and either: (a) Adjust your cognitive profile, or (b) Refund you completely if we can't provide accurate assessment."
+              },
+              {
+                q: "Is this just another wellness scam?",
+                a: "Fair question. Here's how we're different: 🔬 Peer-Reviewed Science - Every protocol is based on published neuroscience research. 👨‍⚕️ Clinical Oversight - Protocols reviewed by board-certified neurologists & psychiatrists. 📊 Measurable Outcomes - Your score is tracked monthly. If it doesn't improve, we investigate why. 💰 Money-Back Guarantee - 30 days. No questions asked. Full refund. We're not selling magic pills or miracle cures. We're teaching you how to optimize the biological systems that govern cognition."
+              },
+              {
+                q: "How is this different from Lumosity/BrainHQ/Peak?",
+                a: "Brain training games vs. biological optimization. Brain Training Apps: Focus on cognitive exercises (games, puzzles), goal is to improve performance on THOSE specific games, transfer effect is minimal (Florida State study: Portal 2 outperformed Lumosity). CogCare: Focus on neurochemical system optimization, goal is to fix underlying biology that enables ALL cognitive tasks, transfer effect improves focus, energy, mood across your entire life. Analogy: Brain training = practicing free throws. CogCare = fixing your vision, strength, and balance."
+              },
+              {
+                q: "What if I don't have time for a complicated protocol?",
+                a: "Our minimum effective dose is 15 minutes/day. Week 1 Protocol Example: Morning (10 min): Walk outside (sunlight exposure), Midday (2 min): Box breathing between meetings, Evening (3 min): Blue light reduction routine. Total: 15 minutes. Most people naturally expand this as they feel benefits, but you can see measurable improvement with just the basics."
+              },
+              {
+                q: "Is my data private? Do you sell it?",
+                a: "Your data is private. We NEVER sell it. Period. Bank-level AES-256 encryption, no advertising partners, no third-party data sharing, you can download or delete your data anytime. We make money from subscriptions, not from selling your information."
+              },
+              {
+                q: "What results can I realistically expect?",
+                a: "Based on 247,000+ user cohort: Week 2: 67% report improved morning energy, easier task initiation. Week 4: 73% achieve 45-min+ focus blocks (vs. 15-20 min baseline). Week 8: 81% report sustained improvement in baseline mood/motivation. But: Results require protocol adherence. 90% adherence → 3.2x better outcomes than 50% adherence. If you're not willing to actually DO the protocols, this won't work. We're optimizing biology, not selling magic."
+              },
+              {
+                q: "Can this help with ADHD/depression/anxiety?",
+                a: "It depends. CogCare can help with: ✓ Subclinical symptoms ('I'm functional but struggling'), ✓ Optimizing biology while on medication, ✓ Lifestyle factors that exacerbate clinical conditions. CogCare CANNOT replace: ✗ Clinical diagnosis by psychiatrist/psychologist, ✗ Medication for moderate-to-severe conditions, ✗ Therapy for trauma, emotional processing. If you have diagnosed ADHD/depression/anxiety: → CogCare works ALONGSIDE treatment, not instead of it. → Many users find their medication works BETTER when biology is optimized."
+              },
+              {
+                q: "Do you take insurance?",
+                a: "Not directly, but we provide documentation for reimbursement. Many HSA/FSA plans cover 'wellness programs' and 'preventive health.' We provide: Itemized receipt (required for HSA/FSA), detailed program description, clinical rationale documentation. Success rate: ~60% of users who submit get partial or full reimbursement."
               }
             ].map((faq, idx) => (
               <RevealOnScroll key={idx} delay={idx * 50} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200">
@@ -1279,7 +1711,7 @@ const ProgramsDirectory = ({ setActivePage }) => {
             </button>
             <button 
               onClick={() => document.getElementById('programs-grid')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-[#4a7c59] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm sm:text-base"
+              className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base"
             >
               📚 BROWSE ALL PROGRAMS
             </button>
@@ -1520,6 +1952,10 @@ const AssessmentsPage = ({ setActivePage }) => {
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] mb-4 sm:mb-6 leading-tight">
             Discover Your Brain's Hidden Patterns
           </h1>
+          <div className="max-w-4xl mx-auto mb-6 sm:mb-8 text-left">
+            <MedicalDisclaimer />
+            <PrivacyBanner setActivePage={setActivePage} />
+          </div>
           <p className="text-[#5c7a70] text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-8 sm:mb-10">
             Take science-backed assessments to understand your cognitive type, identify issues, and get personalized recommendations.
           </p>
@@ -1589,7 +2025,7 @@ const AssessmentsPage = ({ setActivePage }) => {
               return (
                 <RevealOnScroll
                   key={assessment.id}
-                  className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-all cursor-pointer group"
+                  className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-elegant-lg hover:shadow-elegant-xl transition-smooth transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer group"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-12 h-12 sm:w-14 sm:h-14 ${colorClasses[assessment.color]?.bg || 'bg-gray-100'} rounded-xl flex items-center justify-center`}>
@@ -1605,7 +2041,7 @@ const AssessmentsPage = ({ setActivePage }) => {
                     <span>{assessment.questions} questions</span>
                     <span>{assessment.completed.toLocaleString()} completed</span>
                   </div>
-                  <button className="w-full bg-[#4a7c59] text-white px-4 py-2.5 rounded-full font-bold hover:bg-[#3a6347] transition-colors text-sm">
+                  <button className="w-full bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-4 py-2.5 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:scale-[1.02] text-sm">
                     START ASSESSMENT →
                   </button>
                 </RevealOnScroll>
@@ -1638,7 +2074,7 @@ const AssessmentsPage = ({ setActivePage }) => {
                   setSelectedCategory('all');
                   setSelectedType('all');
                 }}
-                className="bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors"
+                className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-6 py-3 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02]"
               >
                 Reset Filters
               </button>
@@ -1650,7 +2086,7 @@ const AssessmentsPage = ({ setActivePage }) => {
                 return (
                   <RevealOnScroll
                     key={assessment.id}
-                    className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 hover:border-[#4a7c59] shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+                    className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 hover:border-[#4a7c59] shadow-elegant hover:shadow-elegant-lg transition-smooth transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className={`w-12 h-12 sm:w-14 sm:h-14 ${colorClasses[assessment.color]?.bg || 'bg-gray-100'} rounded-xl flex items-center justify-center`}>
@@ -1679,7 +2115,7 @@ const AssessmentsPage = ({ setActivePage }) => {
                       <span>{assessment.questions} questions</span>
                       <span>{assessment.completed.toLocaleString()} completed</span>
                     </div>
-                    <button className="w-full bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-4 py-2.5 rounded-full font-bold hover:bg-[#4a7c59] hover:text-white transition-colors text-sm">
+                    <button className="w-full bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-4 py-2.5 rounded-full font-bold hover:bg-gradient-to-r hover:from-[#4a7c59] hover:to-[#5a9c69] hover:text-white hover:border-transparent transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:scale-[1.02] text-sm">
                       START ASSESSMENT →
                     </button>
                   </RevealOnScroll>
@@ -1743,18 +2179,22 @@ const CertificationPage = ({ setActivePage }) => {
       name: "CogCare Certified Brain Health Trainer",
       level: "Foundation",
       duration: "8 weeks",
-      price: 1297,
-      paymentPlan: "3 × $449/month",
+      price: 997,
+      priceRange: "997-1,997",
+      paymentPlan: "3 × $349/month",
       description: "Become a certified trainer in brain health transformation protocols",
       bestFor: "Caregivers, coaches, wellness professionals",
       includes: [
         "Complete CogCare methodology training",
         "Access to all 33 core programs",
         "Certification exam and credential",
+        "Assessment tools and protocol templates",
+        "Client dashboard access",
         "Trainer dashboard and resources",
         "Marketing support and listing",
         "Ongoing continuing education",
-        "Community access"
+        "Monthly case consultation",
+        "Private community access"
       ],
       outcomes: [
         "Certified to deliver CogCare programs",
@@ -1778,8 +2218,9 @@ const CertificationPage = ({ setActivePage }) => {
       name: "Advanced Specialist Certification",
       level: "Advanced",
       duration: "12 weeks",
-      price: 2497,
-      paymentPlan: "4 × $649/month",
+      price: 1997,
+      priceRange: "997-1,997",
+      paymentPlan: "4 × $524/month",
       description: "Advanced certification for licensed professionals (MD, PhD, LCSW, etc.)",
       bestFor: "Licensed therapists, psychiatrists, psychologists",
       includes: [
@@ -1869,6 +2310,9 @@ const CertificationPage = ({ setActivePage }) => {
     }
   ];
 
+  const [expandedFaq, setExpandedFaq] = useState(null);
+  const [faqSearch, setFaqSearch] = useState('');
+  
   const faqs = [
     {
       q: "Who is this certification program for?",
@@ -1910,6 +2354,14 @@ const CertificationPage = ({ setActivePage }) => {
             Join a network of certified professionals transforming lives through evidence-based brain health protocols. 
             Get the training, credentials, and support you need to build a successful practice.
           </p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-white/90 mb-2">
+              <strong className="text-white">CogCare Practitioner Certification</strong> - For coaches, therapists, trainers who want to use our methodology
+            </p>
+            <p className="text-xs sm:text-sm text-white/80">
+              Includes: Assessment tools, protocol templates, client dashboard access, and ongoing support
+            </p>
+          </div>
           <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 text-xs sm:text-sm text-white/80">
             <div className="flex items-center">
               <Check className="w-4 h-4 text-[#4a7c59] mr-2 flex-shrink-0" />
@@ -1975,7 +2427,7 @@ const CertificationPage = ({ setActivePage }) => {
                 delay={idx * 100}
                 className={`bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border-2 ${
                   idx === 0 ? 'border-gray-200' : 'border-[#4a7c59]'
-                } shadow-lg flex flex-col relative`}
+                } shadow-elegant-lg hover:shadow-elegant-xl transition-smooth transform hover:scale-[1.01] flex flex-col relative`}
               >
                 {idx === 1 && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-xs font-bold px-4 py-1 rounded-b-lg">
@@ -1997,8 +2449,15 @@ const CertificationPage = ({ setActivePage }) => {
                     <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a3c34]">${program.price}</span>
                     <span className="text-sm sm:text-lg text-gray-500">one-time</span>
                   </div>
+                  {program.priceRange && (
+                    <p className="text-sm text-[#5c7a70] mb-2">Pricing Range: ${program.priceRange}</p>
+                  )}
                   <p className="text-xs sm:text-sm text-[#5c7a70] mb-4">or {program.paymentPlan}</p>
                   <p className="text-xs text-gray-500 mb-4">{program.duration} program</p>
+                  <div className="bg-[#eff2ef] rounded-lg p-3 mt-4">
+                    <p className="text-xs font-semibold text-[#1a3c34] mb-1">Revenue Potential:</p>
+                    <p className="text-xs text-[#5c7a70]">70-80% revenue share on consultations & program sales. Many trainers earn $50K-$150K+ annually.</p>
+                  </div>
                 </div>
 
                 <div className="mb-6 flex-grow">
@@ -2026,10 +2485,10 @@ const CertificationPage = ({ setActivePage }) => {
                 <div className="border-t border-gray-200 pt-6">
                   <button
                     onClick={() => setSelectedProgram(program.id)}
-                    className={`w-full py-3 sm:py-4 rounded-full font-bold transition-colors text-sm sm:text-base ${
+                    className={`w-full py-3 sm:py-4 rounded-full font-bold transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base ${
                       idx === 0
-                        ? 'bg-[#1a3c34] text-white hover:bg-[#2a5c4f]'
-                        : 'bg-[#4a7c59] text-white hover:bg-[#3a6347]'
+                        ? 'bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white hover:from-[#2a5c4f] hover:via-[#1a3c34] hover:to-[#2a5c4f]'
+                        : 'bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white hover:from-[#3a6347] hover:to-[#4a8c59]'
                     }`}
                   >
                     ENROLL IN {program.level.toUpperCase()} PROGRAM →
@@ -2116,18 +2575,73 @@ const CertificationPage = ({ setActivePage }) => {
         <div className="max-w-4xl mx-auto">
           <RevealOnScroll className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
-              Frequently Asked Questions
+              Common Questions
             </h2>
+            <p className="text-[#5c7a70] text-base sm:text-lg max-w-2xl mx-auto mb-6">
+              Everything you need to know about CogCare
+            </p>
+            {/* FAQ Search */}
+            <div className="max-w-md mx-auto relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search questions..."
+                value={faqSearch}
+                onChange={(e) => setFaqSearch(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#4a7c59] focus:outline-none text-sm sm:text-base"
+              />
+            </div>
           </RevealOnScroll>
 
-          <div className="space-y-6 sm:space-y-8">
-            {faqs.map((faq, idx) => (
-              <RevealOnScroll key={idx} delay={idx * 50} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200">
-                <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-3">{faq.q}</h3>
-                <p className="text-[#5c7a70] text-sm sm:text-base">{faq.a}</p>
-              </RevealOnScroll>
-            ))}
+          <div className="space-y-4 sm:space-y-6">
+            {faqs
+              .filter(faq => 
+                faqSearch === '' || 
+                faq.q.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                faq.a.toLowerCase().includes(faqSearch.toLowerCase())
+              )
+              .map((faq, idx) => {
+                const isExpanded = expandedFaq === idx;
+                return (
+                  <RevealOnScroll key={idx} delay={idx * 30}>
+                    <div className="bg-[#eff2ef] rounded-xl sm:rounded-2xl border border-gray-200 overflow-hidden">
+                      <button
+                        onClick={() => setExpandedFaq(isExpanded ? null : idx)}
+                        className="w-full p-5 sm:p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                      >
+                        <h3 className="text-base sm:text-lg font-bold text-[#1a3c34] pr-4">{faq.q}</h3>
+                        <ChevronRight 
+                          className={`w-5 h-5 text-[#4a7c59] flex-shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                        />
+                      </button>
+                      {isExpanded && (
+                        <div className="px-5 sm:px-6 pb-5 sm:pb-6">
+                          <div className="pt-4 border-t border-gray-200">
+                            <p className="text-[#5c7a70] text-sm sm:text-base leading-relaxed whitespace-pre-line">{faq.a}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </RevealOnScroll>
+                );
+              })}
           </div>
+          
+          {faqs.filter(faq => 
+            faqSearch === '' || 
+            faq.q.toLowerCase().includes(faqSearch.toLowerCase()) ||
+            faq.a.toLowerCase().includes(faqSearch.toLowerCase())
+          ).length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-[#5c7a70] mb-4">No questions found matching your search.</p>
+              <button
+                onClick={() => setFaqSearch('')}
+                className="text-[#4a7c59] hover:text-[#1a3c34] font-semibold"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -2143,10 +2657,10 @@ const CertificationPage = ({ setActivePage }) => {
             Start your certification journey today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-[#1a3c34] px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-xl text-base sm:text-lg">
+            <button className="bg-white text-[#1a3c34] px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:bg-gray-100 transition-all duration-300 shadow-elegant-xl hover:shadow-elegant-2xl transform hover:scale-[1.02] text-base sm:text-lg">
               ENROLL IN FOUNDATION PROGRAM →
             </button>
-            <button className="bg-[#4a7c59] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-xl text-base sm:text-lg">
+            <button className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-xl hover:shadow-elegant-2xl transform hover:scale-[1.02] text-base sm:text-lg">
               ENROLL IN ADVANCED PROGRAM →
             </button>
           </div>
@@ -2167,16 +2681,25 @@ const App = () => {
       
       {activePage === 'home' && (
         <>
-          <Hero />
+          <Hero setActivePage={setActivePage} />
           <TrustSection />
+          <TrustBadges setActivePage={setActivePage} />
+          <ResearchFoundation />
           {/* <HowItWorksSimple />  <-- Keeping simple for home */}
           <WhyItWorks />
+          <AssessmentValidation />
+          <InteractiveDemo setActivePage={setActivePage} />
+          <VideoExplainer />
           <SampleResultPreview />
           <DetailedJourney />
           <Testimonials />
+          <ClinicalAdvisoryBoard />
           <BrainScore />
           <CategoryExplorer />
+          <ContentHub />
+          <ComparisonMatrix />
           <Pricing setActivePage={setActivePage} />
+          <HomeFAQ />
         </>
       )}
 
@@ -2196,8 +2719,20 @@ const App = () => {
         <CertificationPage setActivePage={setActivePage} />
       )}
 
-      <Footer />
-      <ExitIntentPopup />
+      {activePage === 'privacy' && (
+        <PrivacyPolicy setActivePage={setActivePage} />
+      )}
+
+      {activePage === 'terms' && (
+        <TermsOfService setActivePage={setActivePage} />
+      )}
+
+      {activePage !== 'privacy' && activePage !== 'terms' && (
+        <>
+          <Footer setActivePage={setActivePage} />
+          <ExitIntentPopup />
+        </>
+      )}
     </div>
   );
 };
@@ -2205,12 +2740,16 @@ const App = () => {
 // ... (Rest of existing components: Hero, TrustSection, etc. remain unchanged below)
 // ... (Including them here for completeness of the Single File)
 
-const Hero = () => {
+const Hero = ({ setActivePage }) => {
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center bg-[#eff2ef] overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-16">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[800px] h-[600px] sm:h-[800px] bg-gradient-to-r from-white/80 via-[#dce6dc]/50 to-[#c8d9c8]/30 rounded-full blur-[100px] opacity-80 animate-pulse pointer-events-none" />
+    <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#eff2ef] via-white to-[#eff2ef] overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-16">
+      {/* Enhanced animated background orbs */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[800px] h-[600px] sm:h-[800px] bg-gradient-to-r from-[#4a7c59]/20 via-[#dce6dc]/30 to-[#c8d9c8]/20 rounded-full blur-[120px] opacity-60 animate-pulse pointer-events-none" />
+      <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-to-r from-[#1a3c34]/10 to-[#4a7c59]/10 rounded-full blur-[100px] opacity-40 animate-float pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] bg-gradient-to-r from-[#5a9c69]/15 to-transparent rounded-full blur-[80px] opacity-50 animate-float pointer-events-none" style={{ animationDelay: '1s' }} />
+      
       <RevealOnScroll className="z-10 text-center px-4 sm:px-6 max-w-6xl mx-auto w-full">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] tracking-tight mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a3c34] tracking-tight mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto text-shadow-sm">
           What's Keeping Your Brain<br className="hidden sm:block"/> From Working at Its Best?
         </h1>
         <p className="text-[#5c7a70] text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed mb-8 sm:mb-10 md:mb-12 px-2">
@@ -2218,7 +2757,7 @@ const Hero = () => {
           Over 247,000 people have discovered their brain's hidden patterns.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10 text-left">
-          <div className="group bg-white hover:bg-[#1a3c34] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-transparent hover:border-[#1a3c34] shadow-sm hover:shadow-xl transition-all cursor-pointer">
+          <div className="group bg-white hover:bg-gradient-to-br hover:from-[#1a3c34] hover:to-[#2a5c4f] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-transparent shadow-elegant hover:shadow-elegant-xl transition-smooth cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1">
             <div className="flex justify-between items-start mb-3 sm:mb-4">
               <Target className="w-6 h-6 sm:w-8 sm:h-8 text-red-500 group-hover:text-white" />
               <span className="text-[10px] sm:text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full">4 min</span>
@@ -2227,50 +2766,50 @@ const Hero = () => {
             <p className="text-[#5c7a70] group-hover:text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4">"I can't stay on task or finish projects."</p>
             <div className="flex items-center text-[10px] sm:text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c]">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
           </div>
-          <div className="group bg-white hover:bg-[#1a3c34] hover:text-white rounded-2xl p-6 border border-transparent hover:border-[#1a3c34] shadow-sm hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <Activity className="w-8 h-8 text-orange-500 group-hover:text-white" />
-              <span className="text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full">5 min</span>
+          <div className="group bg-white hover:bg-gradient-to-br hover:from-[#1a3c34] hover:to-[#2a5c4f] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-transparent shadow-elegant hover:shadow-elegant-xl transition-smooth cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1">
+            <div className="flex justify-between items-start mb-3 sm:mb-4">
+              <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500 group-hover:text-white transition-colors" />
+              <span className="text-[10px] sm:text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full transition-colors">5 min</span>
             </div>
-            <h3 className="text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2">Anxiety</h3>
-            <p className="text-[#5c7a70] group-hover:text-gray-300 text-sm mb-4">"Constantly worried or on edge."</p>
-            <div className="flex items-center text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c]">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
+            <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2 transition-colors">Anxiety</h3>
+            <p className="text-[#5c7a70] group-hover:text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 transition-colors">"Constantly worried or on edge."</p>
+            <div className="flex items-center text-[10px] sm:text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c] transition-colors">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
           </div>
-          <div className="group bg-white hover:bg-[#1a3c34] hover:text-white rounded-2xl p-6 border border-transparent hover:border-[#1a3c34] shadow-sm hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <Moon className="w-8 h-8 text-indigo-500 group-hover:text-white" />
-              <span className="text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full">3 min</span>
+          <div className="group bg-white hover:bg-gradient-to-br hover:from-[#1a3c34] hover:to-[#2a5c4f] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-transparent shadow-elegant hover:shadow-elegant-xl transition-smooth cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1">
+            <div className="flex justify-between items-start mb-3 sm:mb-4">
+              <Moon className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-500 group-hover:text-white transition-colors" />
+              <span className="text-[10px] sm:text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full transition-colors">3 min</span>
             </div>
-            <h3 className="text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2">Sleep Issues</h3>
-            <p className="text-[#5c7a70] group-hover:text-gray-300 text-sm mb-4">"Can't fall or stay asleep."</p>
-            <div className="flex items-center text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c]">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
+            <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2 transition-colors">Sleep Issues</h3>
+            <p className="text-[#5c7a70] group-hover:text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 transition-colors">"Can't fall or stay asleep."</p>
+            <div className="flex items-center text-[10px] sm:text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c] transition-colors">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
           </div>
-          <div className="group bg-white hover:bg-[#1a3c34] hover:text-white rounded-2xl p-6 border border-transparent hover:border-[#1a3c34] shadow-sm hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <CloudFog className="w-8 h-8 text-gray-500 group-hover:text-white" />
-              <span className="text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full">4 min</span>
+          <div className="group bg-white hover:bg-gradient-to-br hover:from-[#1a3c34] hover:to-[#2a5c4f] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-transparent shadow-elegant hover:shadow-elegant-xl transition-smooth cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1">
+            <div className="flex justify-between items-start mb-3 sm:mb-4">
+              <CloudFog className="w-6 h-6 sm:w-8 sm:h-8 text-gray-500 group-hover:text-white transition-colors" />
+              <span className="text-[10px] sm:text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full transition-colors">4 min</span>
             </div>
-            <h3 className="text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2">Brain Fog</h3>
-            <p className="text-[#5c7a70] group-hover:text-gray-300 text-sm mb-4">"Mental clarity feels impossible."</p>
-            <div className="flex items-center text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c]">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
+            <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2 transition-colors">Brain Fog</h3>
+            <p className="text-[#5c7a70] group-hover:text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 transition-colors">"Mental clarity feels impossible."</p>
+            <div className="flex items-center text-[10px] sm:text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c] transition-colors">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
           </div>
-          <div className="group bg-white hover:bg-[#1a3c34] hover:text-white rounded-2xl p-6 border border-transparent hover:border-[#1a3c34] shadow-sm hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <Battery className="w-8 h-8 text-yellow-500 group-hover:text-white" />
-              <span className="text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full">3 min</span>
+          <div className="group bg-white hover:bg-gradient-to-br hover:from-[#1a3c34] hover:to-[#2a5c4f] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-transparent shadow-elegant hover:shadow-elegant-xl transition-smooth cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1">
+            <div className="flex justify-between items-start mb-3 sm:mb-4">
+              <Battery className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 group-hover:text-white transition-colors" />
+              <span className="text-[10px] sm:text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full transition-colors">3 min</span>
             </div>
-            <h3 className="text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2">Low Energy</h3>
-            <p className="text-[#5c7a70] group-hover:text-gray-300 text-sm mb-4">"Always tired and drained."</p>
-            <div className="flex items-center text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c]">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
+            <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2 transition-colors">Low Energy</h3>
+            <p className="text-[#5c7a70] group-hover:text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 transition-colors">"Always tired and drained."</p>
+            <div className="flex items-center text-[10px] sm:text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c] transition-colors">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
           </div>
-          <div className="group bg-white hover:bg-[#1a3c34] hover:text-white rounded-2xl p-6 border border-transparent hover:border-[#1a3c34] shadow-sm hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <Smile className="w-8 h-8 text-blue-400 group-hover:text-white" />
-              <span className="text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full">4 min</span>
+          <div className="group bg-white hover:bg-gradient-to-br hover:from-[#1a3c34] hover:to-[#2a5c4f] hover:text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-transparent shadow-elegant hover:shadow-elegant-xl transition-smooth cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1">
+            <div className="flex justify-between items-start mb-3 sm:mb-4">
+              <Smile className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 group-hover:text-white transition-colors" />
+              <span className="text-[10px] sm:text-xs font-bold bg-gray-100 group-hover:bg-white/20 group-hover:text-white text-gray-500 px-2 py-1 rounded-full transition-colors">4 min</span>
             </div>
-            <h3 className="text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2">Mood Problems</h3>
-            <p className="text-[#5c7a70] group-hover:text-gray-300 text-sm mb-4">"Feeling down or unstable."</p>
-            <div className="flex items-center text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c]">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
+            <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] group-hover:text-white mb-2 transition-colors">Mood Problems</h3>
+            <p className="text-[#5c7a70] group-hover:text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 transition-colors">"Feeling down or unstable."</p>
+            <div className="flex items-center text-[10px] sm:text-xs font-bold text-[#4a7c59] group-hover:text-[#8fb89c] transition-colors">START QUIZ <ArrowRight className="w-3 h-3 ml-1" /></div>
           </div>
         </div>
         <div className="flex flex-col md:flex-row justify-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-[#5c7a70] px-2">
@@ -2290,7 +2829,7 @@ const Hero = () => {
 
 const TrustSection = () => {
   return (
-    <section className="bg-white py-8 sm:py-12 border-b border-gray-100">
+    <section className="bg-gradient-to-b from-white to-[#eff2ef]/30 py-8 sm:py-12 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
         <p className="text-[10px] sm:text-xs font-bold text-gray-400 tracking-widest uppercase mb-4 sm:mb-6">USED BY OVER 247,000 PEOPLE</p>
         <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
@@ -2405,7 +2944,7 @@ const SampleResultPreview = () => {
           <span className="text-[#4a7c59] font-bold tracking-wider text-[10px] sm:text-xs uppercase mb-2 sm:mb-3 block">See What You Get</span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34]">Your Personal Protocol Preview</h2>
         </div>
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-elegant-lg border border-gray-100">
            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               <div className="bg-[#fcf8f8] rounded-2xl p-6 border border-red-50">
                  <h4 className="font-bold text-[#1a3c34] mb-4 flex items-center"><Zap className="w-5 h-5 text-red-500 mr-2" /> What's Not Working</h4>
@@ -2423,7 +2962,7 @@ const SampleResultPreview = () => {
                    <li className="flex items-start"><Check className="w-4 h-4 text-green-500 mr-2 mt-0.5" /> Completed projects</li>
                  </ul>
               </div>
-              <div className="bg-[#1a3c34] rounded-2xl p-6 shadow-sm text-white">
+              <div className="bg-gradient-to-br from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] rounded-2xl p-6 shadow-elegant-lg text-white">
                  <h4 className="font-bold mb-4 flex items-center"><Clock className="w-5 h-5 text-[#4a7c59] mr-2" /> Start Today</h4>
                  <div className="space-y-4 text-sm text-gray-300">
                     <div><p className="text-[#4a7c59] text-xs font-bold uppercase mb-1">Morning</p><p>15-min walk within 30 min of waking (sets circadian rhythm)</p></div>
@@ -2499,7 +3038,7 @@ const JourneyStep = ({ number, duration, phase, title, subtitle, color, children
 
         {/* Right: Content */}
         <div className="flex-1">
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-lg border border-gray-200">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-elegant-lg border border-gray-200">
             <div className="mb-4 sm:mb-6">
               <div className={`inline-block bg-gradient-to-r ${colors[color]} text-white px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold mb-2 sm:mb-3`}>
                 {phase}
@@ -2532,7 +3071,7 @@ const BrainScore = () => {
         </div>
         <div className="w-full md:w-1/2 flex justify-center">
           <RevealOnScroll delay={200} className="relative w-full max-w-[280px] sm:max-w-sm">
-             <div className="bg-[#1a3c34] border-[6px] sm:border-[8px] border-[#1a3c34] rounded-[2rem] sm:rounded-[3rem] p-1.5 sm:p-2 shadow-2xl shadow-[#1a3c34]/30 relative z-10 overflow-hidden h-[500px] sm:h-[600px]">
+             <div className="bg-gradient-to-br from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] border-[6px] sm:border-[8px] border-[#1a3c34] rounded-[2rem] sm:rounded-[3rem] p-1.5 sm:p-2 shadow-elegant-2xl shadow-[#1a3c34]/30 relative z-10 overflow-hidden h-[500px] sm:h-[600px]">
                 <div className="bg-[#eff2ef] h-full w-full rounded-[2.5rem] overflow-hidden flex flex-col relative">
                   <div className="absolute top-0 w-full h-8 bg-white/80 z-20 backdrop-blur-sm"></div>
                   <div className="p-6 pt-12 text-center bg-white pb-6 rounded-b-3xl shadow-sm">
@@ -2552,30 +3091,581 @@ const BrainScore = () => {
   );
 };
 
+/**
+ * Trust Badges Component
+ */
+const TrustBadges = ({ setActivePage }) => {
+  const badges = [
+    {
+      icon: Stethoscope,
+      title: "Protocols Reviewed by Board-Certified Specialists",
+      color: "blue"
+    },
+    {
+      icon: Lock,
+      title: "Data Security: Bank-Level AES-256 Encryption",
+      color: "green"
+    },
+    {
+      icon: BookOpen,
+      title: "Research-Backed: 127+ Peer-Reviewed Studies",
+      color: "purple"
+    },
+    {
+      icon: ShieldCheck,
+      title: "Privacy First: Zero Data Selling Policy",
+      color: "amber"
+    },
+    {
+      icon: FileText,
+      title: "Transparent Methodology: Published Assessment Framework",
+      color: "teal"
+    }
+  ];
+  
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-[#eff2ef] border-y border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+            Trusted by Healthcare Professionals & Organizations
+          </h2>
+        </RevealOnScroll>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+          {badges.map((badge, idx) => {
+            const IconComponent = badge.icon;
+            const colorClasses = {
+              blue: 'bg-blue-100 text-blue-600',
+              green: 'bg-green-100 text-green-600',
+              purple: 'bg-purple-100 text-purple-600',
+              amber: 'bg-amber-100 text-amber-600',
+              teal: 'bg-teal-100 text-teal-600'
+            };
+            return (
+              <RevealOnScroll key={idx} delay={idx * 50}>
+                <div className="bg-white rounded-xl p-4 sm:p-5 md:p-6 text-center hover:shadow-elegant-lg transition-smooth transform hover:scale-[1.02] cursor-pointer border border-gray-200 hover:border-[#4a7c59]">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-14 md:h-14 ${colorClasses[badge.color] || 'bg-gray-100 text-gray-600'} rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
+                    <IconComponent className="w-5 h-5 sm:w-6 sm:h-7 md:w-7" />
+                  </div>
+                  <p className="text-[10px] sm:text-xs md:text-sm font-semibold text-[#1a3c34] leading-tight px-1">{badge.title}</p>
+                </div>
+              </RevealOnScroll>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Clinical Advisory Board Component
+ */
+const ClinicalAdvisoryBoard = () => {
+  const advisors = [
+    {
+      name: "Dr. Imaad Nasir, M.D.",
+      title: "Assistant Clinical Professor, Board-Certified Neurologist",
+      institution: "UCLA David Geffen School of Medicine, UCLA Brain Research Institute",
+      quote: "CogCare's assessment methodology represents a significant advancement in personalized cognitive optimization.",
+      photo: "/nasir-photo.jpg"
+    },
+    {
+      name: "Dr. [Name], PsyD",
+      title: "Clinical Psychologist, Cognitive Behavioral Specialist",
+      institution: "Stanford Health",
+      quote: "The integration of circadian biology with cognitive assessment provides a holistic approach to mental wellness."
+    },
+    {
+      name: "Dr. [Name], PhD",
+      title: "Neuroscience Researcher",
+      institution: "MIT McGovern Institute",
+      quote: "Evidence-based protocols grounded in peer-reviewed research make CogCare a trusted platform for cognitive enhancement."
+    }
+  ];
+  
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll className="text-center mb-8 sm:mb-12">
+          <div className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+            CLINICAL OVERSIGHT
+          </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+            Clinical Advisory Board
+          </h2>
+          <p className="text-base sm:text-lg text-[#5c7a70] max-w-3xl mx-auto">
+            Our protocols are reviewed by board-certified specialists in neurology, psychiatry, and cognitive neuroscience.
+          </p>
+        </RevealOnScroll>
+        <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+          {advisors.map((advisor, idx) => (
+            <RevealOnScroll key={idx} delay={idx * 100}>
+              <div className="bg-[#eff2ef] rounded-xl p-6 sm:p-8 text-center">
+                {advisor.photo ? (
+                  <img 
+                    src={advisor.photo} 
+                    alt={advisor.name}
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mx-auto mb-4 border-4 border-[#1a3c34]"
+                  />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#1a3c34] rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mx-auto mb-4">
+                    {advisor.name.charAt(advisor.name.indexOf(' ') + 1) || advisor.name.charAt(0)}
+                  </div>
+                )}
+                <h3 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg md:text-xl px-2">{advisor.name}</h3>
+                <p className="text-xs sm:text-sm md:text-base text-[#4a7c59] font-semibold mb-1 px-2">{advisor.title}</p>
+                <p className="text-[10px] sm:text-xs md:text-sm text-[#5c7a70] mb-4 px-2 leading-relaxed">{advisor.institution}</p>
+                <p className="text-sm text-[#5c7a70] italic">"{advisor.quote}"</p>
+              </div>
+            </RevealOnScroll>
+          ))}
+        </div>
+        <div className="mt-8 sm:mt-12 text-center">
+          <p className="text-sm sm:text-base text-[#5c7a70]">
+            [PLACEHOLDER: Clinical protocols reviewed by board-certified specialists in neurology, psychiatry, and cognitive neuroscience.]
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Interactive Demo Component
+ */
+const InteractiveDemo = ({ setActivePage }) => {
+  const [selectedOption, setSelectedOption] = useState(null);
+  
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-[#eff2ef] border-y border-gray-200">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-elegant-lg border border-gray-100">
+          <div className="text-center mb-8 sm:mb-10">
+            <div className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+              TRY A SAMPLE QUESTION
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+              See How Our Assessment Works
+            </h2>
+          </div>
+          
+          <div className="mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base text-[#5c7a70] mb-2">Question 3 of 20:</p>
+            <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-6">
+              "When you start a new project, what typically happens?"
+            </h3>
+            
+            <div className="space-y-2 sm:space-3 md:space-4">
+              {[
+                { value: 'rapid', text: "I'm excited for 5-10 minutes, then completely lose interest", type: "Rapid depletion (Scattered Starter)" },
+                { value: 'spike', text: "I obsess over it for hours, then crash hard afterward", type: "Spike-crash cycle (Hyperfocus Warrior)" },
+                { value: 'anxious', text: "I feel anxious about starting at all", type: "Cortisol-driven avoidance" },
+                { value: 'low', text: "I need multiple coffee breaks to keep going", type: "Chronic low baseline" }
+              ].map((option) => (
+                <label
+                  key={option.value}
+                  className={`flex items-start p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all min-h-[60px] ${
+                    selectedOption === option.value
+                      ? 'border-[#4a7c59] bg-[#eff2ef]'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="demo-question"
+                    value={option.value}
+                    checked={selectedOption === option.value}
+                    onChange={() => setSelectedOption(option.value)}
+                    className="mt-1 mr-2 sm:mr-3 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm md:text-base text-[#1a3c34] leading-relaxed">{option.text}</p>
+                    {selectedOption === option.value && (
+                      <p className="text-[10px] sm:text-xs md:text-sm text-[#4a7c59] mt-2 font-semibold leading-relaxed">
+                        💡 This reveals: {option.type}
+                      </p>
+                    )}
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bg-[#1a3c34] text-white rounded-xl p-5 sm:p-6 text-center">
+            <p className="text-sm sm:text-base mb-4">
+              This question reveals your dopamine response pattern. Our full assessment analyzes 20+ questions to map your complete cognitive profile.
+            </p>
+              <button
+                onClick={() => {
+                  setActivePage('home');
+                  setTimeout(() => {
+                    document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-xs sm:text-sm md:text-base min-h-[44px]"
+              >
+                START FULL ASSESSMENT →
+              </button>
+          </div>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Video Explainer Component
+ */
+const VideoExplainer = () => {
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+            See How CogCare Works in 2 Minutes
+          </h2>
+          <p className="text-base sm:text-lg text-[#5c7a70] max-w-2xl mx-auto mb-6 sm:mb-8">
+            Watch a quick overview of our assessment process and how personalized protocols work
+          </p>
+        </RevealOnScroll>
+        
+        <div className="bg-[#eff2ef] rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 aspect-video flex items-center justify-center relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <button className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] rounded-full flex items-center justify-center hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-xl hover:shadow-elegant-2xl transform hover:scale-110">
+              <Play className="w-10 h-10 sm:w-12 sm:h-12 text-white ml-1" />
+            </button>
+          </div>
+          <p className="absolute bottom-4 left-4 right-4 text-center text-sm text-[#5c7a70]">
+            [PLACEHOLDER: Video will be embedded here - YouTube/Vimeo embed]
+          </p>
+        </div>
+        
+        <div className="mt-8 sm:mt-12 bg-[#eff2ef] rounded-xl p-6 sm:p-8">
+          <h3 className="font-bold text-[#1a3c34] mb-4 text-lg sm:text-xl">Key Points Covered:</h3>
+          <ul className="space-y-2 text-sm sm:text-base text-[#5c7a70]">
+            <li className="flex items-start"><Check className="w-5 h-5 text-[#4a7c59] mr-3 mt-0.5 flex-shrink-0" /> How the 5-minute assessment works</li>
+            <li className="flex items-start"><Check className="w-5 h-5 text-[#4a7c59] mr-3 mt-0.5 flex-shrink-0" /> Understanding your cognitive type results</li>
+            <li className="flex items-start"><Check className="w-5 h-5 text-[#4a7c59] mr-3 mt-0.5 flex-shrink-0" /> Personalized dashboard overview</li>
+            <li className="flex items-start"><Check className="w-5 h-5 text-[#4a7c59] mr-3 mt-0.5 flex-shrink-0" /> Progress tracking after 2 weeks</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Content Hub / Blog Section
+ */
+const ContentHub = () => {
+  const articles = [
+    {
+      title: "The Science Behind Morning Sunlight and Dopamine",
+      description: "How early morning light exposure triggers dopamine production and sets your circadian rhythm for the day.",
+      category: "Dopamine Optimization",
+      readTime: "8 min read"
+    },
+    {
+      title: "Why Your Focus Crashes at 2pm (And How to Fix It)",
+      description: "The cortisol-dopamine interaction that causes afternoon energy crashes and practical solutions.",
+      category: "Focus & Energy",
+      readTime: "6 min read"
+    },
+    {
+      title: "Cortisol 101: The Stress Hormone Explained",
+      description: "Understanding how cortisol affects your brain, body, and cognitive performance.",
+      category: "Stress Management",
+      readTime: "10 min read"
+    },
+    {
+      title: "Cold Exposure Protocols: Complete Guide",
+      description: "Evidence-based cold exposure methods to boost dopamine, reduce inflammation, and improve focus.",
+      category: "Biohacking",
+      readTime: "12 min read"
+    }
+  ];
+  
+  return (
+    <section className="py-12 sm:py-16 md:py-24 bg-[#eff2ef]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <RevealOnScroll className="text-center mb-8 sm:mb-12">
+          <div className="inline-block bg-green-100 text-green-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+            RESEARCH & EDUCATION
+          </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+            Learn the Science Behind Cognitive Optimization
+          </h2>
+          <p className="text-base sm:text-lg text-[#5c7a70] max-w-3xl mx-auto">
+            Evidence-based articles, research summaries, and practical guides to optimize your brain health
+          </p>
+        </RevealOnScroll>
+        
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+          {articles.map((article, idx) => (
+            <RevealOnScroll key={idx} delay={idx * 100}>
+              <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-200 hover:shadow-elegant-lg transition-smooth transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold text-[#4a7c59] bg-[#eff2ef] px-3 py-1 rounded-full">
+                    {article.category}
+                  </span>
+                  <span className="text-xs text-[#5c7a70]">{article.readTime}</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-[#1a3c34] mb-3 hover:text-[#4a7c59] transition-colors">
+                  {article.title}
+                </h3>
+                <p className="text-sm sm:text-base text-[#5c7a70] mb-4">{article.description}</p>
+                <button className="text-sm font-semibold text-[#4a7c59] hover:text-[#1a3c34] flex items-center">
+                  Read Article <ArrowRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
+            </RevealOnScroll>
+          ))}
+        </div>
+        
+        <div className="text-center mt-8 sm:mt-12">
+          <button className="bg-white border-2 border-[#4a7c59] text-[#4a7c59] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-gradient-to-r hover:from-[#4a7c59] hover:to-[#5a9c69] hover:text-white hover:border-transparent transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:scale-[1.02] text-sm sm:text-base">
+            View All Articles →
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Home Page FAQ Component
+ */
+const HomeFAQ = () => {
+  const [expandedFaq, setExpandedFaq] = useState(null);
+  const [faqSearch, setFaqSearch] = useState('');
+  
+  const homeFaqs = [
+    {
+      q: "I've tried supplements, therapy, and 50 productivity apps. Why would THIS be different?",
+      a: "Because you never diagnosed the root cause. You treated symptoms. Think about it: If you have low baseline dopamine (rapid depletion pattern), no amount of 'focus apps' will work. You're trying to willpower your way through a biological deficit. Our quiz maps your SPECIFIC neurochemical pattern—most people discover they've been optimizing the WRONG system. Example: You tried focus techniques, but your real issue was elevated cortisol blocking cognition. Different problem = different solution."
+    },
+    {
+      q: "Can I use CogCare while seeing a therapist or taking medication?",
+      a: "Yes—and 80% of our users do exactly that. CogCare focuses on lifestyle optimization (light exposure, breathing, nutrition, sleep architecture) which complements medical treatment. We're NOT replacing therapy or medication. We're optimizing the biological foundation that makes them work better. ⚠️ Always consult your provider before major lifestyle changes, especially if you're on psychiatric medications that affect neurotransmitter systems."
+    },
+    {
+      q: "What if my quiz results don't match how I feel?",
+      a: "Email us within 7 days for manual clinical review. ~5% of users need assessment recalibration due to: comorbid conditions (ADHD + anxiety, for example), medication effects masking underlying patterns, or atypical circadian rhythms (shift workers, etc.). Our clinical team will review your results and either: (a) Adjust your cognitive profile, or (b) Refund you completely if we can't provide accurate assessment."
+    },
+    {
+      q: "Is this just another wellness scam?",
+      a: "Fair question. Here's how we're different: 🔬 Peer-Reviewed Science - Every protocol is based on published neuroscience research. 👨‍⚕️ Clinical Oversight - Protocols reviewed by board-certified neurologists & psychiatrists. 📊 Measurable Outcomes - Your score is tracked monthly. If it doesn't improve, we investigate why. 💰 Money-Back Guarantee - 30 days. No questions asked. Full refund. We're not selling magic pills or miracle cures. We're teaching you how to optimize the biological systems that govern cognition."
+    },
+    {
+      q: "How is this different from Lumosity/BrainHQ/Peak?",
+      a: "Brain training games vs. biological optimization. Brain Training Apps: Focus on cognitive exercises (games, puzzles), goal is to improve performance on THOSE specific games, transfer effect is minimal (Florida State study: Portal 2 outperformed Lumosity). CogCare: Focus on neurochemical system optimization, goal is to fix underlying biology that enables ALL cognitive tasks, transfer effect improves focus, energy, mood across your entire life. Analogy: Brain training = practicing free throws. CogCare = fixing your vision, strength, and balance."
+    },
+    {
+      q: "What if I don't have time for a complicated protocol?",
+      a: "Our minimum effective dose is 15 minutes/day. Week 1 Protocol Example: Morning (10 min): Walk outside (sunlight exposure), Midday (2 min): Box breathing between meetings, Evening (3 min): Blue light reduction routine. Total: 15 minutes. Most people naturally expand this as they feel benefits, but you can see measurable improvement with just the basics."
+    },
+    {
+      q: "Is my data private? Do you sell it?",
+      a: "Your data is private. We NEVER sell it. Period. Bank-level AES-256 encryption, no advertising partners, no third-party data sharing, you can download or delete your data anytime. We make money from subscriptions, not from selling your information."
+    },
+    {
+      q: "What results can I realistically expect?",
+      a: "Based on 247,000+ user cohort: Week 2: 67% report improved morning energy, easier task initiation. Week 4: 73% achieve 45-min+ focus blocks (vs. 15-20 min baseline). Week 8: 81% report sustained improvement in baseline mood/motivation. But: Results require protocol adherence. 90% adherence → 3.2x better outcomes than 50% adherence. If you're not willing to actually DO the protocols, this won't work. We're optimizing biology, not selling magic."
+    },
+    {
+      q: "Can this help with ADHD/depression/anxiety?",
+      a: "It depends. CogCare can help with: ✓ Subclinical symptoms ('I'm functional but struggling'), ✓ Optimizing biology while on medication, ✓ Lifestyle factors that exacerbate clinical conditions. CogCare CANNOT replace: ✗ Clinical diagnosis by psychiatrist/psychologist, ✗ Medication for moderate-to-severe conditions, ✗ Therapy for trauma, emotional processing. If you have diagnosed ADHD/depression/anxiety: → CogCare works ALONGSIDE treatment, not instead of it. → Many users find their medication works BETTER when biology is optimized."
+    },
+    {
+      q: "Do you take insurance?",
+      a: "Not directly, but we provide documentation for reimbursement. Many HSA/FSA plans cover 'wellness programs' and 'preventive health.' We provide: Itemized receipt (required for HSA/FSA), detailed program description, clinical rationale documentation. Success rate: ~60% of users who submit get partial or full reimbursement."
+    }
+  ];
+  
+  return (
+    <section className="bg-white py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto">
+        <RevealOnScroll className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
+            Common Questions
+          </h2>
+          <p className="text-[#5c7a70] text-base sm:text-lg max-w-2xl mx-auto mb-6">
+            Everything you need to know about CogCare
+          </p>
+          {/* FAQ Search */}
+          <div className="max-w-md mx-auto relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search questions..."
+              value={faqSearch}
+              onChange={(e) => setFaqSearch(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#4a7c59] focus:outline-none text-sm sm:text-base"
+            />
+          </div>
+        </RevealOnScroll>
+
+        <div className="space-y-4 sm:space-y-6">
+          {homeFaqs
+            .filter(faq => 
+              faqSearch === '' || 
+              faq.q.toLowerCase().includes(faqSearch.toLowerCase()) ||
+              faq.a.toLowerCase().includes(faqSearch.toLowerCase())
+            )
+            .map((faq, idx) => {
+              const isExpanded = expandedFaq === idx;
+              return (
+                <RevealOnScroll key={idx} delay={idx * 30}>
+                  <div className="bg-[#eff2ef] rounded-xl sm:rounded-2xl border border-gray-200 overflow-hidden">
+                    <button
+                      onClick={() => setExpandedFaq(isExpanded ? null : idx)}
+                      className="w-full p-4 sm:p-5 md:p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors min-h-[60px] sm:min-h-[70px]"
+                    >
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold text-[#1a3c34] pr-3 sm:pr-4 leading-tight">{faq.q}</h3>
+                      <ChevronRight 
+                        className={`w-5 h-5 sm:w-6 sm:h-6 text-[#4a7c59] flex-shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                      />
+                    </button>
+                    {isExpanded && (
+                      <div className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6">
+                        <div className="pt-3 sm:pt-4 border-t border-gray-200">
+                          <p className="text-[#5c7a70] text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line">{faq.a}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </RevealOnScroll>
+              );
+            })}
+        </div>
+        
+        {homeFaqs.filter(faq => 
+          faqSearch === '' || 
+          faq.q.toLowerCase().includes(faqSearch.toLowerCase()) ||
+          faq.a.toLowerCase().includes(faqSearch.toLowerCase())
+        ).length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-[#5c7a70] mb-4">No questions found matching your search.</p>
+            <button
+              onClick={() => setFaqSearch('')}
+              className="text-[#4a7c59] hover:text-[#1a3c34] font-semibold"
+            >
+              Clear search
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
 const Testimonials = () => {
   const [activeTab, setActiveTab] = useState('focus');
   const testimonials = {
-    focus: [{ name: "Sarah K.", role: "Marketing Director", quote: "I've struggled with focus my entire adult life. This quiz nailed my 'Scattered Starter' profile perfectly. The protocol actually works." }, { name: "Michael R.", role: "Software Engineer", quote: "Finally found something that explains my distraction patterns without just saying 'try harder'. Highly recommend." }],
-    anxiety: [{ name: "James L.", role: "Teacher", quote: "I didn't realize my anxiety was physical until I took the Neuro-Calm assessment. The breathing protocols changed everything." }, { name: "Elena D.", role: "Artist", quote: "Validation. That's what I felt. Finally understanding WHY I feel on edge was the first step to fixing it." }],
-    sleep: [{ name: "Robert T.", role: "Executive", quote: "I thought I just had 'bad sleep'. Turns out I had a cortisol rhythm issue. Fixed it in 2 weeks." }, { name: "Anita P.", role: "Nurse", quote: "Shift work destroyed my sleep. The Circadian Reset protocol from the quiz results saved my career." }]
+    focus: [
+      { 
+        name: "Sarah K.", 
+        role: "Marketing Director, Age 34", 
+        cognitiveType: "Scattered Starter",
+        quote: "I'm a marketing director who couldn't finish projects. Clients were frustrated. I was drowning. Took the CogCare quiz → learned I had rapid dopamine depletion (novelty spike, then 10-min crash). Started morning walk + cold exposure protocol. Now I consistently hit 90-minute deep work blocks. First time in 8 years.",
+        before: "3-4 unfinished projects, constant task-switching, deadline panic",
+        after: "Shipped 2 major campaigns ahead of schedule, 67% longer focus blocks, zero afternoon crashes",
+        timeframe: "Week 4"
+      }, 
+      { 
+        name: "Michael R.", 
+        role: "Software Engineer, Age 29", 
+        cognitiveType: "Hyperfocus Warrior (Crashed)",
+        quote: "I'd hyperfocus for 6 hours, then be useless for 3 days. Boom-bust cycle destroyed my consistency. CogCare identified my pattern: massive dopamine spikes + cortisol dysregulation = burnout loop. Implemented work/rest cycles + breathing protocols.",
+        before: "1 productive day, 3 recovery days (25% efficiency)",
+        after: "5 solid days/week, sustainable output, energy stays level (250% productivity increase)",
+        timeframe: "Week 6"
+      }
+    ],
+    anxiety: [
+      { 
+        name: "James L.", 
+        role: "Teacher, Age 42", 
+        cognitiveType: "Chronic Stress Responder",
+        quote: "I didn't realize my anxiety was physical until I took the Neuro-Calm assessment. The breathing protocols changed everything. My cortisol was flatlined high 24/7—explaining why I couldn't think clearly even on days off.",
+        before: "Constant worry, physical tension, decision paralysis",
+        after: "Calm baseline, clear thinking, proactive problem-solving",
+        timeframe: "Week 8"
+      },
+      { 
+        name: "Elena D.", 
+        role: "Artist, Age 31", 
+        cognitiveType: "Chronic Stress Responder",
+        quote: "Validation. That's what I felt. Finally understanding WHY I feel on edge was the first step to fixing it. Breathing protocols + evening wind-down routine literally changed my brain's baseline state.",
+        before: "Always on edge, reactive, creative blocks",
+        after: "Mental clarity, proactive work, actually enjoy creating again",
+        timeframe: "Week 6"
+      }
+    ],
+    sleep: [
+      { 
+        name: "Robert T.", 
+        role: "Executive, Age 45", 
+        cognitiveType: "Circadian Disrupted",
+        quote: "I thought I just had 'bad sleep'. Turns out I had a cortisol rhythm issue. Fixed it in 2 weeks with the circadian optimization protocol. Now I sleep 7-8 hours consistently and wake up refreshed.",
+        before: "4-5 hours sleep, constant fatigue, afternoon crashes",
+        after: "7-8 hours sleep, consistent energy, no afternoon crashes",
+        timeframe: "Week 2"
+      },
+      { 
+        name: "Anita P.", 
+        role: "Nurse, Age 38", 
+        cognitiveType: "Circadian Disrupted",
+        quote: "Shift work destroyed my sleep. The Circadian Reset protocol from the quiz results saved my career. I can now manage rotating shifts without the constant exhaustion.",
+        before: "Erratic sleep, shift work exhaustion, mood swings",
+        after: "Adaptable sleep schedule, stable energy, improved mood",
+        timeframe: "Week 4"
+      }
+    ]
   };
   return (
     <section className="py-12 sm:py-16 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#1a3c34] mb-3 sm:mb-4">Success Stories</h2>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#1a3c34] mb-3 sm:mb-4">Before & After: Real User Transformations</h2>
         <p className="text-center text-[#5c7a70] text-sm sm:text-base md:text-lg mb-8 sm:mb-10 md:mb-12">Read stories from people who faced the same problem as you.</p>
         <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 mb-8 sm:mb-10 md:mb-12 flex-wrap px-2">
           {['focus', 'anxiety', 'sleep'].map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold capitalize transition-all ${activeTab === tab ? 'bg-[#1a3c34] text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{tab === 'focus' ? 'Focus & ADHD' : tab}</button>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold capitalize transition-all duration-300 ${activeTab === tab ? 'bg-gradient-to-r from-[#1a3c34] via-[#2a5c4f] to-[#1a3c34] text-white shadow-elegant-lg' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 shadow-elegant hover:shadow-elegant-sm'}`}>{tab === 'focus' ? 'Focus & ADHD' : tab}</button>
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {testimonials[activeTab].map((t, i) => (
-            <div key={i} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border border-transparent hover:border-[#1a3c34]/10 transition-all">
-              <div className="flex items-center mb-3 sm:mb-4"><div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#1a3c34] rounded-full flex items-center justify-center text-white font-bold mr-2 sm:mr-3 text-sm sm:text-base">{t.name.charAt(0)}</div><div><p className="font-bold text-[#1a3c34] text-xs sm:text-sm">{t.name}</p><p className="text-[10px] sm:text-xs text-[#5c7a70]">{t.role}</p></div></div>
-              <p className="text-[#1a3c34] text-sm sm:text-base md:text-lg italic leading-relaxed">"{t.quote}"</p>
-              <div className="mt-3 sm:mt-4 flex text-yellow-400"><Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" /><Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" /><Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" /><Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" /><Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" /></div>
-            </div>
+            <RevealOnScroll key={i} delay={i * 100} className="bg-[#eff2ef] rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 border border-transparent hover:border-[#1a3c34]/10 transition-all">
+              <div className="flex items-center mb-3 sm:mb-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1a3c34] rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 text-base sm:text-lg flex-shrink-0">
+                  {t.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-bold text-[#1a3c34] text-sm sm:text-base">{t.name}</p>
+                  <p className="text-xs sm:text-sm text-[#5c7a70]">{t.role}</p>
+                  <p className="text-xs font-semibold text-[#4a7c59] mt-1">Cognitive Type: {t.cognitiveType}</p>
+                </div>
+              </div>
+              <p className="text-[#1a3c34] text-sm sm:text-base md:text-lg italic leading-relaxed mb-4">"{t.quote}"</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 pt-4 border-t border-gray-300">
+                <div>
+                  <p className="text-[10px] sm:text-xs font-bold text-red-600 mb-1 sm:mb-2">BEFORE:</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-[#5c7a70] leading-relaxed">{t.before}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] sm:text-xs font-bold text-green-600 mb-1 sm:mb-2">AFTER ({t.timeframe}):</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-[#5c7a70] leading-relaxed">{t.after}</p>
+                </div>
+              </div>
+              <div className="flex text-yellow-400">
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
+              </div>
+            </RevealOnScroll>
           ))}
         </div>
       </div>
@@ -2590,8 +3680,11 @@ const Pricing = ({ setActivePage }) => {
         {/* Hero Section */}
         <RevealOnScroll>
           <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <div className="inline-block bg-green-100 text-green-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-bold mb-4">
+              CHOOSE YOUR PATH
+            </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a3c34] mb-4 sm:mb-6">
-              Transform Your Brain - Choose Your Path
+              Choose Your Path to Cognitive Optimization
             </h2>
             <p className="text-[#5c7a70] text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-6 sm:mb-8">
               Not sure which path is right for you? Take our free 5-minute assessment first to get a personalized recommendation.
@@ -2603,179 +3696,191 @@ const Pricing = ({ setActivePage }) => {
                   document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
               }}
-              className="bg-[#4a7c59] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-sm sm:text-base"
+              className="bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-sm sm:text-base"
             >
               TAKE FREE QUIZ →
             </button>
           </div>
         </RevealOnScroll>
 
-        {/* Three Main Pathways */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto mb-12 sm:mb-16">
-          {/* PATHWAY 1: CogCare Programs */}
-          <RevealOnScroll className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-lg flex flex-col">
-            <div className="mb-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">📚</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-2">CogCare Programs</h3>
-              <p className="text-[#5c7a70] text-sm sm:text-base mb-4">
-                Research-backed transformation programs designed by our clinical team
+        {/* Three Pricing Tiers */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto mb-8 sm:mb-12 md:mb-16">
+          {/* TIER 1: FREE ASSESSMENT */}
+          <RevealOnScroll className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border border-gray-200 shadow-elegant-lg hover:shadow-elegant-xl transition-smooth flex flex-col">
+            <div className="mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl sm:text-2xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">🎯</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1a3c34] mb-2 text-center sm:text-left">FREE ASSESSMENT</h3>
+              <p className="text-[#5c7a70] text-xs sm:text-sm md:text-base mb-3 sm:mb-4 text-center sm:text-left">
+                Perfect for: Understanding your brain's bottlenecks
               </p>
             </div>
 
-            <div className="mb-6">
-              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Best For:</p>
-              <ul className="space-y-2 text-sm text-[#5c7a70] mb-4">
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Self-motivated learners</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Single-issue focus</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Budget-conscious</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Structured approach</li>
+            <div className="mb-4 sm:mb-6 flex-grow">
+              <ul className="space-y-2 text-xs sm:text-sm text-[#5c7a70]">
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Take any specialized quiz (3-5 min)</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Get your cognitive type + top 3 recommendations</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Access basic educational content</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Compare your score to national averages</span></li>
               </ul>
             </div>
 
-            <div className="mb-6 flex-grow">
-              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Includes:</p>
-              <ul className="space-y-2 text-sm text-[#5c7a70]">
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Quiz-matched personalized path</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> 4-12 week programs</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Self-paced learning</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Implementation tools</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Community access</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Lifetime access</li>
+            <div className="border-t border-gray-200 pt-4 sm:pt-6 mt-auto">
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#4a7c59] mb-3 sm:mb-4 text-center sm:text-left">FREE</p>
+              <button 
+                onClick={() => {
+                  setActivePage('home');
+                  setTimeout(() => {
+                    document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="w-full bg-gradient-to-r from-[#4a7c59] to-[#5a9c69] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold hover:from-[#3a6347] hover:to-[#4a8c59] transition-all duration-300 shadow-elegant-lg hover:shadow-elegant-xl transform hover:scale-[1.02] text-xs sm:text-sm md:text-base min-h-[44px]"
+              >
+                START FREE ASSESSMENT →
+              </button>
+            </div>
+          </RevealOnScroll>
+
+          {/* TIER 2: COMPLETE PROTOCOL ACCESS */}
+          <RevealOnScroll delay={100} className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border-2 border-[#4a7c59] shadow-xl flex flex-col relative transform md:-translate-y-2">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-b-lg">MOST POPULAR</div>
+            <div className="mb-3 sm:mb-4 mt-2 sm:mt-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl sm:text-2xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">🚀</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1a3c34] mb-2 text-center sm:text-left">COMPLETE PROTOCOL ACCESS</h3>
+              <p className="text-[#5c7a70] text-xs sm:text-sm md:text-base mb-3 sm:mb-4 text-center sm:text-left">
+                Perfect for: Serious cognitive optimization
+              </p>
+            </div>
+
+            <div className="mb-4 sm:mb-6 flex-grow">
+              <ul className="space-y-2 text-xs sm:text-sm text-[#5c7a70]">
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Full diagnostic report (15-page PDF)</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">8-week personalized optimization program</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Video learning modules (40+ lessons)</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Daily protocol stack (morning/afternoon/evening routines)</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Progress tracking dashboard</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Private community access (12,000+ members)</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Monthly reassessments to track improvement</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Lifetime access + quarterly protocol updates</span></li>
               </ul>
             </div>
 
-            <div className="border-t border-gray-200 pt-6 mt-auto">
-              <div className="mb-4">
-                <p className="text-sm text-[#5c7a70] mb-2">Pricing:</p>
-                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Programs: $197-497</p>
-                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Bundles: $447-697</p>
-              </div>
-              <p className="text-2xl sm:text-3xl font-bold text-[#4a7c59] mb-4">FROM $197</p>
+            <div className="border-t border-gray-200 pt-4 sm:pt-6 mt-auto">
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#4a7c59] mb-1 sm:mb-2 text-center sm:text-left">$147</p>
+              <p className="text-[10px] sm:text-xs text-[#5c7a70] mb-3 sm:mb-4 text-center sm:text-left">One-time payment • Lifetime access</p>
               <button 
                 onClick={() => setActivePage('programs')}
-                className="w-full bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-sm sm:text-base"
+                className="w-full bg-[#4a7c59] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-xs sm:text-sm md:text-base mb-2 min-h-[44px]"
               >
-                BROWSE PROGRAMS →
+                GET FULL ACCESS →
               </button>
-              <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
+              <p className="text-[10px] sm:text-xs text-center text-[#5c7a70]">30-Day Money-Back Guarantee</p>
+              <div className="flex items-center justify-center mt-3 sm:mt-4 text-[10px] sm:text-xs text-gray-500 flex-wrap gap-1">
                 <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
                 <span>247,000+ enrolled</span>
-                <span className="mx-2">•</span>
+                <span className="mx-1 sm:mx-2">•</span>
                 <span>68% completion rate</span>
               </div>
             </div>
           </RevealOnScroll>
 
-          {/* PATHWAY 2: Specialist Programs */}
-          <RevealOnScroll delay={100} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-[#4a7c59] shadow-xl flex flex-col relative transform md:-translate-y-2">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#4a7c59] text-white text-xs font-bold px-3 py-1 rounded-b-lg">MOST POPULAR</div>
-            <div className="mb-4 mt-2">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">👨‍⚕️</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-2">Specialist Programs</h3>
-              <p className="text-[#5c7a70] text-sm sm:text-base mb-4">
-                Created by licensed specialists (MDs, PhDs, therapists)
+          {/* TIER 3: PREMIUM COACHING */}
+          <RevealOnScroll delay={200} className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border border-gray-200 shadow-lg flex flex-col">
+            <div className="mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl sm:text-2xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">👑</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1a3c34] mb-2 text-center sm:text-left">PREMIUM COACHING</h3>
+              <p className="text-[#5c7a70] text-xs sm:text-sm md:text-base mb-3 sm:mb-4 text-center sm:text-left">
+                Perfect for: Executive performance, clinical optimization
               </p>
             </div>
 
-            <div className="mb-6">
-              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Best For:</p>
-              <ul className="space-y-2 text-sm text-[#5c7a70] mb-4">
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Specific specialist methodologies</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Expert guidance</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Proven frameworks</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Niche approaches</li>
+            <div className="mb-4 sm:mb-6 flex-grow">
+              <p className="text-xs sm:text-sm font-semibold text-[#1a3c34] mb-2 sm:mb-3">Everything in Complete Access, PLUS:</p>
+              <ul className="space-y-2 text-xs sm:text-sm text-[#5c7a70]">
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">4x 45-min video consultations with certified cognitive coaches</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Personalized protocol adjustments based on your progress</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Priority email support</span></li>
+                <li className="flex items-start"><Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> <span className="leading-relaxed">Advanced biomarker interpretation (if you track HRV, sleep, etc.)</span></li>
               </ul>
             </div>
 
-            <div className="mb-6 flex-grow">
-              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Includes:</p>
-              <ul className="space-y-2 text-sm text-[#5c7a70]">
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Specialist's unique methodology</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> 4-12 week programs</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Self-paced learning</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Optional 1:1 support</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Private communities</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Lifetime access</li>
-              </ul>
-            </div>
-
-            <div className="border-t border-gray-200 pt-6 mt-auto">
-              <div className="mb-4">
-                <p className="text-sm text-[#5c7a70] mb-2">Pricing:</p>
-                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Programs: $247-997</p>
-                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Bundles: $500-1,500</p>
-              </div>
-              <p className="text-2xl sm:text-3xl font-bold text-[#4a7c59] mb-4">FROM $247</p>
+            <div className="border-t border-gray-200 pt-4 sm:pt-6 mt-auto">
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#4a7c59] mb-1 sm:mb-2 text-center sm:text-left">$497</p>
+              <p className="text-[10px] sm:text-xs text-[#5c7a70] mb-3 sm:mb-4 text-center sm:text-left">One-time payment • Lifetime access</p>
               <button 
                 onClick={() => setActivePage('directory')}
-                className="w-full bg-[#1a3c34] text-white px-6 py-3 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors shadow-lg text-sm sm:text-base"
+                className="w-full bg-[#1a3c34] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#2a5c4f] transition-colors shadow-lg text-xs sm:text-sm md:text-base mb-2 min-h-[44px]"
               >
-                FIND SPECIALISTS →
+                BOOK CONSULTATION →
               </button>
-              <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
-                <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
-                <span>500+ specialists</span>
-                <span className="mx-2">•</span>
-                <span>All licensed/certified</span>
-              </div>
-            </div>
-          </RevealOnScroll>
-
-          {/* PATHWAY 3: Direct Consultation */}
-          <RevealOnScroll delay={200} className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-lg flex flex-col">
-            <div className="mb-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">💬</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-2">Direct Consultation</h3>
-              <p className="text-[#5c7a70] text-sm sm:text-base mb-4">
-                1:1 sessions with board-certified professionals
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Best For:</p>
-              <ul className="space-y-2 text-sm text-[#5c7a70] mb-4">
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Complex cases</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Need diagnosis</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Medication management</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Personalized care</li>
-              </ul>
-            </div>
-
-            <div className="mb-6 flex-grow">
-              <p className="font-semibold text-[#1a3c34] text-sm mb-3">Includes:</p>
-              <ul className="space-y-2 text-sm text-[#5c7a70]">
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Comprehensive evaluation</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Treatment planning</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Ongoing support</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Insurance accepted</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Virtual or in-person</li>
-                <li className="flex items-start"><Check className="w-4 h-4 text-[#4a7c59] mr-2 mt-0.5 flex-shrink-0" /> Session packages</li>
-              </ul>
-            </div>
-
-            <div className="border-t border-gray-200 pt-6 mt-auto">
-              <div className="mb-4">
-                <p className="text-sm text-[#5c7a70] mb-2">Pricing:</p>
-                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Initial: $250-500</p>
-                <p className="text-lg sm:text-xl font-bold text-[#1a3c34]">Follow-up: $150-350</p>
-                <p className="text-sm text-[#5c7a70]">Packages: 10-20% savings</p>
-              </div>
-              <p className="text-2xl sm:text-3xl font-bold text-[#4a7c59] mb-4">FROM $150/session</p>
-              <button 
-                onClick={() => setActivePage('directory')}
-                className="w-full bg-[#4a7c59] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3a6347] transition-colors shadow-lg text-sm sm:text-base"
-              >
-                BOOK CONSULT →
-              </button>
-              <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
-                <ShieldCheck className="w-3 h-3 text-[#4a7c59] mr-1" />
-                <span>Insurance accepted</span>
-                <span className="mx-2">•</span>
-                <span>Same-week appointments</span>
-              </div>
+              <p className="text-[10px] sm:text-xs text-center text-[#5c7a70]">30-Day Money-Back Guarantee</p>
             </div>
           </RevealOnScroll>
         </div>
+
+        {/* What You Get Section */}
+        <RevealOnScroll className="max-w-6xl mx-auto mb-12 sm:mb-16">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg border border-gray-100">
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#1a3c34] mb-6 sm:mb-8 text-center">Inside the Complete Protocol</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">🎯</div>
+                <h4 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg text-center sm:text-left">Personalized Dashboard</h4>
+                <p className="text-xs sm:text-sm text-[#5c7a70] text-center sm:text-left leading-relaxed">Your cognitive profile, real-time score tracking, protocol reminders</p>
+              </div>
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">📚</div>
+                <h4 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg text-center sm:text-left">Video Learning Library</h4>
+                <p className="text-xs sm:text-sm text-[#5c7a70] text-center sm:text-left leading-relaxed">40+ modules (5-12 min each) covering dopamine systems, cortisol regulation, sleep architecture, and more</p>
+              </div>
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">⏰</div>
+                <h4 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg text-center sm:text-left">Daily Protocol Stack</h4>
+                <p className="text-xs sm:text-sm text-[#5c7a70] text-center sm:text-left leading-relaxed">Auto-generated from your cognitive profile: morning, midday, and evening routines</p>
+              </div>
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">👥</div>
+                <h4 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg text-center sm:text-left">Community Access</h4>
+                <p className="text-xs sm:text-sm text-[#5c7a70] text-center sm:text-left leading-relaxed">Private forum with 12,000+ members, weekly Q&A sessions, accountability partners</p>
+              </div>
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">📊</div>
+                <h4 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg text-center sm:text-left">Progress Tracking</h4>
+                <p className="text-xs sm:text-sm text-[#5c7a70] text-center sm:text-left leading-relaxed">Monthly reassessments, score improvement graphs, protocol adherence analytics</p>
+              </div>
+              <div className="bg-[#eff2ef] rounded-xl p-4 sm:p-5 md:p-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4a7c59] text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold mb-3 sm:mb-4 mx-auto sm:mx-0">💬</div>
+                <h4 className="font-bold text-[#1a3c34] mb-2 text-base sm:text-lg text-center sm:text-left">Optional Add-On</h4>
+                <p className="text-xs sm:text-sm text-[#5c7a70] text-center sm:text-left leading-relaxed">1:1 Specialist Matching - Book consultations with certified cognitive coaches ($97-$247 per session)</p>
+              </div>
+            </div>
+          </div>
+        </RevealOnScroll>
+
+        {/* Payment Options */}
+        <RevealOnScroll className="max-w-4xl mx-auto mb-12 sm:mb-16">
+          <div className="bg-[#1a3c34] text-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-center">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Payment Options</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm md:text-base">
+              <div className="flex items-center justify-center sm:justify-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 flex-shrink-0" />
+                <span className="text-center sm:text-left">HSA/FSA Accepted</span>
+              </div>
+              <div className="flex items-center justify-center sm:justify-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 flex-shrink-0" />
+                <span className="text-center sm:text-left">Insurance Reimbursement Support</span>
+              </div>
+              <div className="flex items-center justify-center sm:justify-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 flex-shrink-0" />
+                <span className="text-center sm:text-left">Payment Plans Available</span>
+              </div>
+              <div className="flex items-center justify-center sm:justify-start">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59] mr-2 flex-shrink-0" />
+                <span className="text-center sm:text-left">Corporate Wellness Packages</span>
+              </div>
+            </div>
+            <p className="text-sm text-gray-300 mt-4">We provide documentation for insurance reimbursement. ~60% of users who submit get partial or full reimbursement.</p>
+          </div>
+        </RevealOnScroll>
 
         {/* Hybrid Option Section */}
         <RevealOnScroll className="max-w-4xl mx-auto">
@@ -2871,10 +3976,294 @@ const CategoryExplorer = () => {
   );
 };
 
-const Footer = () => {
+/**
+ * Privacy Policy Page
+ */
+const PrivacyPolicy = ({ setActivePage }) => {
+  return (
+    <div className="pt-14 sm:pt-16 md:pt-20 min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
+        <button 
+          onClick={() => setActivePage('home')}
+          className="text-[#4a7c59] hover:text-[#1a3c34] mb-8 flex items-center text-sm sm:text-base"
+        >
+          <ChevronRight className="w-4 h-4 mr-1 rotate-180" />
+          Back to Home
+        </button>
+        
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a3c34] mb-6 sm:mb-8">Privacy Policy</h1>
+        <p className="text-sm sm:text-base text-gray-600 mb-8">Last updated: [PLACEHOLDER: Date]</p>
+        
+        <div className="prose prose-sm sm:prose-base max-w-none space-y-8 text-[#5c7a70]">
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">1. Information We Collect</h2>
+            <p className="mb-4">We collect the following types of information:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Quiz Responses:</strong> Your answers to assessment questions, which help us generate your cognitive profile</li>
+              <li><strong>Email Address:</strong> If you choose to receive your results or subscribe to our newsletter</li>
+              <li><strong>Usage Analytics:</strong> Anonymous data about how you interact with our website (pages viewed, time spent, etc.)</li>
+              <li><strong>Device Information:</strong> Browser type, operating system, and device type for technical optimization</li>
+            </ul>
+            <p className="text-sm text-gray-600 italic">[PLACEHOLDER: Add any additional data collection methods specific to your implementation]</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">2. How We Use Your Information</h2>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Personalization:</strong> To generate your personalized cognitive profile and recommendations</li>
+              <li><strong>Service Improvement:</strong> To analyze patterns and improve our assessment accuracy</li>
+              <li><strong>Research:</strong> Aggregated, anonymized data may be used for scientific research (no personally identifiable information)</li>
+              <li><strong>Communication:</strong> To send you your results and relevant educational content (if you opt in)</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">3. Data Sharing and Access</h2>
+            <p className="mb-4"><strong>We do NOT sell your data.</strong> Your information is accessed only by:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Our internal team members who need access to provide services</li>
+              <li>Service providers who help us operate (hosting, analytics) under strict confidentiality agreements</li>
+            </ul>
+            <p className="mb-4"><strong>We never share your data with:</strong></p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Advertising partners or third-party marketers</li>
+              <li>Data brokers or analytics companies for their own use</li>
+              <li>Other users or public forums</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">4. Your Rights</h2>
+            <p className="mb-4">You have the right to:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Access:</strong> Request a copy of all data we have about you</li>
+              <li><strong>Deletion:</strong> Request that we delete your personal information</li>
+              <li><strong>Portability:</strong> Request your data in a machine-readable format</li>
+              <li><strong>Correction:</strong> Update or correct inaccurate information</li>
+              <li><strong>Opt-out:</strong> Unsubscribe from marketing communications at any time</li>
+            </ul>
+            <p className="text-sm">To exercise these rights, contact us at: <a href="mailto:privacy@cogcare.com" className="text-[#4a7c59] hover:underline">privacy@cogcare.com</a></p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">5. Data Retention</h2>
+            <p className="mb-4">We retain your information for:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Active Users:</strong> As long as your account is active or as needed to provide services</li>
+              <li><strong>Inactive Users:</strong> Up to 3 years after last activity, then anonymized</li>
+              <li><strong>Legal Requirements:</strong> As required by law or to resolve disputes</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">6. Cookies and Tracking</h2>
+            <p className="mb-4">We use cookies and similar technologies to:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Remember your preferences and settings</li>
+              <li>Analyze website traffic and usage patterns (anonymized)</li>
+              <li>Improve website functionality</li>
+            </ul>
+            <p className="mb-4">You can control cookies through your browser settings. Note: Disabling cookies may affect website functionality.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">7. Data Security</h2>
+            <p className="mb-4">We protect your data using:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Encryption:</strong> AES-256 encryption for data at rest and in transit</li>
+              <li><strong>Access Controls:</strong> Limited access to authorized personnel only</li>
+              <li><strong>Regular Audits:</strong> Security assessments and vulnerability testing</li>
+              <li><strong>Compliance:</strong> HIPAA-level security standards where applicable</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">8. International Users</h2>
+            <p className="mb-4">If you're located outside the United States, please note that:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Your data may be transferred to and processed in the United States</li>
+              <li>We comply with GDPR requirements for EU users</li>
+              <li>We comply with CCPA requirements for California residents</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">9. Children's Privacy</h2>
+            <p className="mb-4">Our services are not intended for users under 18 years of age. We do not knowingly collect personal information from children.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">10. Contact Us</h2>
+            <p className="mb-4">For privacy concerns or questions, contact us at:</p>
+            <ul className="list-none space-y-2 mb-4">
+              <li><strong>Email:</strong> <a href="mailto:privacy@cogcare.com" className="text-[#4a7c59] hover:underline">privacy@cogcare.com</a></li>
+              <li><strong>Address:</strong> [PLACEHOLDER: Company Address]</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Terms of Service Page
+ */
+const TermsOfService = ({ setActivePage }) => {
+  return (
+    <div className="pt-14 sm:pt-16 md:pt-20 min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
+        <button 
+          onClick={() => setActivePage('home')}
+          className="text-[#4a7c59] hover:text-[#1a3c34] mb-8 flex items-center text-sm sm:text-base"
+        >
+          <ChevronRight className="w-4 h-4 mr-1 rotate-180" />
+          Back to Home
+        </button>
+        
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a3c34] mb-6 sm:mb-8">Terms of Service</h1>
+        <p className="text-sm sm:text-base text-gray-600 mb-8">Last updated: [PLACEHOLDER: Date]</p>
+        
+        <div className="prose prose-sm sm:prose-base max-w-none space-y-8 text-[#5c7a70]">
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">1. Service Description</h2>
+            <p className="mb-4">CogCare provides educational wellness information, cognitive assessments, and personalized optimization protocols. Our services include:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Online cognitive assessments and quizzes</li>
+              <li>Personalized cognitive profiles and recommendations</li>
+              <li>Educational content about brain health and optimization</li>
+              <li>Optional paid programs with detailed protocols and resources</li>
+            </ul>
+            <p className="mb-4"><strong>Important:</strong> CogCare is not a medical service and does not provide medical advice, diagnosis, or treatment.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">2. Service Limitations</h2>
+            <p className="mb-4">Our services are designed for:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Educational and informational purposes</li>
+              <li>General wellness optimization</li>
+              <li>Complementing (not replacing) professional medical care</li>
+            </ul>
+            <p className="mb-4"><strong>Our services are NOT:</strong></p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>A substitute for professional medical advice, diagnosis, or treatment</li>
+              <li>Intended to treat, cure, or prevent any medical condition</li>
+              <li>Emergency medical services</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">3. User Responsibilities</h2>
+            <p className="mb-4">By using our services, you agree to:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Provide accurate and truthful information in assessments</li>
+              <li>Use our services only for lawful purposes</li>
+              <li>Not share your account credentials with others</li>
+              <li>Consult with healthcare providers for medical concerns</li>
+              <li>Not use our services if you are experiencing a medical emergency</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">4. Intellectual Property Rights</h2>
+            <p className="mb-4">All content on CogCare, including:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Assessment questions and methodologies</li>
+              <li>Educational content and protocols</li>
+              <li>Website design and functionality</li>
+              <li>Trademarks and logos</li>
+            </ul>
+            <p className="mb-4">...are owned by CogCare or our licensors and protected by copyright, trademark, and other intellectual property laws.</p>
+            <p className="mb-4">You may not reproduce, distribute, modify, or create derivative works without our written permission.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">5. Limitation of Liability</h2>
+            <p className="mb-4"><strong>Medical Disclaimer:</strong> CogCare provides educational information only. We are not liable for:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Any health outcomes or medical decisions made based on our content</li>
+              <li>Misinterpretation of assessment results</li>
+              <li>Failure to seek appropriate medical care</li>
+              <li>Any adverse effects from implementing our protocols without medical supervision</li>
+            </ul>
+            <p className="mb-4"><strong>Service Availability:</strong> We are not liable for:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Service interruptions or technical issues</li>
+              <li>Loss of data due to technical failures</li>
+              <li>Inaccuracies in assessment results (though we strive for accuracy)</li>
+            </ul>
+            <p className="mb-4">To the maximum extent permitted by law, our total liability is limited to the amount you paid for our services in the 12 months preceding the claim.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">6. Payment and Refunds</h2>
+            <p className="mb-4"><strong>Payment:</strong></p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Payment is required before accessing paid programs</li>
+              <li>All prices are in USD unless otherwise stated</li>
+              <li>We accept major credit cards and other payment methods as displayed</li>
+            </ul>
+            <p className="mb-4"><strong>Refunds:</strong></p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>30-day money-back guarantee for paid programs</li>
+              <li>Refund requests must be submitted within 30 days of purchase</li>
+              <li>Refunds will be processed to the original payment method</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">7. Account Termination</h2>
+            <p className="mb-4">We reserve the right to terminate or suspend your account if you:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Violate these Terms of Service</li>
+              <li>Engage in fraudulent or illegal activity</li>
+              <li>Misuse our services or content</li>
+              <li>Provide false information</li>
+            </ul>
+            <p className="mb-4">You may terminate your account at any time by contacting us or deleting your account through our platform.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">8. Dispute Resolution</h2>
+            <p className="mb-4"><strong>Governing Law:</strong> These terms are governed by the laws of [PLACEHOLDER: State/Country].</p>
+            <p className="mb-4"><strong>Dispute Resolution:</strong> Any disputes will be resolved through:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Good faith negotiation between parties</li>
+              <li>If negotiation fails, binding arbitration in accordance with [PLACEHOLDER: Arbitration Rules]</li>
+              <li>Class action waivers apply</li>
+            </ul>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">9. Changes to Terms</h2>
+            <p className="mb-4">We may update these Terms of Service from time to time. We will notify you of material changes by:</p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Posting the updated terms on our website</li>
+              <li>Sending an email notification (if you have an account)</li>
+              <li>Displaying a notice on our platform</li>
+            </ul>
+            <p className="mb-4">Continued use of our services after changes constitutes acceptance of the new terms.</p>
+          </section>
+          
+          <section>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a3c34] mb-4">10. Contact Information</h2>
+            <p className="mb-4">For questions about these terms, contact us at:</p>
+            <ul className="list-none space-y-2 mb-4">
+              <li><strong>Email:</strong> <a href="mailto:legal@cogcare.com" className="text-[#4a7c59] hover:underline">legal@cogcare.com</a></li>
+              <li><strong>Address:</strong> [PLACEHOLDER: Company Address]</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Footer = ({ setActivePage }) => {
   return (
     <footer className="bg-[#1a3c34] text-[10px] sm:text-xs text-[#8fb89c] py-12 sm:py-16 md:py-20 px-4 sm:px-6 border-t border-white/5">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6 md:gap-8">
         <div>
           <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Quick Assessments</h4>
           <ul className="space-y-2">
@@ -2921,18 +4310,100 @@ const Footer = () => {
            <ul className="space-y-2">
              <li className="hover:text-white cursor-pointer transition-colors">About Us</li>
              <li className="hover:text-white cursor-pointer transition-colors">Contact</li>
-             <li className="hover:text-white cursor-pointer transition-colors">Privacy Policy</li>
-             <li className="hover:text-white cursor-pointer transition-colors">Terms of Service</li>
+             <li 
+               onClick={() => setActivePage('privacy')}
+               className="hover:text-white cursor-pointer transition-colors"
+             >
+               Privacy Policy
+             </li>
+             <li 
+               onClick={() => setActivePage('terms')}
+               className="hover:text-white cursor-pointer transition-colors"
+             >
+               Terms of Service
+             </li>
              <li className="hover:text-white cursor-pointer transition-colors">Affiliate Program</li>
            </ul>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto mt-10 sm:mt-12 md:mt-16 pt-6 sm:pt-8 border-t border-[#2a5c4f] flex flex-col md:flex-row justify-between items-center gap-4">
+      
+      {/* Privacy & Data Security in Footer */}
+      <div className="max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10 pt-4 sm:pt-6 md:pt-8 border-t border-[#2a5c4f] px-2">
+        <div className="bg-[#2a5c4f] rounded-lg p-3 sm:p-4 md:p-5 mb-3 sm:mb-4 md:mb-6">
+          <div className="flex items-start">
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 text-[#4a7c59]" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm md:text-base font-bold text-white mb-2 sm:mb-3">🔒 Your Data is Private & Secure</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm text-[#8fb89c]">
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight break-words">HIPAA-Level Encryption (AES-256)</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight break-words">Zero Data Selling - Never shared with advertisers</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight break-words">Anonymous Results - No personally identifiable information required</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-[#4a7c59] flex-shrink-0 mt-0.5" />
+                  <span className="leading-tight break-words">GDPR & CCPA Compliant</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm mt-3 sm:mt-4">
+                <button 
+                  onClick={() => setActivePage('privacy')}
+                  className="text-[#8fb89c] hover:text-white underline font-medium"
+                >
+                  View Privacy Policy
+                </button>
+                <span className="text-[#5c7a70] hidden sm:inline">•</span>
+                <button 
+                  onClick={() => setActivePage('privacy')}
+                  className="text-[#8fb89c] hover:text-white underline font-medium"
+                >
+                  Data Security Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Medical Disclaimer in Footer */}
+      <div className="max-w-7xl mx-auto pt-4 sm:pt-6 md:pt-8 border-t border-[#2a5c4f] px-2">
+        <div className="bg-amber-900/30 border-l-4 border-amber-400 p-3 sm:p-4 md:p-5 rounded-r-lg">
+          <div className="flex items-start">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-amber-400 mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] sm:text-xs md:text-sm font-semibold text-amber-100 mb-2 leading-relaxed">
+                ⚠️ Important: CogCare provides educational wellness information and is not a substitute for professional medical advice, diagnosis, or treatment.
+              </p>
+              <p className="text-[10px] sm:text-xs md:text-sm text-amber-200 mb-2 sm:mb-3 leading-relaxed">
+                If you're experiencing severe symptoms, suicidal thoughts, or mental health crisis, contact a healthcare provider immediately.
+              </p>
+              <div className="flex flex-col gap-1.5 sm:gap-2 md:gap-4 text-[10px] sm:text-xs text-amber-200">
+                <a href="tel:988" className="flex items-center hover:text-amber-100 font-medium break-all">
+                  🇺🇸 US: 988 Suicide & Crisis Lifeline
+                </a>
+                <a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-amber-100 font-medium break-all">
+                  🌍 International: Find local resources at findahelpline.com
+                  <ExternalLink className="w-3 h-3 ml-1 flex-shrink-0" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto mt-4 sm:mt-6 md:mt-8 pt-4 sm:pt-6 md:pt-8 border-t border-[#2a5c4f] flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 px-2">
         <div className="flex items-center space-x-2 text-white font-semibold">
             <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-[#4a7c59]" />
-            <span className="text-sm sm:text-base">CogCare</span>
+            <span className="text-xs sm:text-sm md:text-base">CogCare</span>
         </div>
-        <p className="text-[10px] sm:text-xs md:text-sm text-center md:text-left">© 2026 Cognitive Care Alliance Inc All rights reserved.</p>
+        <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm text-center md:text-left leading-tight">© 2026 Cognitive Care Alliance Inc All rights reserved.</p>
       </div>
     </footer>
   );

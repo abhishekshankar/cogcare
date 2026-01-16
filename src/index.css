@@ -14,15 +14,156 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-/* Better touch targets for mobile */
+/* Better touch targets for mobile - minimum 44x44px */
 button, a, input, select {
   touch-action: manipulation;
+  min-height: 44px;
 }
 
 /* Prevent text selection on buttons for better mobile UX */
 button {
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* Ensure text doesn't overflow on mobile */
+p, span, div, h1, h2, h3, h4, h5, h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Better table scrolling on mobile */
+table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Improve form inputs on mobile */
+input, select, textarea {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Enhanced Visual Design System */
+
+/* Custom gradient utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, #1a3c34 0%, #2a5c4f 50%, #1a3c34 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #4a7c59 0%, #5a9c69 100%);
+}
+
+.gradient-accent-hover {
+  background: linear-gradient(135deg, #3a6347 0%, #4a8c59 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #1a3c34 0%, #4a7c59 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Enhanced shadow system */
+.shadow-elegant {
+  box-shadow: 0 4px 6px -1px rgba(26, 60, 52, 0.05), 0 2px 4px -1px rgba(26, 60, 52, 0.03);
+}
+
+.shadow-elegant-lg {
+  box-shadow: 0 10px 15px -3px rgba(26, 60, 52, 0.1), 0 4px 6px -2px rgba(26, 60, 52, 0.05);
+}
+
+.shadow-elegant-xl {
+  box-shadow: 0 20px 25px -5px rgba(26, 60, 52, 0.1), 0 10px 10px -5px rgba(26, 60, 52, 0.04);
+}
+
+.shadow-elegant-2xl {
+  box-shadow: 0 25px 50px -12px rgba(26, 60, 52, 0.15);
+}
+
+/* Smooth animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(26, 60, 52, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced text shadows */
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-bounce {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }

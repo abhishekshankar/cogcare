@@ -1,50 +1,50 @@
 name: Deploy to GitHub Pages
-
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: "pages"
   cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Copy CogCare 2.0 to deploy
         run: cp -r "CogCare 2.0" dist/
-      
+
+      - name: Copy Cogcare 3.0 to root of deploy
+        run: |
+          cp "src/Cogcare 3.0/index.html" dist/index.html
+          cp "src/Cogcare 3.0/hero-bg.png" dist/hero-bg.png
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
-
   deploy:
     environment:
       name: github-pages

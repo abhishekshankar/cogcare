@@ -173,16 +173,17 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   )
 }
 
+const URGENCY_CONFIG = {
+  HIGH:      { label: 'High Priority', color: '#c0392b', bg: '#fdf0ef' },
+  UNCERTAIN: { label: 'Uncertain',     color: '#e67e22', bg: '#fef6ed' },
+  LOW:       { label: 'Low Concern',   color: '#27ae60', bg: '#edfaf1' },
+}
+
 // ---- BHIReport ----
 function BHIReport({ quizResults, onReset }) {
   const { differentials, domains, urgency } = quizResults
-
-  const urgencyConfig = {
-    HIGH:      { label: 'High Priority',  color: '#c0392b', bg: '#fdf0ef' },
-    UNCERTAIN: { label: 'Uncertain',       color: '#e67e22', bg: '#fef6ed' },
-    LOW:       { label: 'Low Concern',     color: '#27ae60', bg: '#edfaf1' },
-  }
-  const u = urgencyConfig[urgency]
+  // TODO: surface motorFlag — motor symptoms warrant a specialist referral note
+  const u = URGENCY_CONFIG[urgency] ?? URGENCY_CONFIG['LOW']
 
   return (
     <div className="flex flex-col h-full">
@@ -257,7 +258,7 @@ function BHIReport({ quizResults, onReset }) {
         <p className="text-[11px] text-[#3D4B3E] opacity-60 mb-4 leading-relaxed">
           This is not a clinical diagnosis. Please consult a qualified healthcare professional.
         </p>
-        <Button appearance="secondary" onClick={onReset}>
+        <Button appearance="outline" onClick={onReset}>
           Start Over
         </Button>
       </div>

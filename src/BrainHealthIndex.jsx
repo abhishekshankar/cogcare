@@ -266,4 +266,107 @@ function BHIReport({ quizResults, onReset }) {
   )
 }
 
+// ---- BrainHealthIndex overlay shell ----
+export default function BrainHealthIndex({
+  open,
+  onClose,
+  quizAnswers,
+  setQuizAnswers,
+  quizResults,
+  setQuizResults,
+}) {
+  const [step, setStep] = useState('quiz')
+
+  // Sync step with results state
+  useEffect(() => {
+    if (open && quizResults) setStep('report')
+    if (open && !quizResults) setStep('quiz')
+  }, [open, quizResults])
+
+  // ESC to close + body scroll lock
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [open, onClose])
+
+  const handleComplete = useCallback((results) => {
+    setQuizResults(results)
+    setStep('report')
+  }, [setQuizResults])
+
+  const handleReset = useCallback(() => {
+    setQuizAnswers({})
+    setQuizResults(null)
+    setStep('quiz')
+  }, [setQuizAnswers, setQuizResults])
+
+  if (!open) return null
+
+  return (
+    <FluentProvider
+      theme={cogcareTheme}
+      style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex' }}
+    >
+      {/* Dimmed backdrop — click to close */}
+      <div
+        className="flex-1 animate-modal-backdrop cursor-pointer"
+        style={{ background: 'rgba(61,75,62,0.5)' }}
+        onClick={onClose}
+        aria-label="Close assessment"
+      />
+
+      {/* Slide-in panel */}
+      <div
+        className="animate-modal-panel flex flex-col bg-[#FDFBF7]"
+        style={{
+          width: '58vw',
+          maxWidth: '700px',
+          minWidth: '320px',
+          borderLeft: '1px solid #E8DCC4',
+          boxShadow: '-20px 0 60px rgba(61,75,62,0.15)',
+        }}
+      >
+        {/* Panel header */}
+        <div className="flex items-center justify-between px-8 py-5 border-b border-[#E8DCC4] shrink-0">
+          <div className="flex items-center gap-2.5">
+            <Brain className="w-5 h-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+            <span className="font-serif italic text-lg text-[#3D4B3E]">Brain Health Index</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F3EFE9] transition-colors text-[#3D4B3E]"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Step content */}
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {step === 'quiz' && (
+            <BHIQuiz
+              quizAnswers={quizAnswers}
+              setQuizAnswers={setQuizAnswers}
+              onComplete={handleComplete}
+            />
+          )}
+          {step === 'report' && quizResults && (
+            <BHIReport
+              quizResults={quizResults}
+              onReset={handleReset}
+            />
+          )}
+        </div>
+      </div>
+    </FluentProvider>
+  )
+}
+
 export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE, BHIQuiz, BHIReport }

@@ -100,7 +100,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   const isGlobal = qi === 16
   const scale = isGlobal ? CCA_GLOBAL_SCALE : CCA_LIKERT
   const selected = quizAnswers[qi + 1] || null
-  const pct = (qi + (selected ? 1 : 0)) / total
+  const pct = (qi + 1) / total
 
   const handleSelect = (_ev, data) => {
     setQuizAnswers(prev => ({ ...prev, [qi + 1]: Number(data.value) }))
@@ -110,7 +110,10 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
     if (qi < total - 1) {
       setQi(qi + 1)
     } else {
-      onComplete(computeResults(quizAnswers))
+      const finalAnswers = selected
+        ? { ...quizAnswers, [qi + 1]: selected }
+        : quizAnswers
+      onComplete(computeResults(finalAnswers))
     }
   }
 
@@ -126,7 +129,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">{q.domain}</span>
           <span className="text-[11px] text-[#3D4B3E] font-medium">{qi + 1} of {total}</span>
         </div>
-        <ProgressBar value={pct} thickness="medium" />
+        <ProgressBar value={pct} max={1} thickness="medium" />
       </div>
 
       {/* Question + answers */}
@@ -138,7 +141,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
           layout="vertical"
         >
           {scale.map((label, i) => (
-            <Radio key={i} value={String(i + 1)} label={label} />
+            <Radio key={String(i + 1)} value={String(i + 1)} label={label} />
           ))}
         </RadioGroup>
       </div>

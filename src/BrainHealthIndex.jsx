@@ -275,14 +275,6 @@ export default function BrainHealthIndex({
   quizResults,
   setQuizResults,
 }) {
-  const [step, setStep] = useState('quiz')
-
-  // Sync step with results state
-  useEffect(() => {
-    if (open && quizResults) setStep('report')
-    if (open && !quizResults) setStep('quiz')
-  }, [open, quizResults])
-
   // ESC to close + body scroll lock
   useEffect(() => {
     if (!open) return
@@ -298,14 +290,14 @@ export default function BrainHealthIndex({
 
   const handleComplete = useCallback((results) => {
     setQuizResults(results)
-    setStep('report')
   }, [setQuizResults])
 
   const handleReset = useCallback(() => {
     setQuizAnswers({})
     setQuizResults(null)
-    setStep('quiz')
   }, [setQuizAnswers, setQuizResults])
+
+  const step = quizResults ? 'report' : 'quiz'
 
   if (!open) return null
 
@@ -316,9 +308,12 @@ export default function BrainHealthIndex({
     >
       {/* Dimmed backdrop — click to close */}
       <div
+        role="button"
+        tabIndex={0}
         className="flex-1 animate-modal-backdrop cursor-pointer"
         style={{ background: 'rgba(61,75,62,0.5)' }}
         onClick={onClose}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose() }}
         aria-label="Close assessment"
       />
 
@@ -336,7 +331,7 @@ export default function BrainHealthIndex({
         {/* Panel header */}
         <div className="flex items-center justify-between px-8 py-5 border-b border-[#E8DCC4] shrink-0">
           <div className="flex items-center gap-2.5">
-            <Brain className="w-5 h-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+            <Brain className="w-5 h-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden="true" />
             <span className="font-serif italic text-lg text-[#3D4B3E]">Brain Health Index</span>
           </div>
           <button

@@ -1,0 +1,95 @@
+import { useState, useEffect, useCallback } from 'react'
+import {
+  FluentProvider,
+  RadioGroup,
+  Radio,
+  Button,
+  ProgressBar,
+} from '@fluentui/react-components'
+import { Brain, X, ArrowRight, ChevronLeft } from 'lucide-react'
+
+// ---- Quiz data (ported from main branch CCAQuiz) ----
+const CCA_QUIZ_QUESTIONS = [
+  { text: "Does the person have difficulty staying focused on a task for more than 15 minutes?", domain: "Attention" },
+  { text: "Does the person feel mentally exhausted or 'foggy' for most of the day?", domain: "Cognitive" },
+  { text: "Has the person's sleep quality noticeably changed in the past 12 months?", domain: "Sleep" },
+  { text: "Does the person feel anxious, worried, or on edge most of the time?", domain: "Mood" },
+  { text: "Has the person's mood been persistently low or flat — not just sad, but emotionally blunted?", domain: "Mood" },
+  { text: "Does the person repeat the same questions, statements, or actions within minutes of doing them?", domain: "FTD-Compulsive" },
+  { text: "Has the person shown a noticeable reduction in warmth, compassion, or interest in other people?", domain: "FTD-Social" },
+  { text: "Has the person done or said things that are socially inappropriate and seemed unaware it was wrong?", domain: "FTD-Disinhibition" },
+  { text: "Has the person's personality changed significantly in the past 1–3 years?", domain: "FTD-Core" },
+  { text: "Does the person have difficulty finding words or expressing themselves verbally?", domain: "Language" },
+  { text: "Has the person's ability to plan, organize, or sequence tasks declined?", domain: "Executive" },
+  { text: "Does the person have unusual eating habits, food cravings, or overeat compulsively?", domain: "FTD-Compulsive" },
+  { text: "Is the person less aware of their own behavioral changes than family members are?", domain: "Anosognosia" },
+  { text: "Has the person become more rigid, inflexible, or insistent on routines?", domain: "FTD-Compulsive" },
+  { text: "Has the person lost interest in hobbies, relationships, or activities they previously enjoyed?", domain: "Apathy" },
+  { text: "Does the person show any signs of motor difficulties: slowing, stiffness, tremor, or falls?", domain: "Motor" },
+  { text: "How would you rate the overall change in this person's day-to-day functioning compared to 2 years ago?", domain: "Global" },
+]
+
+const CCA_LIKERT = ["Not at all", "Rarely", "Sometimes", "Often", "Almost always"]
+const CCA_GLOBAL_SCALE = ["No change", "Mild decline", "Moderate decline", "Significant decline", "Severe decline"]
+
+function computeResults(answers) {
+  const ftdScore = (
+    (answers[6] || 1) + (answers[7] || 1) + (answers[8] || 1) + (answers[9] || 1) +
+    (answers[12] || 1) + (answers[13] || 1) + (answers[14] || 1)
+  ) / 7
+  const depressionScore = ((answers[4] || 1) + (answers[5] || 1) + (answers[15] || 1) + (answers[3] || 1)) / 4
+  const cognitiveScore = ((answers[1] || 1) + (answers[2] || 1) + (answers[10] || 1) + (answers[11] || 1)) / 4
+  const globalDecline = answers[17] || 1
+  let bvftd = ftdScore * 25
+  let eoad = (cognitiveScore * 15) + (globalDecline * 3)
+  let depression = depressionScore * 20
+  let mixed = ((ftdScore + depressionScore) / 2) * 15
+  let normal = Math.max(5, 100 - bvftd - eoad - depression - mixed)
+  const total = bvftd + eoad + depression + mixed + normal
+  bvftd = Math.round((bvftd / total) * 100)
+  eoad = Math.round((eoad / total) * 100)
+  depression = Math.round((depression / total) * 100)
+  mixed = Math.round((mixed / total) * 100)
+  normal = 100 - bvftd - eoad - depression - mixed
+  const urgency = ftdScore >= 3.5 ? 'HIGH' : ftdScore >= 2.5 ? 'UNCERTAIN' : 'LOW'
+  return {
+    differentials: [
+      { label: 'bvFTD-Probable', probability: bvftd, color: '#c0392b' },
+      { label: 'EOAD Pattern', probability: eoad, color: '#e67e22' },
+      { label: 'Late-Onset Depression', probability: depression, color: '#2980b9' },
+      { label: 'Mixed/Uncertain', probability: mixed, color: '#8e44ad' },
+      { label: 'Normal Aging', probability: normal, color: '#27ae60' },
+    ],
+    domains: {
+      'Social Cognition': Math.round(((answers[7] || 1) / 5) * 100),
+      'Disinhibition': Math.round(((answers[8] || 1) / 5) * 100),
+      'Compulsive Behaviors': Math.round(((answers[14] || 1) + (answers[6] || 1) + (answers[12] || 1)) / 15 * 100),
+      'Apathy': Math.round(((answers[15] || 1) / 5) * 100),
+      'Executive Function': Math.round(((answers[11] || 1) / 5) * 100),
+      'Mood/Affect': Math.round(((answers[5] || 1) / 5) * 100),
+    },
+    urgency,
+    motorFlag: (answers[16] || 1) >= 3,
+    ftdScore: Math.round(ftdScore * 10) / 10,
+  }
+}
+
+// ---- Fluent 2 theme (exact CogCare 3.0 colors) ----
+const cogcareTheme = {
+  colorBrandBackground: '#3D4B3E',
+  colorBrandBackgroundHover: '#2D382D',
+  colorBrandBackgroundPressed: '#2D382D',
+  colorBrandForeground1: '#3D4B3E',
+  colorNeutralBackground1: '#FDFBF7',
+  colorNeutralBackground2: '#F3EFE9',
+  colorNeutralBackground3: '#F3EFE9',
+  colorNeutralStroke1: '#E8DCC4',
+  colorNeutralStroke2: '#E8DCC4',
+  colorNeutralForeground1: '#1A1A1A',
+  colorNeutralForeground2: '#3D4B3E',
+  borderRadiusMedium: '12px',
+  borderRadiusLarge: '16px',
+  borderRadiusXLarge: '24px',
+}
+
+export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE }

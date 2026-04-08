@@ -92,4 +92,82 @@ const cogcareTheme = {
   borderRadiusXLarge: '24px',
 }
 
-export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE }
+// ---- BHIQuiz ----
+function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
+  const [qi, setQi] = useState(0)
+  const total = CCA_QUIZ_QUESTIONS.length
+  const q = CCA_QUIZ_QUESTIONS[qi]
+  const isGlobal = qi === 16
+  const scale = isGlobal ? CCA_GLOBAL_SCALE : CCA_LIKERT
+  const selected = quizAnswers[qi + 1] || null
+  const pct = (qi + (selected ? 1 : 0)) / total
+
+  const handleSelect = (_ev, data) => {
+    setQuizAnswers(prev => ({ ...prev, [qi + 1]: Number(data.value) }))
+  }
+
+  const handleNext = () => {
+    if (qi < total - 1) {
+      setQi(qi + 1)
+    } else {
+      onComplete(computeResults(quizAnswers))
+    }
+  }
+
+  const handleBack = () => {
+    if (qi > 0) setQi(qi - 1)
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Progress header */}
+      <div className="px-8 pt-6 pb-2">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">{q.domain}</span>
+          <span className="text-[11px] text-[#3D4B3E] font-medium">{qi + 1} of {total}</span>
+        </div>
+        <ProgressBar value={pct} thickness="medium" />
+      </div>
+
+      {/* Question + answers */}
+      <div className="flex-1 overflow-y-auto px-8 py-6">
+        <h2 className="font-serif italic text-2xl text-[#1A1A1A] leading-snug mb-8">{q.text}</h2>
+        <RadioGroup
+          value={selected ? String(selected) : ''}
+          onChange={handleSelect}
+          layout="vertical"
+        >
+          {scale.map((label, i) => (
+            <Radio key={i} value={String(i + 1)} label={label} />
+          ))}
+        </RadioGroup>
+      </div>
+
+      {/* Navigation */}
+      <div className="px-8 py-5 border-t border-[#E8DCC4] flex items-center justify-between bg-[#FDFBF7]">
+        {qi > 0 ? (
+          <Button
+            appearance="subtle"
+            icon={<ChevronLeft className="w-4 h-4" />}
+            onClick={handleBack}
+          >
+            Back
+          </Button>
+        ) : (
+          <div />
+        )}
+        <Button
+          appearance="primary"
+          disabled={!selected}
+          onClick={handleNext}
+          icon={<ArrowRight className="w-4 h-4" />}
+          iconPosition="after"
+        >
+          {qi < total - 1 ? 'Next' : 'View Results'}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE, BHIQuiz }

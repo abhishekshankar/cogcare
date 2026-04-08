@@ -304,7 +304,7 @@ export default function BrainHealthIndex({
   return (
     <FluentProvider
       theme={cogcareTheme}
-      style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex' }}
     >
       {/* Dimmed backdrop — click to close */}
       <div

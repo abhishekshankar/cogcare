@@ -173,4 +173,96 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   )
 }
 
-export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE, BHIQuiz }
+// ---- BHIReport ----
+function BHIReport({ quizResults, onReset }) {
+  const { differentials, domains, urgency } = quizResults
+
+  const urgencyConfig = {
+    HIGH:      { label: 'High Priority',  color: '#c0392b', bg: '#fdf0ef' },
+    UNCERTAIN: { label: 'Uncertain',       color: '#e67e22', bg: '#fef6ed' },
+    LOW:       { label: 'Low Concern',     color: '#27ae60', bg: '#edfaf1' },
+  }
+  const u = urgencyConfig[urgency]
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto px-8 py-6">
+
+        {/* Header */}
+        <div className="mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B] mb-2">
+            Assessment Complete
+          </p>
+          <h2 className="font-serif italic text-3xl text-[#1A1A1A] mb-4">
+            Your Brain Health Index
+          </h2>
+          <span
+            className="inline-block text-[11px] font-bold uppercase tracking-[0.15em] px-3 py-1.5 rounded-full"
+            style={{ color: u.color, background: u.bg }}
+          >
+            {u.label}
+          </span>
+        </div>
+
+        {/* Differentials */}
+        <div className="mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E] opacity-50 mb-4">
+            Differential Analysis
+          </p>
+          <div className="space-y-4">
+            {differentials.map(d => (
+              <div key={d.label}>
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[12px] font-medium text-[#1A1A1A]">{d.label}</span>
+                  <span className="text-[11px] font-bold" style={{ color: d.color }}>
+                    {d.probability}%
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-[#E8DCC4] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{ width: `${d.probability}%`, background: d.color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Domain scores */}
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E] opacity-50 mb-4">
+            Domain Scores
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(domains).map(([name, score]) => (
+              <span
+                key={name}
+                className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-[#E8DCC4]"
+                style={{
+                  background: score > 60 ? '#fdf0ef' : '#F3EFE9',
+                  color: score > 60 ? '#c0392b' : '#3D4B3E',
+                }}
+              >
+                {name}: {score}%
+              </span>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Footer */}
+      <div className="px-8 py-6 border-t border-[#E8DCC4] bg-[#F3EFE9]">
+        <p className="text-[11px] text-[#3D4B3E] opacity-60 mb-4 leading-relaxed">
+          This is not a clinical diagnosis. Please consult a qualified healthcare professional.
+        </p>
+        <Button appearance="secondary" onClick={onReset}>
+          Start Over
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE, BHIQuiz, BHIReport }

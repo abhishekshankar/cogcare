@@ -124,7 +124,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   return (
     <div className="flex flex-col h-full">
       {/* Progress header */}
-      <div className="px-8 pt-6 pb-2">
+      <div className="px-4 pb-2 pt-4 sm:px-8 sm:pt-6">
         <div className="flex justify-between items-center mb-2">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">{q.domain}</span>
           <span className="text-[11px] text-[#3D4B3E] font-medium">{qi + 1} of {total}</span>
@@ -133,8 +133,10 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
       </div>
 
       {/* Question + answers */}
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        <h2 className="font-serif italic text-2xl text-[#1A1A1A] leading-snug mb-8">{q.text}</h2>
+      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
+        <h2 className="mb-6 font-serif text-xl italic leading-snug text-[#1A1A1A] sm:mb-8 sm:text-2xl">
+          {q.text}
+        </h2>
         <RadioGroup
           value={selected ? String(selected) : ''}
           onChange={handleSelect}
@@ -147,7 +149,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
       </div>
 
       {/* Navigation */}
-      <div className="px-8 py-5 border-t border-[#E8DCC4] flex items-center justify-between bg-[#FDFBF7]">
+      <div className="flex items-center justify-between border-t border-[#E8DCC4] bg-[#FDFBF7] px-4 py-4 sm:px-8 sm:py-5">
         {qi > 0 ? (
           <Button
             appearance="subtle"
@@ -187,11 +189,11 @@ function BHIReport({ quizResults, onReset }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+      <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-6">
 
         {/* Header */}
         <div className="mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B] mb-2">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B]">
             Assessment Complete
           </p>
           <h2 className="font-serif italic text-3xl text-[#1A1A1A] mb-4">
@@ -254,8 +256,8 @@ function BHIReport({ quizResults, onReset }) {
       </div>
 
       {/* Footer */}
-      <div className="px-8 py-6 border-t border-[#E8DCC4] bg-[#F3EFE9]">
-        <p className="text-[11px] text-[#3D4B3E] opacity-60 mb-4 leading-relaxed">
+      <div className="border-t border-[#E8DCC4] bg-[#F3EFE9] px-4 py-5 sm:px-8 sm:py-6">
+        <p className="mb-4 text-[11px] leading-relaxed text-[#3D4B3E] opacity-60">
           This is not a clinical diagnosis. Please consult a qualified healthcare professional.
         </p>
         <Button appearance="outline" onClick={onReset}>
@@ -302,44 +304,44 @@ export default function BrainHealthIndex({
   if (!open) return null
 
   return (
-    <FluentProvider
-      theme={cogcareTheme}
-      style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex' }}
-    >
+    <FluentProvider theme={cogcareTheme}>
+      <div
+        className="fixed inset-0 z-[60] flex flex-col sm:flex-row"
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
+      >
       {/* Dimmed backdrop — click to close */}
       <div
         role="button"
         tabIndex={0}
-        className="flex-1 animate-modal-backdrop cursor-pointer"
+        className="min-h-[25%] flex-1 animate-modal-backdrop cursor-pointer sm:min-h-0"
         style={{ background: 'rgba(61,75,62,0.5)' }}
         onClick={onClose}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose() }}
         aria-label="Close assessment"
       />
 
-      {/* Slide-in panel */}
+      {/* Slide-in panel — full width on small screens */}
       <div
-        className="animate-modal-panel flex flex-col bg-[#FDFBF7]"
-        style={{
-          width: '58vw',
-          maxWidth: '700px',
-          minWidth: '320px',
-          borderLeft: '1px solid #E8DCC4',
-          boxShadow: '-20px 0 60px rgba(61,75,62,0.15)',
-        }}
+        className="animate-modal-panel flex max-h-[85dvh] w-full max-w-none flex-col border-t border-[#E8DCC4] bg-[#FDFBF7] shadow-[0_-20px_60px_rgba(61,75,62,0.15)] sm:max-h-none sm:h-full sm:w-[58vw] sm:max-w-[700px] sm:min-w-[min(100%,320px)] sm:border-l sm:border-t-0 sm:shadow-[-20px_0_60px_rgba(61,75,62,0.15)]"
       >
         {/* Panel header */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-[#E8DCC4] shrink-0">
-          <div className="flex items-center gap-2.5">
-            <Brain className="w-5 h-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden="true" />
-            <span className="font-serif italic text-lg text-[#3D4B3E]">Brain Health Index</span>
+        <div className="flex shrink-0 items-center justify-between border-b border-[#E8DCC4] px-4 py-4 sm:px-8 sm:py-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+            <Brain className="h-5 w-5 shrink-0 text-[#A67B5B]" strokeWidth={1.5} aria-hidden="true" />
+            <span className="truncate font-serif text-base italic text-[#3D4B3E] sm:text-lg">
+              Brain Health Index
+            </span>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F3EFE9] transition-colors text-[#3D4B3E]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#3D4B3E] transition-colors hover:bg-[#F3EFE9]"
             aria-label="Close"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
@@ -359,6 +361,7 @@ export default function BrainHealthIndex({
             />
           )}
         </div>
+      </div>
       </div>
     </FluentProvider>
   )

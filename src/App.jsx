@@ -86,12 +86,23 @@ We offer a library of education designed for your specific needs. This includes 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#E8DCC4]">
       <header
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 pt-[max(0.5rem,env(safe-area-inset-top))] ${
           isScrolled
-            ? 'bg-white/90 backdrop-blur-md py-4 shadow-sm'
-            : 'bg-transparent py-8'
+            ? 'bg-white/90 backdrop-blur-md py-3 sm:py-4 shadow-sm'
+            : 'bg-transparent py-4 sm:py-6 md:py-8'
         }`}
       >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-nowrap items-center justify-between gap-2 sm:gap-4 md:gap-6">
+          <a
+            href={`${BASE}/`}
+            className="group flex min-w-0 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap sm:gap-2.5"
+          >
+            <Brain
+              className="w-5 h-5 sm:w-6 sm:h-7 shrink-0 text-[#A67B5B] group-hover:scale-110 transition-transform duration-300"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+            <span className="font-serif text-xl sm:text-2xl md:text-3xl tracking-tighter text-[#3D4B3E] whitespace-nowrap">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-nowrap items-center justify-between gap-3 sm:gap-6">
           <a
             href={`${BASE}/`}
@@ -111,11 +122,13 @@ We offer a library of education designed for your specific needs. This includes 
           </a>
 
           <nav
+            className="flex shrink-0 flex-nowrap items-center justify-end gap-2 sm:gap-4 md:gap-8 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#3D4B3E]"
             className="flex shrink-0 flex-nowrap items-center gap-4 sm:gap-6 md:gap-10 text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]"
             aria-label="Primary"
           >
             <a
               href="https://cogcare.org/"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 hover:opacity-60 transition-opacity"
               className="inline-flex items-center justify-center hover:opacity-60 transition-opacity whitespace-nowrap py-2"
               rel="noopener noreferrer"
             >
@@ -123,6 +136,7 @@ We offer a library of education designed for your specific needs. This includes 
             </a>
             <a
               href="https://cogcare.org/"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-[#3D4B3E] px-3.5 py-2 text-[9px] sm:px-6 sm:py-2.5 sm:text-[10px] md:px-10 md:py-3.5 font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-white transition-all hover:bg-[#2D382D]"
               className="bg-[#3D4B3E] hover:bg-[#2D382D] text-white px-5 sm:px-8 md:px-10 py-2.5 sm:py-3.5 rounded-full inline-flex items-center justify-center whitespace-nowrap transition-all"
               rel="noopener noreferrer"
             >
@@ -132,26 +146,28 @@ We offer a library of education designed for your specific needs. This includes 
         </div>
       </header>
 
-      <section className="relative min-h-screen flex items-center pt-24 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 w-full grid md:grid-cols-12 gap-8 lg:gap-24 items-center">
-          <div className="md:col-span-7 z-10 pt-12 lg:pt-24">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F3EFE9] rounded-full text-[9px] font-bold uppercase tracking-[0.25em] text-[#A67B5B] mb-8 w-fit">
-              <Sparkles className="w-3 h-3 shrink-0" aria-hidden />
-              Evidence-Based Cognitive Wellness
+      <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-[max(5.5rem,env(safe-area-inset-top))] sm:pt-28">
+        <div className="max-w-7xl mx-auto w-full grid items-center gap-8 px-4 sm:px-6 md:grid-cols-12 lg:gap-24">
+          <div className="z-10 pt-8 sm:pt-12 md:col-span-7 lg:pt-24">
+            <div className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full bg-[#F3EFE9] px-2.5 py-1.5 text-[8px] font-bold uppercase leading-tight tracking-[0.2em] text-[#A67B5B] sm:mb-8 sm:px-3 sm:text-[9px] sm:tracking-[0.25em]">
+              <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
+              <span className="min-w-0">
+                Evidence-Based Cognitive Wellness
+              </span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-8xl font-serif leading-[1.05] mb-8 lg:mb-10 text-[#1A1A1A] tracking-tight">
+            <h1 className="mb-6 text-4xl font-serif leading-[1.05] tracking-tight text-[#1A1A1A] sm:mb-8 sm:text-5xl md:mb-10 md:text-6xl lg:text-8xl lg:leading-[1.05]">
               Dementia is <br />
               <span className="italic text-[#3D4B3E]">Modifiable.</span>
             </h1>
 
-            <p className="text-lg md:text-xl lg:text-2xl text-slate-500 mb-10 max-w-xl font-light leading-relaxed">
+            <p className="mb-8 max-w-xl text-base font-light leading-relaxed text-slate-500 sm:mb-10 sm:text-lg md:text-xl lg:text-2xl">
               Scientific breakthroughs reveal that 40% of dementia risk is linked
               to factors we can change. Your protective journey begins with daily
               rituals.
             </p>
 
-            <div className="max-w-sm lg:max-w-md w-full bg-white/40 backdrop-blur-md p-6 lg:p-8 rounded-[2.5rem] lg:rounded-[3rem] border border-[#F3EFE9] shadow-sm">
+            <div className="w-full max-w-sm rounded-[2rem] border border-[#F3EFE9] bg-white/40 p-5 shadow-sm backdrop-blur-md sm:rounded-[2.5rem] sm:p-6 lg:max-w-md lg:rounded-[3rem] lg:p-8">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-6">
                 Start your BRAIN check-in
               </p>
@@ -166,8 +182,8 @@ We offer a library of education designed for your specific needs. This includes 
             </div>
           </div>
 
-          <div className="md:col-span-5 relative flex justify-center mt-12 md:mt-0">
-            <div className="relative w-full max-w-sm lg:max-w-lg aspect-[4/5] rounded-[3.5rem] lg:rounded-[4.5rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(61,75,62,0.12)] border-[12px] lg:border-[16px] border-white ring-1 ring-slate-100">
+          <div className="relative mt-10 flex justify-center md:col-span-5 md:mt-0">
+            <div className="relative aspect-[4/5] w-full max-w-[min(100%,20rem)] overflow-hidden rounded-[2.25rem] border-[8px] border-white shadow-[0_40px_80px_-15px_rgba(61,75,62,0.12)] ring-1 ring-slate-100 sm:max-w-sm sm:rounded-[3rem] sm:border-[12px] lg:max-w-lg lg:rounded-[4.5rem] lg:border-[16px]">
               <img
                 src="https://cogcare.org/wp-content/uploads/2024/09/marcus-aurelius-6787978.jpg"
                 alt="Portrait representing cognitive resilience and well-being"
@@ -196,18 +212,21 @@ We offer a library of education designed for your specific needs. This includes 
         </div>
       </section>
 
-      <section className="py-32 bg-white" aria-labelledby="pillars-heading">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-20 items-end mb-24">
+      <section
+        className="bg-white py-16 sm:py-24 md:py-32"
+        aria-labelledby="pillars-heading"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-16 grid items-end gap-10 lg:mb-24 lg:grid-cols-2 lg:gap-20">
             <div>
               <h2
                 id="pillars-heading"
-                className="text-5xl md:text-6xl font-serif text-[#1A1A1A] mb-8 leading-tight"
+                className="mb-6 text-3xl font-serif leading-tight text-[#1A1A1A] sm:mb-8 sm:text-4xl md:text-5xl lg:text-6xl"
               >
                 Dementia Does Not <br />
                 <span className="italic text-[#3D4B3E]">Differentiate.</span>
               </h2>
-              <p className="text-xl text-slate-400 leading-relaxed max-w-lg font-light">
+              <p className="max-w-lg text-base font-light leading-relaxed text-slate-400 sm:text-lg md:text-xl">
                 High-end cognitive care should be a universal standard. We build
                 the inclusive architecture for brain health across all
                 communities.
@@ -218,13 +237,13 @@ We offer a library of education designed for your specific needs. This includes 
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
             {cards.map((card) => (
               <button
                 key={card.id}
                 type="button"
                 onClick={() => setSelectedCard(card)}
-                className="group relative h-[580px] rounded-[3.5rem] overflow-hidden cursor-pointer bg-slate-50 transition-all duration-700 hover:shadow-2xl text-left w-full border-0 p-0"
+                className="group relative h-[min(78vh,520px)] w-full cursor-pointer overflow-hidden rounded-[2rem] border-0 bg-slate-50 p-0 text-left transition-all duration-700 hover:shadow-2xl sm:h-[540px] sm:rounded-[3rem] md:h-[580px] lg:rounded-[3.5rem]"
               >
                 <img
                   src={card.image}
@@ -233,16 +252,16 @@ We offer a library of education designed for your specific needs. This includes 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" />
 
-                <div className="absolute bottom-0 left-0 p-10 w-full text-white transform transition-transform duration-700">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.3em] mb-4 text-white/60">
+                <div className="absolute bottom-0 left-0 w-full transform p-6 text-white transition-transform duration-700 sm:p-10">
+                  <p className="mb-3 text-[8px] font-bold uppercase tracking-[0.25em] text-white/60 sm:mb-4 sm:text-[9px] sm:tracking-[0.3em]">
                     {card.category}
                   </p>
-                  <h3 className="text-2xl font-serif mb-8 leading-tight max-w-[200px]">
+                  <h3 className="mb-4 max-w-[220px] font-serif text-xl leading-tight sm:mb-8 sm:text-2xl">
                     {card.title}
                   </h3>
-                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="flex translate-y-2 items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-100 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                     Explore
-                    <ArrowUpRight className="w-4 h-4" aria-hidden />
+                    <ArrowUpRight className="h-4 w-4" aria-hidden />
                   </div>
                 </div>
               </button>
@@ -253,17 +272,17 @@ We offer a library of education designed for your specific needs. This includes 
 
       {selectedCard && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-end"
+          className="fixed inset-0 z-[100] flex items-end justify-end sm:items-center"
           role="presentation"
         >
           <button
             type="button"
-            className="absolute inset-0 bg-[#3D4B3E]/20 backdrop-blur-md animate-modal-backdrop border-0 cursor-pointer p-0"
+            className="animate-modal-backdrop absolute inset-0 cursor-pointer border-0 bg-[#3D4B3E]/20 p-0 backdrop-blur-md"
             onClick={() => setSelectedCard(null)}
             aria-label="Close panel"
           />
           <div
-            className="relative bg-[#FDFBF7] w-full max-w-2xl h-full shadow-2xl overflow-y-auto animate-modal-panel flex flex-col"
+            className="animate-modal-panel relative flex h-[92dvh] max-h-[100dvh] w-full max-w-2xl flex-col overflow-y-auto bg-[#FDFBF7] shadow-2xl sm:h-full sm:max-h-none"
             role="dialog"
             aria-modal="true"
             aria-labelledby="card-detail-title"
@@ -272,24 +291,24 @@ We offer a library of education designed for your specific needs. This includes 
               ref={closeBtnRef}
               type="button"
               onClick={() => setSelectedCard(null)}
-              className="absolute top-10 right-10 p-4 bg-white hover:bg-[#F3EFE9] rounded-full transition-all z-10 border border-slate-100"
+              className="absolute right-4 top-4 z-10 rounded-full border border-slate-100 bg-white p-3 transition-all hover:bg-[#F3EFE9] sm:right-10 sm:top-10 sm:p-4"
               aria-label="Close"
             >
-              <X className="w-5 h-5 text-slate-800" aria-hidden />
+              <X className="h-5 w-5 text-slate-800" aria-hidden />
             </button>
 
-            <div className="pt-32 pb-24 px-10 md:px-20">
+            <div className="px-5 pb-16 pt-24 sm:px-10 sm:pb-24 sm:pt-32 md:px-20">
               <div className="inline-block px-4 py-1.5 bg-[#3D4B3E] text-white text-[9px] font-bold uppercase tracking-[0.25em] mb-12 rounded-full">
                 {selectedCard.category}
               </div>
               <h2
                 id="card-detail-title"
-                className="text-5xl md:text-6xl font-serif text-[#1A1A1A] mb-16 leading-[1.1] italic"
+                className="mb-10 font-serif text-3xl italic leading-[1.15] text-[#1A1A1A] sm:mb-12 sm:text-4xl md:mb-16 md:text-5xl lg:text-6xl"
               >
                 {selectedCard.title}
               </h2>
 
-              <div className="aspect-[16/10] rounded-[3.5rem] overflow-hidden mb-16 shadow-2xl border-[12px] border-white">
+              <div className="mb-10 aspect-[16/10] overflow-hidden rounded-[1.75rem] border-[6px] border-white shadow-2xl sm:mb-12 sm:rounded-[2.5rem] sm:border-[10px] md:mb-16 md:rounded-[3.5rem] md:border-[12px]">
                 <img
                   src={selectedCard.image}
                   className="w-full h-full object-cover"
@@ -298,17 +317,17 @@ We offer a library of education designed for your specific needs. This includes 
               </div>
 
               <div className="max-w-none">
-                <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-light whitespace-pre-line mb-16 italic border-l-2 border-[#A67B5B] pl-10">
+                <p className="mb-10 whitespace-pre-line border-l-2 border-[#A67B5B] pl-5 text-base font-light italic leading-relaxed text-slate-600 sm:mb-12 sm:pl-8 sm:text-lg md:mb-16 md:text-xl lg:text-2xl">
                   {selectedCard.content}
                 </p>
 
                 <div className="space-y-6">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#3D4B3E] mb-8">
+                  <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.4em] text-[#3D4B3E] sm:mb-8">
                     Next Steps
                   </p>
                   <button
                     type="button"
-                    className="w-full p-8 bg-white border border-slate-100 rounded-[2rem] flex items-center justify-between hover:border-[#3D4B3E] transition-all group shadow-sm hover:shadow-xl text-left"
+                    className="group flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 text-left shadow-sm transition-all hover:border-[#3D4B3E] hover:shadow-xl sm:rounded-[2rem] sm:p-8"
                   >
                     <span className="font-serif text-lg text-[#1A1A1A]">
                       CogCare {selectedCard.category} Resource
@@ -324,14 +343,14 @@ We offer a library of education designed for your specific needs. This includes 
         </div>
       )}
 
-      <footer className="bg-[#F3EFE9] py-32 border-t border-[#E8DCC4]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-16 mb-24">
-            <div className="col-span-2">
-              <span className="font-serif italic text-4xl tracking-tight text-[#3D4B3E] block mb-10">
+      <footer className="border-t border-[#E8DCC4] bg-[#F3EFE9] py-16 sm:py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-16 grid gap-12 md:mb-24 md:grid-cols-3 md:gap-16">
+            <div className="md:col-span-2">
+              <span className="mb-6 block font-serif text-3xl italic tracking-tight text-[#3D4B3E] sm:mb-10 sm:text-4xl">
                 CogCare.org
               </span>
-              <p className="text-slate-400 max-w-sm leading-relaxed font-light italic text-base mb-8">
+              <p className="mb-6 max-w-sm text-base font-light italic leading-relaxed text-slate-400 sm:mb-8">
                 A modern boutique initiative for brain longevity. Designed to
                 empower, grounded in clinical proof, and accessible to everyone.
               </p>
@@ -365,11 +384,11 @@ We offer a library of education designed for your specific needs. This includes 
               </ul>
             </div>
           </div>
-          <div className="pt-16 border-t border-[#E8DCC4] flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-slate-300 italic">
+          <div className="flex flex-col items-center gap-6 border-t border-[#E8DCC4] pt-10 text-center md:flex-row md:items-center md:justify-between md:gap-8 md:pt-16 md:text-left">
+            <p className="text-[10px] font-bold uppercase italic tracking-[0.25em] text-slate-300">
               © 2026 CogCare Initiative • Empowering Cognitive Resilience
             </p>
-            <div className="flex gap-10 text-[10px] uppercase tracking-[0.25em] font-bold text-slate-300">
+            <div className="flex gap-10 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300">
               <a
                 href="https://cogcare.org/"
                 className="hover:text-[#3D4B3E] transition-colors"

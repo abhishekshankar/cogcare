@@ -3,6 +3,13 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
+// Default "/" so `npm run dev` and hosts like Amplify serve from the site root.
+// Set VITE_BASE_PATH=/cogcare/ for GitHub Pages project sites (user.github.io/repo/).
+const baseRaw = process.env.VITE_BASE_PATH ?? '/'
+const base = baseRaw.endsWith('/') ? baseRaw : `${baseRaw}/`
+
+export default defineConfig({
+  base,
 // Default "/" for hosts that serve the app at the domain root (e.g. AWS Amplify).
 // Set VITE_BASE_PATH=/cogcare/ for GitHub Pages project sites (user.github.io/repo/).
 const base = process.env.VITE_BASE_PATH ?? '/'

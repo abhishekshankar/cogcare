@@ -87,45 +87,43 @@ We offer a library of education designed for your specific needs. This includes 
             : 'bg-transparent py-8'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-nowrap items-center justify-between gap-3 sm:gap-6">
           <a
             href={`${BASE}/`}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            className="flex shrink-0 items-center gap-2 sm:gap-2.5 cursor-pointer group whitespace-nowrap"
           >
             <Brain
-              className="w-7 h-7 text-[#A67B5B] group-hover:scale-110 transition-transform duration-300"
+              className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-[#A67B5B] group-hover:scale-110 transition-transform duration-300"
               strokeWidth={1.5}
               aria-hidden
             />
-            <span className="font-serif text-3xl tracking-tighter text-[#3D4B3E]">
+            <span className="font-serif text-2xl sm:text-3xl tracking-tighter text-[#3D4B3E] whitespace-nowrap">
               Cog<span className="italic">Care</span>
-              <span className="text-[#A67B5B] text-base font-sans font-medium tracking-normal ml-0.5 opacity-80">
+              <span className="text-[#A67B5B] text-sm sm:text-base font-sans font-medium tracking-normal ml-0.5 opacity-80">
                 .org
               </span>
             </span>
           </a>
 
-          <div className="flex items-center gap-10">
-            <nav
-              className="flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]"
-              aria-label="Primary"
-            >
-              <a
-                href="https://cogcare.org/"
-                className="hover:opacity-60 transition-opacity"
-                rel="noopener noreferrer"
-              >
-                Education
-              </a>
-            </nav>
+          <nav
+            className="flex shrink-0 flex-nowrap items-center gap-4 sm:gap-6 md:gap-10 text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]"
+            aria-label="Primary"
+          >
             <a
               href="https://cogcare.org/"
-              className="bg-[#3D4B3E] hover:bg-[#2D382D] text-white px-10 py-3.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all inline-flex items-center justify-center"
+              className="inline-flex items-center justify-center hover:opacity-60 transition-opacity whitespace-nowrap py-2"
+              rel="noopener noreferrer"
+            >
+              Education
+            </a>
+            <a
+              href="https://cogcare.org/"
+              className="bg-[#3D4B3E] hover:bg-[#2D382D] text-white px-5 sm:px-8 md:px-10 py-2.5 sm:py-3.5 rounded-full inline-flex items-center justify-center whitespace-nowrap transition-all"
               rel="noopener noreferrer"
             >
               Donate
             </a>
-          </div>
+          </nav>
         </div>
       </header>
 

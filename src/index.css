@@ -19,6 +19,7 @@ body {
 }
 
 /* Keep site header on one row; global span rules must not split the wordmark */
+/* Keep site header on one row; global span/word rules must not split the wordmark */
 header a,
 header span {
   overflow-wrap: normal;

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import BrainHealthIndex from './BrainHealthIndex'
 import {
   X,
   ArrowRight,
@@ -12,6 +13,10 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, '')
 export default function App() {
   const [selectedCard, setSelectedCard] = useState(null)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [showQuiz, setShowQuiz] = useState(false)
+  const [quizAnswers, setQuizAnswers] = useState({})
+  const [quizResults, setQuizResults] = useState(null)
+  const handleCloseQuiz = useCallback(() => setShowQuiz(false), [])
   const closeBtnRef = useRef(null)
 
   useEffect(() => {
@@ -154,6 +159,7 @@ We offer a library of education designed for your specific needs. This includes 
               </p>
               <button
                 type="button"
+                onClick={() => setShowQuiz(true)}
                 className="w-full bg-[#3D4B3E] text-white px-8 py-4 rounded-full font-bold uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-3 hover:shadow-2xl hover:-translate-y-1 transition-all"
               >
                 Begin Assessment
@@ -377,6 +383,15 @@ We offer a library of education designed for your specific needs. This includes 
           </div>
         </div>
       </footer>
+
+      <BrainHealthIndex
+        open={showQuiz}
+        onClose={handleCloseQuiz}
+        quizAnswers={quizAnswers}
+        setQuizAnswers={setQuizAnswers}
+        quizResults={quizResults}
+        setQuizResults={setQuizResults}
+      />
     </div>
   )
 }

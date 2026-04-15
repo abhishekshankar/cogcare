@@ -92,52 +92,45 @@ We offer a library of education designed for your specific needs. This includes 
             : 'bg-transparent py-4 sm:py-6 md:py-8'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-nowrap items-center justify-between gap-2 sm:gap-4 md:gap-6">
+        <div className="mx-auto flex max-w-7xl flex-nowrap items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6 md:gap-6">
           <a
             href={`${BASE}/`}
             className="group flex min-w-0 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap sm:gap-2.5"
           >
             <Brain
-              className="w-5 h-5 sm:w-6 sm:h-7 shrink-0 text-[#A67B5B] group-hover:scale-110 transition-transform duration-300"
+              className="h-5 w-5 shrink-0 text-[#A67B5B] transition-transform duration-300 group-hover:scale-110 sm:h-6 sm:h-7"
               strokeWidth={1.5}
               aria-hidden
             />
-            <span className="font-serif text-xl sm:text-2xl md:text-3xl tracking-tighter text-[#3D4B3E] whitespace-nowrap">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-nowrap items-center justify-between gap-3 sm:gap-6">
-          <a
-            href={`${BASE}/`}
-            className="flex shrink-0 items-center gap-2 sm:gap-2.5 cursor-pointer group whitespace-nowrap"
-          >
-            <Brain
-              className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-[#A67B5B] group-hover:scale-110 transition-transform duration-300"
-              strokeWidth={1.5}
-              aria-hidden
-            />
-            <span className="font-serif text-2xl sm:text-3xl tracking-tighter text-[#3D4B3E] whitespace-nowrap">
+            <span className="font-serif text-xl tracking-tighter text-[#3D4B3E] whitespace-nowrap sm:text-2xl md:text-3xl">
               Cog<span className="italic">Care</span>
-              <span className="text-[#A67B5B] text-sm sm:text-base font-sans font-medium tracking-normal ml-0.5 opacity-80">
+              <span className="ml-0.5 font-sans text-sm font-medium tracking-normal text-[#A67B5B] opacity-80 sm:text-base">
                 .org
               </span>
             </span>
           </a>
 
           <nav
-            className="flex shrink-0 flex-nowrap items-center justify-end gap-2 sm:gap-4 md:gap-8 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#3D4B3E]"
-            className="flex shrink-0 flex-nowrap items-center gap-4 sm:gap-6 md:gap-10 text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]"
+            className="flex shrink-0 flex-nowrap items-center justify-end gap-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#3D4B3E] sm:gap-4 sm:text-[10px] sm:tracking-[0.2em] md:gap-8"
             aria-label="Primary"
           >
             <a
               href="https://cogcare.org/"
-              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 hover:opacity-60 transition-opacity"
-              className="inline-flex items-center justify-center hover:opacity-60 transition-opacity whitespace-nowrap py-2"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
               rel="noopener noreferrer"
             >
               Education
             </a>
             <a
+              href="https://cogcare.org/blog/"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
+              rel="noopener noreferrer"
+            >
+              Blog
+            </a>
+            <a
               href="https://cogcare.org/"
-              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-[#3D4B3E] px-3.5 py-2 text-[9px] sm:px-6 sm:py-2.5 sm:text-[10px] md:px-10 md:py-3.5 font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-white transition-all hover:bg-[#2D382D]"
-              className="bg-[#3D4B3E] hover:bg-[#2D382D] text-white px-5 sm:px-8 md:px-10 py-2.5 sm:py-3.5 rounded-full inline-flex items-center justify-center whitespace-nowrap transition-all"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-[#3D4B3E] px-3.5 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-white transition-all hover:bg-[#2D382D] sm:px-6 sm:py-2.5 sm:text-[10px] sm:tracking-[0.2em] md:px-10 md:py-3.5"
               rel="noopener noreferrer"
             >
               Donate
@@ -374,6 +367,15 @@ We offer a library of education designed for your specific needs. This includes 
                 </li>
                 <li>
                   <a
+                    href="https://cogcare.org/blog/"
+                    className="hover:opacity-50 transition-opacity"
+                    rel="noopener noreferrer"
+                  >
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a
                     href="https://cogcare.org/"
                     className="hover:opacity-50 transition-opacity"
                     rel="noopener noreferrer"
@@ -388,7 +390,14 @@ We offer a library of education designed for your specific needs. This includes 
             <p className="text-[10px] font-bold uppercase italic tracking-[0.25em] text-slate-300">
               © 2026 CogCare Initiative • Empowering Cognitive Resilience
             </p>
-            <div className="flex gap-10 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300">
+            <div className="flex flex-wrap justify-center gap-6 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300 sm:gap-10">
+              <a
+                href="https://cogcare.org/blog/"
+                className="hover:text-[#3D4B3E] transition-colors"
+                rel="noopener noreferrer"
+              >
+                Blog
+              </a>
               <a
                 href="https://cogcare.org/"
                 className="hover:text-[#3D4B3E] transition-colors"

@@ -367,4 +367,3 @@ export default function BrainHealthIndex({
   )
 }
 
-export { cogcareTheme, computeResults, CCA_QUIZ_QUESTIONS, CCA_LIKERT, CCA_GLOBAL_SCALE, BHIQuiz, BHIReport }

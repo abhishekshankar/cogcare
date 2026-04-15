@@ -28,15 +28,12 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_BASE_PATH: /cogcare/
         run: npm run build
 
       - name: Copy CogCare 2.0 to deploy
         run: cp -r "CogCare 2.0" dist/
-
-      - name: Copy Cogcare 3.0 to root of deploy
-        run: |
-          cp "src/Cogcare 3.0/index.html" dist/index.html
-          cp "src/Cogcare 3.0/hero-bg.png" dist/hero-bg.png
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

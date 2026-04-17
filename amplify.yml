@@ -3,6 +3,10 @@
 #
 # Use Node 20+ (Vite 7 / React 19). Default Amplify images may ship an older Node; without this,
 # `npm run build` can fail quickly — the console sometimes shows that as “cancelled” or a generic error.
+#
+# Use `npm install` (not `npm ci`): strict `npm ci` often fails on Amplify when the lockfile + nested
+# AWS/CDK deps don’t satisfy npm’s “every implied package must appear in lock” check (warnings you
+# see about fast-xml-parser / peers are unrelated; the hard failure is EUSAGE / Missing: … from lock file).
 version: 1
 frontend:
   phases:
@@ -11,7 +15,7 @@ frontend:
         - nvm install 20
         - nvm use 20
         - node -v
-        - npm ci
+        - npm install --no-audit --no-fund
     build:
       commands:
         - npm run build

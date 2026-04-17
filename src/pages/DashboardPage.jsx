@@ -13,7 +13,7 @@ import { Brain, LogOut, Settings2, LayoutGrid, FlaskConical, Sparkles } from 'lu
 import { Link } from 'react-router-dom'
 import BHIReportContent from '../components/BHIReportContent'
 import CreatePasswordCard from '../components/CreatePasswordCard'
-import { computeBrainCreditFromResults } from '../lib/brainCredit'
+import { computeBrainCreditFromResults } from '../../lib/brainCredit'
 import {
   clearPendingNewPasswordFlag,
   hasPendingNewPasswordFlag,

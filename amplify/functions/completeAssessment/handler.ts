@@ -12,7 +12,7 @@ import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtim
 import { env } from '$amplify/env/complete-assessment'
 import type { Schema } from '../../data/resource'
 import { buildBhiReportEmailHtml, escapeHtml } from '../../../lib/bhiReportEmailHtml.js'
-import { computeBrainCreditFromResults } from '../../../src/lib/brainCredit.js'
+import { computeBrainCreditFromResults } from '../../../lib/brainCredit.js'
 
 const cognito = new CognitoIdentityProviderClient({})
 

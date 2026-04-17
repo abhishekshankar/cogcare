@@ -2,14 +2,18 @@
 
 ## Local development
 
-- Run **`npm run sandbox`** from the repo root. This deploys a sandbox stack and writes **`src/amplify_outputs.json`** (see `package.json` `sandbox` script).
+- Run **`npm run sandbox`** from the repo root. This deploys a sandbox stack and writes **`src/amplify_outputs.json`** (see `package.json` `sandbox` script). For an already-deployed cloud app, use **`npx ampx generate outputs --app-id <id> --branch <branch> --out-dir src`** instead.
 - The Vite app calls **`Amplify.configure()`** only when `amplify_outputs.json` includes a non-empty Cognito **`user_pool_client_id`** (see `src/lib/amplifyConfigure.js`).
 
 ## Frontend hosting (AWS Amplify Hosting)
 
-- Use **[Amplify Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/getting-started.html)** with this repo: the build spec is **[`amplify.yml`](../amplify.yml)** (`npm ci` → `npm run build` → artifacts from **`dist/`**).
-- Set **`VITE_`** environment variables in the Amplify console for each branch (e.g. `VITE_COMPLETE_ASSESSMENT_URL` after your backend function URL is known). Do not commit secrets.
-- Deploy the **Gen 2 backend** (Lambda, Cognito, AppSync) via **`ampx pipeline-deploy`** or your CI/CD pipeline — see [Amplify Gen 2 deploy](https://docs.amplify.aws/react/deploy-and-host/fullstack-branching/).
+- Connect this repo in **[Amplify Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/getting-started.html)** as a **Gen 2 fullstack** app so builds can deploy the backend. The build spec is **[`amplify.yml`](../amplify.yml)**:
+  - **Backend phase:** `npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID`
+  - **Frontend phase:** `npx ampx generate outputs … --out-dir src`, then `npm run build` → artifacts from **`dist/`**
+- Amplify provides **`AWS_BRANCH`** and **`AWS_APP_ID`** during the build; do not commit secrets.
+- Optional **`VITE_`** overrides in the Amplify console (per branch) can supply Cognito or GraphQL values if you ever build without generated outputs — see [`src/lib/amplifyOutputs.js`](../src/lib/amplifyOutputs.js). Do not put secrets in `VITE_*` vars.
+- One-time: ensure the AWS account/region is **CDK-bootstrapped** for `ampx pipeline-deploy`. Set Lambda secrets (**`BREVO_API_KEY`**, **`BREVO_SENDER_EMAIL`**) in the Amplify console for **`completeAssessment`**.
+- See [Amplify Gen 2 deploy](https://docs.amplify.aws/react/deploy-and-host/fullstack-branching/) and [Create a backend for Gen 2](https://docs.aws.amazon.com/amplify/latest/userguide/build-backend-Gen2.html).
 
 ### If Hosting shows “cancelled” or fails immediately
 

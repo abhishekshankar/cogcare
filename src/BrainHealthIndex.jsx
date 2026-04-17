@@ -426,8 +426,10 @@ export default function BrainHealthIndex({
   return (
     <FluentProvider theme={cogcareTheme}>
       <div
-        className="fixed inset-0 z-[60] flex flex-col sm:flex-row"
+        className="fixed inset-0 z-[60] flex min-h-0 flex-col overflow-hidden sm:flex-row"
         style={{
+          /* Full-bleed scrim so safe-area padding is not transparent (avoids site header showing above the modal). */
+          backgroundColor: 'rgba(61,75,62,0.5)',
           paddingTop: 'env(safe-area-inset-top)',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
@@ -436,16 +438,16 @@ export default function BrainHealthIndex({
       <div
         role="button"
         tabIndex={0}
-        className="min-h-[25%] flex-1 animate-modal-backdrop cursor-pointer sm:min-h-0"
+        className="min-h-0 flex-1 animate-modal-backdrop cursor-pointer sm:min-h-0"
         style={{ background: 'rgba(61,75,62,0.5)' }}
         onClick={onClose}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose() }}
         aria-label="Close assessment"
       />
 
-      {/* Slide-in panel — full width on small screens */}
+      {/* Slide-in panel — full width on small screens; max-h-full keeps sheet within the padded viewport (min-h-[25%] + 85dvh could overflow on short phones). */}
       <div
-        className="animate-modal-panel flex max-h-[85dvh] w-full max-w-none flex-col border-t border-[#E8DCC4] bg-[#FDFBF7] shadow-[0_-20px_60px_rgba(61,75,62,0.15)] sm:max-h-none sm:h-full sm:w-[58vw] sm:max-w-[700px] sm:min-w-[min(100%,320px)] sm:border-l sm:border-t-0 sm:shadow-[-20px_0_60px_rgba(61,75,62,0.15)]"
+        className="animate-modal-panel flex min-h-0 max-h-full w-full max-w-none flex-col border-t border-[#E8DCC4] bg-[#FDFBF7] shadow-[0_-20px_60px_rgba(61,75,62,0.15)] sm:max-h-none sm:h-full sm:w-[58vw] sm:max-w-[700px] sm:min-w-[min(100%,320px)] sm:border-l sm:border-t-0 sm:shadow-[-20px_0_60px_rgba(61,75,62,0.15)]"
       >
         {/* Panel header */}
         <div className="flex shrink-0 items-center justify-between border-b border-[#E8DCC4] px-4 py-4 sm:px-8 sm:py-5">

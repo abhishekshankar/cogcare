@@ -21,10 +21,12 @@ export default function LoginPage() {
       <div className="min-h-screen bg-[#FDFBF7] px-4 py-16 text-[#1A1A1A]">
         <div className="mx-auto max-w-md rounded-3xl border border-[#E8DCC4] bg-white p-8 shadow-sm">
           <p className="text-sm leading-relaxed text-[#3D4B3E]">
-            Authentication is not configured in this build. Run{' '}
-            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">npm run sandbox</code> to
-            generate <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">amplify_outputs.json</code>{' '}
-            in <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">src/</code>, then refresh.
+            Authentication is not configured in this build. For production, deploy the Amplify Gen 2
+            backend and ensure the Hosting build runs <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">ampx generate outputs</code> (see{' '}
+            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">amplify.yml</code>) or set{' '}
+            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">VITE_USER_POOL_CLIENT_ID</code> and related vars. Locally, run{' '}
+            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">npm run sandbox</code> to write{' '}
+            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">src/amplify_outputs.json</code>, then refresh.
           </p>
           <Link
             to="/"

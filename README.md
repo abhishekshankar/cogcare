@@ -36,9 +36,9 @@ The Vite dev server exposes **`POST /api/send-quiz-email`** (see [`vite-plugin-l
 
 If Brevo returns **`unrecognised IP address`**, add the caller’s public IPv4 under **[Security → Authorised IPs](https://app.brevo.com/security/authorised_ips)**. For **Lambda (`completeAssessment`)**, AWS egress IPs are stable per subnet/NAT setup; for **local dev**, your home IP changes more often. That list is **only editable in the Brevo dashboard**.
 
-### AWS: Amplify Hosting (frontend)
+### AWS: Amplify Hosting (fullstack)
 
-Host the static Vite app on **[Amplify Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/getting-started.html)** using the repo’s [`amplify.yml`](amplify.yml) (build → `dist`). Connect your Git branch, set **`VITE_`** variables in the Amplify console (e.g. `VITE_COMPLETE_ASSESSMENT_URL` after backend deploy), and run backend deploys separately (`ampx pipeline-deploy` / CI) so `amplify_outputs.json` or env overrides match production.
+Use **[Amplify Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/getting-started.html)** as a **Gen 2 fullstack** app: the repo’s [`amplify.yml`](amplify.yml) runs **`ampx pipeline-deploy`** (backend), then **`ampx generate outputs`** into `src/`, then **`npm run build`** → `dist/`. Set Lambda secrets (**Brevo**) in the console; optional **`VITE_*`** overrides are documented in [`docs/cogcare-amplify.md`](docs/cogcare-amplify.md) and [`src/lib/amplifyOutputs.js`](src/lib/amplifyOutputs.js).
 
 ---
 

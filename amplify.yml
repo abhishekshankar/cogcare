@@ -23,6 +23,7 @@ backend:
             echo "AWS_BRANCH=${AWS_BRANCH:-} AWS_APP_ID=${AWS_APP_ID:-}"
             exit 1
           fi
+        - export NODE_OPTIONS=--max-old-space-size=8192
         - npx ampx pipeline-deploy --branch "$AWS_BRANCH" --app-id "$AWS_APP_ID"
   cache:
     paths:

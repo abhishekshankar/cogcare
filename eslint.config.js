@@ -7,7 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores(['dist']),
   {
-    files: ['vite.config.js'],
+    files: ['vite.config.js', 'vite-plugin-local-email-api.js', 'api/**/*.js', 'playwright.config.js', 'e2e/**/*.js'],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: globals.node,
@@ -15,7 +15,7 @@ export default defineConfig([
   },
   {
     files: ['**/*.{js,jsx}'],
-    ignores: ['vite.config.js'],
+    ignores: ['vite.config.js', 'playwright.config.js', 'e2e/**'],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,

@@ -1,12 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import {
-  FluentProvider,
-  RadioGroup,
-  Radio,
-  Button,
-  ProgressBar,
-} from '@fluentui/react-components'
-import { Brain, X, ArrowRight, ChevronLeft } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { FluentProvider, Button } from '@fluentui/react-components'
+import { Brain, X, ArrowRight, ChevronLeft, Mail, Loader2 } from 'lucide-react'
+import BHIReportContent from './components/BHIReportContent'
+import { getCompleteAssessmentUrl } from './lib/completeAssessmentUrl'
 
 // ---- Quiz data (ported from main branch CCAQuiz) ----
 const CCA_QUIZ_QUESTIONS = [
@@ -122,136 +119,259 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Progress header */}
-      <div className="px-4 pb-2 pt-4 sm:px-8 sm:pt-6">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">{q.domain}</span>
-          <span className="text-[11px] text-[#3D4B3E] font-medium">{qi + 1} of {total}</span>
+    <div className="flex h-full flex-col">
+      {/* Progress + domain */}
+      <div className="shrink-0 border-b border-[#E8DCC4]/80 bg-[#FDFBF7] px-4 pb-5 pt-5 sm:px-8 sm:pb-6 sm:pt-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="inline-flex items-center rounded-full bg-[#F3EFE9] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#A67B5B] ring-1 ring-[#E8DCC4]/60">
+            {q.domain}
+          </span>
+          <span className="text-[11px] font-semibold tabular-nums text-[#3D4B3E]/80">
+            Question <span className="text-[#3D4B3E]">{qi + 1}</span>
+            <span className="mx-1 font-normal text-[#3D4B3E]/40">/</span>
+            {total}
+          </span>
         </div>
-        <ProgressBar value={pct} max={1} thickness="medium" />
+        <div className="mb-1.5 flex justify-between text-[10px] font-medium uppercase tracking-[0.12em] text-[#3D4B3E]/45">
+          <span>Progress</span>
+          <span>{Math.round(pct * 100)}%</span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-[#E8DCC4]/90">
+          <div
+            className="h-full rounded-full bg-[#3D4B3E] transition-[width] duration-500 ease-out"
+            style={{ width: `${Math.min(100, pct * 100)}%` }}
+          />
+        </div>
       </div>
 
-      {/* Question + answers */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
-        <h2 className="mb-6 font-serif text-xl italic leading-snug text-[#1A1A1A] sm:mb-8 sm:text-2xl">
+      {/* Question + options */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E]/40">
+          {isGlobal ? 'Overall function' : 'How often'}
+        </p>
+        <h2 className="mb-8 font-serif text-[1.35rem] leading-[1.35] tracking-tight text-[#1A1A1A] sm:mb-10 sm:text-2xl sm:leading-snug md:text-[1.65rem]">
           {q.text}
         </h2>
-        <RadioGroup
-          value={selected ? String(selected) : ''}
-          onChange={handleSelect}
-          layout="vertical"
-        >
-          {scale.map((label, i) => (
-            <Radio key={String(i + 1)} value={String(i + 1)} label={label} />
-          ))}
-        </RadioGroup>
+
+        <fieldset className="min-w-0 border-0 p-0">
+          <legend className="sr-only">Choose one answer</legend>
+          <div className="flex flex-col gap-2.5 sm:gap-3">
+            {scale.map((label, i) => {
+              const value = i + 1
+              const isOn = selected === value
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() =>
+                    handleSelect(null, { value: String(value) })
+                  }
+                  className={[
+                    'group flex w-full min-h-[52px] items-center gap-3 rounded-2xl border px-3.5 py-3.5 text-left transition-all duration-200 sm:min-h-[56px] sm:gap-4 sm:px-4 sm:py-4',
+                    isOn
+                      ? 'border-[#3D4B3E] bg-[#F3EFE9] shadow-[0_0_0_1px_rgba(61,75,62,0.12)] ring-2 ring-[#3D4B3E]/15'
+                      : 'border-[#E8DCC4] bg-white hover:border-[#A67B5B]/45 hover:bg-[#FFFCF8] active:scale-[0.99]',
+                  ].join(' ')}
+                >
+                  <span
+                    className={[
+                      'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold tabular-nums sm:h-10 sm:w-10 sm:text-sm',
+                      isOn
+                        ? 'bg-[#3D4B3E] text-white'
+                        : 'bg-[#F3EFE9] text-[#3D4B3E] group-hover:bg-[#E8DCC4]/80',
+                    ].join(' ')}
+                    aria-hidden
+                  >
+                    {value}
+                  </span>
+                  <span
+                    className={[
+                      'min-w-0 flex-1 text-[13px] font-medium leading-snug sm:text-sm',
+                      isOn ? 'text-[#1A1A1A]' : 'text-[#3D4B3E]',
+                    ].join(' ')}
+                  >
+                    {label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </fieldset>
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between border-t border-[#E8DCC4] bg-[#FDFBF7] px-4 py-4 sm:px-8 sm:py-5">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[#E8DCC4] bg-[#F3EFE9]/50 px-4 py-4 backdrop-blur-sm sm:px-8 sm:py-5">
         {qi > 0 ? (
           <Button
             appearance="subtle"
-            icon={<ChevronLeft className="w-4 h-4" />}
+            icon={<ChevronLeft className="h-4 w-4" />}
             onClick={handleBack}
           >
             Back
           </Button>
         ) : (
-          <div />
+          <div className="min-w-[4rem]" aria-hidden />
         )}
         <Button
           appearance="primary"
           disabled={!selected}
           onClick={handleNext}
-          icon={<ArrowRight className="w-4 h-4" />}
+          icon={<ArrowRight className="h-4 w-4" />}
           iconPosition="after"
+          className={!selected ? 'opacity-50' : ''}
         >
-          {qi < total - 1 ? 'Next' : 'View Results'}
+          {qi < total - 1 ? 'Next' : 'View results'}
         </Button>
       </div>
     </div>
   )
 }
 
-const URGENCY_CONFIG = {
-  HIGH:      { label: 'High Priority', color: '#c0392b', bg: '#fdf0ef' },
-  UNCERTAIN: { label: 'Uncertain',     color: '#e67e22', bg: '#fef6ed' },
-  LOW:       { label: 'Low Concern',   color: '#27ae60', bg: '#edfaf1' },
-}
+/** In dev, Vite serves POST /api/send-quiz-email (see vite-plugin-local-email-api.js). */
+const LEGACY_QUIZ_EMAIL_URL =
+  import.meta.env.VITE_QUIZ_EMAIL_API_URL ||
+  (import.meta.env.DEV ? '/api/send-quiz-email' : '')
 
 // ---- BHIReport ----
-function BHIReport({ quizResults, onReset }) {
-  const { differentials, domains, urgency } = quizResults
-  // TODO: surface motorFlag — motor symptoms warrant a specialist referral note
-  const u = URGENCY_CONFIG[urgency] ?? URGENCY_CONFIG['LOW']
+function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
+  const navigate = useNavigate()
+  const completeAssessmentUrl = getCompleteAssessmentUrl()
+  const canEmail = Boolean(completeAssessmentUrl || LEGACY_QUIZ_EMAIL_URL)
+
+  const [email, setEmail] = useState('')
+  const [emailStatus, setEmailStatus] = useState('idle')
+  const [emailMessage, setEmailMessage] = useState('')
+
+  const sendResultsEmail = async () => {
+    if (!canEmail) return
+    const trimmed = email.trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setEmailMessage('Please enter a valid email address.')
+      setEmailStatus('error')
+      return
+    }
+    setEmailStatus('sending')
+    setEmailMessage('')
+    try {
+      const url = completeAssessmentUrl || LEGACY_QUIZ_EMAIL_URL
+      const body = completeAssessmentUrl
+        ? JSON.stringify({
+            email: trimmed,
+            results: quizResults,
+            answers: quizAnswers ?? {},
+          })
+        : JSON.stringify({ email: trimmed, results: quizResults })
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      })
+      let data = {}
+      try {
+        data = await res.json()
+      } catch {
+        /* ignore */
+      }
+      if (!res.ok) {
+        throw new Error(data.error || `Request failed (${res.status})`)
+      }
+      setEmailStatus('sent')
+      setEmailMessage('')
+      if (completeAssessmentUrl) {
+        onClose?.()
+        navigate('/login?from=quiz&returnTo=' + encodeURIComponent('/dashboard'))
+      }
+    } catch (err) {
+      setEmailStatus('error')
+      setEmailMessage(err instanceof Error ? err.message : 'Could not send email.')
+    }
+  }
+
+  const emailCard = (
+    <div className="mb-8 rounded-2xl border border-[#E8DCC4] bg-white/80 p-5 shadow-sm sm:p-6">
+      <div className="mb-4 flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F3EFE9] text-[#3D4B3E]">
+          <Mail className="h-5 w-5" strokeWidth={1.5} aria-hidden />
+        </div>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+            Email my results
+          </p>
+          <p className="mt-1 text-[13px] leading-relaxed text-[#3D4B3E]/85">
+            {canEmail
+              ? completeAssessmentUrl
+                ? 'Create your account and save this assessment to your dashboard (check email for login).'
+                : 'Get a copy of this summary sent to your inbox.'
+              : import.meta.env.DEV
+                ? 'Email sending is not configured locally. Add VITE_QUIZ_EMAIL_API_URL to .env, set VITE_COMPLETE_ASSESSMENT_URL, or run npm run sandbox so amplify_outputs.json includes your function URL.'
+                : 'Email delivery is not available from this app right now. Save or screenshot your results, or try again later.'}
+          </p>
+        </div>
+      </div>
+      {canEmail ? (
+        emailStatus === 'sent' ? (
+          <p className="text-sm font-medium text-[#3D4B3E]" role="status">
+            {completeAssessmentUrl
+              ? 'Check your email for your report and temporary password, then sign in.'
+              : 'Check your inbox — we sent your Brain Health Index summary.'}
+          </p>
+        ) : (
+          <>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+              <label className="sr-only" htmlFor="bhi-email">
+                Email address
+              </label>
+              <input
+                id="bhi-email"
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (emailStatus === 'error') {
+                    setEmailStatus('idle')
+                    setEmailMessage('')
+                  }
+                }}
+                disabled={emailStatus === 'sending'}
+                className="min-h-[48px] flex-1 rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 text-sm text-[#1A1A1A] outline-none ring-0 transition placeholder:text-slate-400 focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20 disabled:opacity-60"
+              />
+              <button
+                type="button"
+                onClick={sendResultsEmail}
+                disabled={emailStatus === 'sending'}
+                className="inline-flex min-h-[48px] shrink-0 items-center justify-center gap-2 rounded-xl bg-[#3D4B3E] px-5 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#2D382D] disabled:opacity-50 sm:px-6"
+              >
+                {emailStatus === 'sending' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Sending
+                  </>
+                ) : (
+                  'Send'
+                )}
+              </button>
+            </div>
+            {emailStatus === 'error' && emailMessage ? (
+              <p className="mt-3 text-[13px] text-red-700" role="alert">
+                {emailMessage}
+              </p>
+            ) : null}
+          </>
+        )
+      ) : null}
+    </div>
+  )
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-6">
-
-        {/* Header */}
-        <div className="mb-8">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B]">
-            Assessment Complete
-          </p>
-          <h2 className="font-serif italic text-3xl text-[#1A1A1A] mb-4">
-            Your Brain Health Index
-          </h2>
-          <span
-            className="inline-block text-[11px] font-bold uppercase tracking-[0.15em] px-3 py-1.5 rounded-full"
-            style={{ color: u.color, background: u.bg }}
-          >
-            {u.label}
-          </span>
-        </div>
-
-        {/* Differentials */}
-        <div className="mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E] opacity-50 mb-4">
-            Differential Analysis
-          </p>
-          <div className="space-y-4">
-            {differentials.map(d => (
-              <div key={d.label}>
-                <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-[12px] font-medium text-[#1A1A1A]">{d.label}</span>
-                  <span className="text-[11px] font-bold" style={{ color: d.color }}>
-                    {d.probability}%
-                  </span>
-                </div>
-                <div className="h-2 rounded-full bg-[#E8DCC4] overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${d.probability}%`, background: d.color }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Domain scores */}
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E] opacity-50 mb-4">
-            Domain Scores
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(domains).map(([name, score]) => (
-              <span
-                key={name}
-                className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-[#E8DCC4]"
-                style={{
-                  background: score > 60 ? '#fdf0ef' : '#F3EFE9',
-                  color: score > 60 ? '#c0392b' : '#3D4B3E',
-                }}
-              >
-                {name}: {score}%
-              </span>
-            ))}
-          </div>
-        </div>
+        <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B]">
+          Assessment Complete
+        </p>
+        <BHIReportContent quizResults={quizResults} middleSlot={emailCard} />
 
       </div>
 
@@ -357,7 +477,9 @@ export default function BrainHealthIndex({
           {step === 'report' && quizResults && (
             <BHIReport
               quizResults={quizResults}
+              quizAnswers={quizAnswers}
               onReset={handleReset}
+              onClose={onClose}
             />
           )}
         </div>

@@ -1,0 +1,18 @@
+# Amplify Hosting — build the Vite frontend (AWS only; no third-party hosts required).
+# Backend (Gen 2) is deployed with ampx / Amplify console pipelines; see docs/cogcare-amplify.md
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*

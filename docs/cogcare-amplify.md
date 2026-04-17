@@ -11,6 +11,13 @@
 - Set **`VITE_`** environment variables in the Amplify console for each branch (e.g. `VITE_COMPLETE_ASSESSMENT_URL` after your backend function URL is known). Do not commit secrets.
 - Deploy the **Gen 2 backend** (Lambda, Cognito, AppSync) via **`ampx pipeline-deploy`** or your CI/CD pipeline — see [Amplify Gen 2 deploy](https://docs.amplify.aws/react/deploy-and-host/fullstack-branching/).
 
+### If Hosting shows “cancelled” or fails immediately
+
+- Confirm the connected **branch** (e.g. `cogcare-3`) has **`amplify.yml`** at the repo root and you triggered a build for that branch.
+- Open **Amplify → App → Hosting → Build history** → failed job → **Download logs**. Fast failures are often **wrong Node version** (this repo expects **Node 20+**; see root `amplify.yml` `nvm` steps) or **`npm ci`** errors (lockfile out of sync with `package.json`).
+- **SUPERSEDED** / cancelled runs when a **new commit** arrives while a build is running is normal.
+- GitHub **Actions** (e.g. Pages) use separate workflows; they do not show in Amplify build history.
+
 ## Secrets (never in the browser)
 
 - **Brevo** API key and sender email are configured as Lambda **secrets** in `amplify/functions/completeAssessment/resource.ts` (`secret('BREVO_API_KEY')`, etc.). They are available only to the **`completeAssessment`** function, not to Vite env vars.

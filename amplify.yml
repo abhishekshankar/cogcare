@@ -1,10 +1,16 @@
 # Amplify Hosting — build the Vite frontend (AWS only; no third-party hosts required).
 # Backend (Gen 2) is deployed with ampx / Amplify console pipelines; see docs/cogcare-amplify.md
+#
+# Use Node 20+ (Vite 7 / React 19). Default Amplify images may ship an older Node; without this,
+# `npm run build` can fail quickly — the console sometimes shows that as “cancelled” or a generic error.
 version: 1
 frontend:
   phases:
     preBuild:
       commands:
+        - nvm install 20
+        - nvm use 20
+        - node -v
         - npm ci
     build:
       commands:

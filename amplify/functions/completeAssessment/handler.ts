@@ -9,18 +9,22 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider'
 import { randomBytes } from 'crypto'
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime'
-import { env } from '$amplify/env/complete-assessment'
 import type { Schema } from '../../data/resource'
 import { buildBhiReportEmailHtml, escapeHtml } from '../../../lib/bhiReportEmailHtml.js'
 import { computeBrainCreditFromResults } from '../../../lib/brainCredit.js'
 
 const cognito = new CognitoIdentityProviderClient({})
 
+/** Lambda injects data env at runtime; avoid `$amplify/env/*` (virtual import) so CDK/esbuild can bundle. */
+function getDataClientEnv(): Parameters<typeof getAmplifyDataClientConfig>[0] {
+  return process.env as Parameters<typeof getAmplifyDataClientConfig>[0]
+}
+
 let dataClient: ReturnType<typeof generateClient<Schema>> | null = null
 
 async function getDataClient() {
   if (dataClient) return dataClient
-  const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(env)
+  const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(getDataClientEnv())
   Amplify.configure(resourceConfig, libraryOptions)
   dataClient = generateClient<Schema>()
   return dataClient

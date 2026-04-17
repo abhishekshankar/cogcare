@@ -4,6 +4,63 @@ Give this entire file to another LLM or operator. Goal: **deploy the CogCare rep
 
 ---
 
+## Browser assistant: AWS Amplify Console only
+
+Use this section for automation that **only drives the browser** on `console.aws.amazon.com` (Amplify). It does not include CLI, Git pushes, or Brevo’s website (except where noted as “open in another tab”).
+
+### A. Sign in and open Amplify
+
+1. Go to **https://console.aws.amazon.com/amplify/** (pick the correct **Region** in the top bar if the app already exists elsewhere).
+2. Open **AWS Amplify** → **All apps**.
+
+### B. Create the app (if it does not exist)
+
+1. Choose **Create new app** / **Host web app** (wording may vary).
+2. Connect **GitHub**, **GitLab**, or **Bitbucket**; authorize AWS when prompted.
+3. Select the **CogCare repository** and the **branch** to deploy (e.g. `main`).
+4. On the build/configure step, ensure the build uses the **build specification from the repository** (`amplify.yml` at the **root**). Do **not** replace it with a generic “npm run build” unless you are sure — this repo needs the **backend + frontend** spec.
+5. Save / **Create app** / **Save and deploy** so the first build starts.
+
+### C. App already exists — verify hosting
+
+1. Click the **app name**.
+2. Open **Hosting** → **Build settings** (or **App settings** → **Build settings**). Confirm **`amplify.yml`** is read from the repo (root), not an empty override.
+3. Open **Hosting** → **Branches**: confirm the right **branch** is connected and builds are enabled.
+
+### D. Backend secrets (Brevo — required for email)
+
+Secrets are **not** “Hosting environment variables” for the frontend. They must be stored as **Amplify Gen 2 / Lambda secrets** for the backend (exact menu labels change; look under the app for **Secrets**, **Backend**, or **Sandbox**).
+
+1. In the Amplify app, find **Secrets** or **Environment secrets** / **Backend secrets** (Gen 2).
+2. Add two secrets with **these exact names**:
+   - `BREVO_API_KEY` → paste the Brevo API key (from **https://app.brevo.com** → API keys — open Brevo in another tab if needed).
+   - `BREVO_SENDER_EMAIL` → the verified sender email in Brevo.
+3. Save. **Redeploy** the backend or trigger a new **build** so Lambdas pick up secrets (see F).
+
+### E. Optional: Hosting “Environment variables” (usually skip)
+
+1. **Hosting** → **Environment variables** (per branch).
+2. Only add **`VITE_*`** vars if documented by the team (e.g. overrides). **Do not** put `BREVO_API_KEY` here — it would be exposed to the browser.
+
+### F. Run a deployment and watch it
+
+1. **Hosting** → **Build history** (or the branch view) → **Redeploy this version** or trigger a build after a new commit.
+2. Open the **latest build** → **View logs** (or download logs).
+3. Wait until **Backend** (if shown) and **Frontend** steps finish **Succeeded**.
+
+### G. Get the live URL
+
+1. **Hosting** → select the **branch** → copy the **Default domain** URL (e.g. `*.amplifyapp.com`).
+2. In the browser, open **`/login`** — you should see a real sign-in form, not “Authentication is not configured…”.
+
+### H. If something fails (still in Amplify only)
+
+1. **Hosting** → failed build → **Download logs** / copy error lines.
+2. Confirm **D** was done (secret names exact: `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`).
+3. Confirm build spec is still **repo `amplify.yml`**, not overwritten in the console.
+
+---
+
 ## 1. Repository facts (do not guess)
 
 - **Stack:** Vite + React app in repo root; **Amplify Gen 2** backend under `amplify/`.

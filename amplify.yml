@@ -2,6 +2,11 @@
 # Requires an Amplify app connected with Gen 2 backend (same repo). See docs/cogcare-amplify.md.
 #
 # Node 20+ (Vite 7 / React 19). Use `npm install` (not `npm ci`) per repo `.npmrc` / lockfile notes.
+#
+# Amplify often sets NODE_ENV=production during install, which skips devDependencies — but
+# @aws-amplify/backend-cli (the `ampx` CLI) lives in devDependencies. Use --include=dev so
+# `npx ampx pipeline-deploy` and `npx ampx generate outputs` resolve. Do not run
+# `npx @aws-amplify/backend-cli` alone (that prints help with no subcommand).
 version: 1
 backend:
   phases:
@@ -10,9 +15,15 @@ backend:
         - nvm install 20
         - nvm use 20
         - node -v
-        - npm install --no-audit --no-fund --cache .npm --prefer-offline
+        - npm install --no-audit --no-fund --include=dev --cache .npm --prefer-offline
         - export CI=1
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        - |
+          if [ -z "${AWS_BRANCH:-}" ] || [ -z "${AWS_APP_ID:-}" ]; then
+            echo "ERROR: AWS_BRANCH or AWS_APP_ID is empty. Amplify Hosting must inject these for Gen 2 fullstack apps."
+            echo "AWS_BRANCH=${AWS_BRANCH:-} AWS_APP_ID=${AWS_APP_ID:-}"
+            exit 1
+          fi
+        - npx ampx pipeline-deploy --branch "$AWS_BRANCH" --app-id "$AWS_APP_ID"
   cache:
     paths:
       - .npm/**/*
@@ -24,8 +35,13 @@ frontend:
         - nvm install 20
         - nvm use 20
         - node -v
-        - npm install --no-audit --no-fund --cache .npm --prefer-offline
-        - npx ampx generate outputs --branch $AWS_BRANCH --app-id $AWS_APP_ID --out-dir src
+        - npm install --no-audit --no-fund --include=dev --cache .npm --prefer-offline
+        - |
+          if [ -z "${AWS_BRANCH:-}" ] || [ -z "${AWS_APP_ID:-}" ]; then
+            echo "ERROR: AWS_BRANCH or AWS_APP_ID is empty."
+            exit 1
+          fi
+        - npx ampx generate outputs --branch "$AWS_BRANCH" --app-id "$AWS_APP_ID" --out-dir src
     build:
       commands:
         - npm run build

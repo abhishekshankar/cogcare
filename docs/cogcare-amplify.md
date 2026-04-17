@@ -7,6 +7,7 @@
 
 ## Frontend hosting (AWS Amplify Hosting)
 
+- **Backend build installs devDependencies:** Amplify’s install step often runs with `NODE_ENV=production`, which skips `devDependencies`. This repo keeps **`@aws-amplify/backend-cli`** (the `ampx` CLI) in **devDependencies**, so **[`amplify.yml`](../amplify.yml)** uses **`npm install --include=dev`**. Without that, `npx ampx pipeline-deploy` fails. Also use the full command **`npx ampx pipeline-deploy …`** — **`npx @aws-amplify/backend-cli`** alone prints help (no subcommand).
 - Connect this repo in **[Amplify Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/getting-started.html)** as a **Gen 2 fullstack** app so builds can deploy the backend. The build spec is **[`amplify.yml`](../amplify.yml)**:
   - **Backend phase:** `npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID`
   - **Frontend phase:** `npx ampx generate outputs … --out-dir src`, then `npm run build` → artifacts from **`dist/`**

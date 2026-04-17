@@ -11,13 +11,16 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.owner()]),
 
-  /** Per-email daily cap for completeAssessment (Lambda only). PK slotKey = email#YYYY-MM-DD (UTC). Auth: schema-level allow.resource(completeAssessment). */
+  /** Per-email daily cap for completeAssessment (Lambda only). PK slotKey = email#YYYY-MM-DD (UTC). */
   OnboardingAttempt: a
     .model({
       slotKey: a.string().required(),
       hitCount: a.integer().required(),
     })
-    .identifier(['slotKey']),
+    .identifier(['slotKey'])
+    .authorization((allow) => [
+      allow.resource(completeAssessment).to(['mutate', 'query']),
+    ]),
 
   Assessment: a
     .model({

@@ -25,11 +25,13 @@ backend.completeAssessment.addEnvironment(
   backend.auth.resources.userPool.userPoolId,
 )
 
+// CloudFormation AllowMethods only allows GET|PUT|HEAD|POST|PATCH|DELETE|* — not OPTIONS.
+// Use * so browsers’ CORS preflight (OPTIONS) is allowed; listing OPTIONS fails validation.
 const fnUrl = backend.completeAssessment.resources.lambda.addFunctionUrl({
   authType: FunctionUrlAuthType.NONE,
   cors: {
     allowedOrigins: ['*'],
-    allowedMethods: [HttpMethod.POST, HttpMethod.OPTIONS],
+    allowedMethods: [HttpMethod.ALL],
     allowedHeaders: ['content-type', 'authorization'],
   },
 })

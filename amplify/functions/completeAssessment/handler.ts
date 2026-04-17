@@ -33,8 +33,9 @@ async function getDataClient() {
 function corsHeaders(origin: string) {
   return {
     'Access-Control-Allow-Origin': origin || '*',
-    'Access-Control-Allow-Headers': 'content-type',
-    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+    // Match Function URL CORS in amplify/backend.ts (preflight may request these headers).
+    'Access-Control-Allow-Headers': 'content-type, authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json',
   }
 }

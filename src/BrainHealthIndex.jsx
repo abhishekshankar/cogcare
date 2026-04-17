@@ -263,7 +263,12 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
         : JSON.stringify({ email: trimmed, results: quizResults })
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body,
       })
       let data = {}
@@ -283,7 +288,12 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
       }
     } catch (err) {
       setEmailStatus('error')
-      setEmailMessage(err instanceof Error ? err.message : 'Could not send email.')
+      let msg = err instanceof Error ? err.message : 'Could not send email.'
+      if (msg === 'Failed to fetch' || msg === 'Load failed' || msg === 'NetworkError when attempting to fetch resource.') {
+        msg =
+          'Could not reach the email service (network or browser blocked the request). If this persists, confirm the app has a valid assessment URL in deployment settings, or try another network.'
+      }
+      setEmailMessage(msg)
     }
   }
 

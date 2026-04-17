@@ -130,6 +130,12 @@ We offer a library of education designed for your specific needs. This includes 
               Blog
             </a>
             <Link
+              to="/login?mode=signup"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
+            >
+              Create account
+            </Link>
+            <Link
               to="/login"
               className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
             >

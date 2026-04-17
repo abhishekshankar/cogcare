@@ -11,7 +11,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.owner()]),
 
-  /** Per-email daily cap for completeAssessment (Lambda only). PK slotKey = email#YYYY-MM-DD (UTC). */
+  /** Per-email daily cap for completeAssessment (Lambda). PK slotKey = email#YYYY-MM-DD (UTC). */
   OnboardingAttempt: a
     .model({
       slotKey: a.string().required(),
@@ -19,7 +19,10 @@ const schema = a.schema({
     })
     .identifier(['slotKey'])
     .authorization((allow) => [
-      allow.resource(completeAssessment).to(['mutate', 'query']),
+      // Per-model `allow` has no `.resource()` (Amplify strips it — see ModelType.authorization).
+      // Schema-level `allow.resource(completeAssessment)` still wires Lambda IAM access.
+      // GraphQL auth for this model: IAM / Identity Pool (matches Lambda data client).
+      allow.authenticated('identityPool').to(['create', 'read', 'update', 'delete']),
     ]),
 
   Assessment: a

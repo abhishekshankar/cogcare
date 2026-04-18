@@ -27,28 +27,47 @@ export const handler: VerifyAuthChallengeResponseTriggerHandler = async (event) 
   event.response.answerCorrect = false
   const answer = event.request.challengeAnswer?.trim() ?? ''
   if (!answer) {
+    console.warn('[verify-magic-link] missing challengeAnswer')
     return event
   }
 
-  const username = (event.userName || event.request.userAttributes?.email || '').trim().toLowerCase()
+  /**
+   * In Amplify Gen 2 with `loginWith.email`, the Cognito Username is an auto-generated
+   * UUID (matches `sub`), not the email. Always prefer the verified email attribute
+   * for comparing against the MagicLinkToken row.
+   */
+  const emailAttr = event.request.userAttributes?.email ?? ''
+  const username = emailAttr.trim().toLowerCase()
   const tokenHash = hashToken(answer)
 
   try {
     const client = await getDataClient()
     const { data: row, errors } = await client.models.MagicLinkToken.get({ tokenHash })
     if (errors?.length || !row) {
+      console.warn('[verify-magic-link] token not found', {
+        userName: event.userName,
+        emailAttr: username,
+        errors: errors?.map((e) => e.message),
+      })
       return event
     }
 
     const email = typeof row.email === 'string' ? row.email.trim().toLowerCase() : ''
-    if (email !== username) {
+    if (!username || email !== username) {
+      console.warn('[verify-magic-link] email mismatch', {
+        rowEmail: email,
+        emailAttr: username,
+        userName: event.userName,
+      })
       return event
     }
     if (row.used) {
+      console.warn('[verify-magic-link] token already used', { email })
       return event
     }
     const exp = row.expiresAt ? new Date(String(row.expiresAt)).getTime() : 0
     if (!exp || Number.isNaN(exp) || Date.now() > exp) {
+      console.warn('[verify-magic-link] token expired', { email, expiresAt: row.expiresAt })
       return event
     }
 
@@ -57,11 +76,16 @@ export const handler: VerifyAuthChallengeResponseTriggerHandler = async (event) 
       used: true,
     })
     if (upErr?.length) {
+      console.warn('[verify-magic-link] mark-used failed', {
+        email,
+        errors: upErr.map((e) => e.message),
+      })
       return event
     }
 
     event.response.answerCorrect = true
-  } catch {
+  } catch (err) {
+    console.error('[verify-magic-link] unexpected error', err)
     event.response.answerCorrect = false
   }
   return event

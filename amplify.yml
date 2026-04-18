@@ -26,11 +26,11 @@ backend:
         - export NODE_OPTIONS=--max-old-space-size=8192
         # APP_BASE_URL is baked into the completeAssessment Lambda env at synth time
         # (see amplify/backend.ts). Magic-link emails use it to build /auth/magic URLs.
-        # Prefer an explicit Hosting env var (e.g. custom domain like https://app.cogcare.org);
-        # fall back to the default Amplify branch URL `https://<branch>.<app-id>.amplifyapp.com`.
+        # Production custom domain is https://cogcare.org. Override per branch via the Amplify
+        # Hosting "Environment variables" UI (e.g. preview branches can point to their own URL).
         - |
           if [ -z "${APP_BASE_URL:-}" ]; then
-            export APP_BASE_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com"
+            export APP_BASE_URL="https://cogcare.org"
             echo "APP_BASE_URL not set; defaulting to ${APP_BASE_URL}"
           else
             echo "APP_BASE_URL provided: ${APP_BASE_URL}"

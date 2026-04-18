@@ -227,7 +227,11 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   )
 }
 
-/** In dev, Vite serves POST /api/send-quiz-email (see vite-plugin-local-email-api.js). */
+/**
+ * Legacy email-only path when `VITE_COMPLETE_ASSESSMENT_URL` is unset: no Cognito onboarding or
+ * “existing account” dashboard linking — use the Lambda URL for full quiz completion behavior.
+ * In dev, Vite serves POST /api/send-quiz-email (see vite-plugin-local-email-api.js).
+ */
 const LEGACY_QUIZ_EMAIL_URL =
   import.meta.env.VITE_QUIZ_EMAIL_API_URL ||
   (import.meta.env.DEV ? '/api/send-quiz-email' : '')
@@ -251,6 +255,9 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
   const [email, setEmail] = useState('')
   const [emailStatus, setEmailStatus] = useState('idle')
   const [emailMessage, setEmailMessage] = useState('')
+  /** After successful Lambda submit: `new_user` | `existing_user` (legacy API omits). */
+  const [emailScenario, setEmailScenario] = useState(null)
+  const [existingAccountModalOpen, setExistingAccountModalOpen] = useState(false)
 
   const sendResultsEmail = async () => {
     if (!canEmail) return
@@ -297,8 +304,15 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
           (text && text.length < 400 ? text.trim() : '')
         throw new Error(serverMsg || `Request failed (${res.status})`)
       }
+      const scenario =
+        typeof data.scenario === 'string' ? data.scenario : 'new_user'
+      setEmailScenario(scenario)
       setEmailStatus('sent')
       setEmailMessage('')
+      if (resolvedFnUrl && scenario === 'existing_user') {
+        setExistingAccountModalOpen(true)
+        return
+      }
       if (resolvedFnUrl) {
         onClose?.()
         navigate('/login?from=quiz&returnTo=' + encodeURIComponent('/dashboard'))
@@ -339,7 +353,9 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
         emailStatus === 'sent' ? (
           <p className="text-sm font-medium text-[#3D4B3E]" role="status">
             {completeAssessmentUrl
-              ? 'Check your email for your report and temporary password, then sign in.'
+              ? emailScenario === 'existing_user'
+                ? 'We emailed you a copy of your report. Use the dialog to sign in and view this quiz on your dashboard.'
+                : 'Check your email for your report and temporary password, then sign in.'
               : 'Check your inbox — we sent your Brain Health Index summary.'}
           </p>
         ) : (
@@ -361,6 +377,7 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
                     setEmailStatus('idle')
                     setEmailMessage('')
                   }
+                  setEmailScenario(null)
                 }}
                 disabled={emailStatus === 'sending'}
                 className="min-h-[48px] flex-1 rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 text-sm text-[#1A1A1A] outline-none ring-0 transition placeholder:text-slate-400 focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20 disabled:opacity-60"
@@ -392,8 +409,72 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
     </div>
   )
 
+  const returnToEnc = encodeURIComponent('/dashboard')
+  const encEmail = encodeURIComponent(email.trim())
+  /** quizFlow=existing skips the “temporary password” hint on LoginPage. */
+  const signInQuizUrl = `/login?from=quiz&quizFlow=existing&returnTo=${returnToEnc}&prefillEmail=${encEmail}`
+  const forgotQuizUrl = `/login?mode=forgot&returnTo=${returnToEnc}&prefillEmail=${encEmail}`
+
   return (
     <div className="flex flex-col h-full">
+      {existingAccountModalOpen ? (
+        <div
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-[#1A1A1A]/50 p-4 sm:items-center"
+          role="presentation"
+          onClick={() => setExistingAccountModalOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bhi-existing-account-title"
+            className="w-full max-w-md rounded-2xl border border-[#E8DCC4] bg-[#FDFBF7] p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2
+              id="bhi-existing-account-title"
+              className="font-serif text-xl italic text-[#3D4B3E]"
+            >
+              You already have an account
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-[#3D4B3E]/90">
+              This email is registered with CogCare. We added this quiz to your dashboard and sent a
+              copy of your report to your inbox. Sign in to review your results.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button
+                type="button"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-[#3D4B3E] px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#2D382D]"
+                onClick={() => {
+                  setExistingAccountModalOpen(false)
+                  onClose?.()
+                  navigate(signInQuizUrl)
+                }}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-[#E8DCC4] bg-white px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] transition hover:bg-[#F3EFE9]"
+                onClick={() => {
+                  setExistingAccountModalOpen(false)
+                  onClose?.()
+                  navigate(forgotQuizUrl)
+                }}
+              >
+                Forgot my password
+              </button>
+            </div>
+            <button
+              type="button"
+              className="mt-4 w-full text-center text-sm text-[#A67B5B] underline-offset-4 hover:underline"
+              onClick={() => setExistingAccountModalOpen(false)}
+            >
+              Not now
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-6">
         <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B]">
           Assessment Complete

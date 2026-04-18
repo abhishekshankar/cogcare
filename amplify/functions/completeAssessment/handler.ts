@@ -95,6 +95,32 @@ async function resolveSub(
 
 const DAILY_CAP = 3
 
+/** Data client from `getDataClient()` — avoid explicit Schema generic here (TS stack depth). */
+async function recordOnboardingHit(
+  client: { models: { OnboardingAttempt: { update: (input: unknown) => Promise<unknown>; create: (input: unknown) => Promise<unknown> } } },
+  attemptRow: { slotKey: string; hitCount?: number | null } | null,
+  slotKey: string,
+) {
+  const nextHits = (attemptRow?.hitCount ?? 0) + 1
+  if (attemptRow) {
+    const { errors: upErr } = await client.models.OnboardingAttempt.update({
+      slotKey,
+      hitCount: nextHits,
+    })
+    if (upErr?.length) {
+      throw new Error(upErr.map((e) => e.message).join('; '))
+    }
+  } else {
+    const { errors: crErr } = await client.models.OnboardingAttempt.create({
+      slotKey,
+      hitCount: 1,
+    })
+    if (crErr?.length) {
+      throw new Error(crErr.map((e) => e.message).join('; '))
+    }
+  }
+}
+
 export const handler: Handler = async (event) => {
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*'
   const headers = corsHeaders(allowedOrigin)
@@ -246,29 +272,12 @@ export const handler: Handler = async (event) => {
 </body></html>`,
     })
 
-    const nextHits = (attemptRow?.hitCount ?? 0) + 1
-    if (attemptRow) {
-      const { errors: upErr } = await client.models.OnboardingAttempt.update({
-        slotKey,
-        hitCount: nextHits,
-      })
-      if (upErr?.length) {
-        throw new Error(upErr.map((e) => e.message).join('; '))
-      }
-    } else {
-      const { errors: crErr } = await client.models.OnboardingAttempt.create({
-        slotKey,
-        hitCount: 1,
-      })
-      if (crErr?.length) {
-        throw new Error(crErr.map((e) => e.message).join('; '))
-      }
-    }
+    await recordOnboardingHit(client, attemptRow, slotKey)
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ ok: true, nextStep: 'SIGN_IN' }),
+      body: JSON.stringify({ ok: true, scenario: 'new_user', nextStep: 'SIGN_IN' }),
     }
   } catch (e: unknown) {
     if (
@@ -277,13 +286,92 @@ export const handler: Handler = async (event) => {
       'name' in e &&
       (e as { name: string }).name === 'UsernameExistsException'
     ) {
-      return {
-        statusCode: 409,
-        headers,
-        body: JSON.stringify({
-          error: 'An account with this email already exists. Sign in instead.',
-          code: 'USER_EXISTS',
-        }),
+      try {
+        const sub = await resolveSub(poolId, email)
+        if (!sub) {
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ error: 'Could not resolve account for this email.' }),
+          }
+        }
+
+        const { data: existingAssessments, errors: assessListErr } =
+          await client.models.Assessment.list({
+            filter: { owner: { eq: sub } },
+          })
+        if (assessListErr?.length) {
+          throw new Error(assessListErr.map((x) => x.message).join('; '))
+        }
+        const priorCount = existingAssessments?.length ?? 0
+        const nextCount = priorCount + 1
+        const newCredit = computeBrainCreditFromResults(results, {
+          completedAssessmentCount: nextCount,
+        })
+        const completedAt = new Date().toISOString()
+
+        const { data: profiles, errors: profileListErr } = await client.models.UserProfile.list({
+          filter: { owner: { eq: sub } },
+          limit: 1,
+        })
+        if (profileListErr?.length) {
+          throw new Error(profileListErr.map((x) => x.message).join('; '))
+        }
+        const profileRow = profiles?.[0]
+        if (profileRow?.id) {
+          const { errors: upProfErr } = await client.models.UserProfile.update({
+            id: profileRow.id,
+            brainCreditScore: newCredit,
+          })
+          if (upProfErr?.length) {
+            throw new Error(upProfErr.map((x) => x.message).join('; '))
+          }
+        } else {
+          const { errors: createProfErr } = await client.models.UserProfile.create({
+            displayName: email.split('@')[0] || 'Member',
+            brainCreditScore: newCredit,
+            createdAt: completedAt,
+            owner: sub,
+          })
+          if (createProfErr?.length) {
+            throw new Error(createProfErr.map((x) => x.message).join('; '))
+          }
+        }
+
+        const { errors: assessmentErrors } = await client.models.Assessment.create({
+          type: 'BHI',
+          answersJson: JSON.stringify(answers),
+          resultsJson: JSON.stringify(results ?? {}),
+          completedAt,
+          owner: sub,
+        })
+        if (assessmentErrors?.length) {
+          throw new Error(assessmentErrors.map((x) => x.message).join('; '))
+        }
+
+        await sendBrevoEmail({
+          apiKey,
+          senderEmail,
+          senderName,
+          to: email,
+          subject: 'Your Brain Health Index results',
+          html: reportHtml,
+        })
+
+        await recordOnboardingHit(client, attemptRow, slotKey)
+
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ ok: true, scenario: 'existing_user', nextStep: 'SIGN_IN' }),
+        }
+      } catch (inner: unknown) {
+        const message = inner instanceof Error ? inner.message : 'Unexpected error'
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ error: message }),
+        }
       }
     }
 

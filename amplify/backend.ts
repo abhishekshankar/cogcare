@@ -15,7 +15,11 @@ const backend = defineBackend({
 
 backend.completeAssessment.resources.lambda.addToRolePolicy(
   new PolicyStatement({
-    actions: ['cognito-idp:AdminCreateUser', 'cognito-idp:AdminDeleteUser'],
+    actions: [
+      'cognito-idp:AdminCreateUser',
+      'cognito-idp:AdminDeleteUser',
+      'cognito-idp:AdminGetUser',
+    ],
     resources: [backend.auth.resources.userPool.userPoolArn],
   }),
 )

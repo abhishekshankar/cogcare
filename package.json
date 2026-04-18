@@ -13,7 +13,10 @@
     "preview": "vite preview",
     "deploy": "VITE_BASE_PATH=/cogcare/ npm run build && gh-pages -d dist",
     "sandbox": "ampx sandbox --outputs-out-dir src",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify:outputs": "node scripts/verify-amplify-outputs.cjs",
+    "verify:quick": "npm run lint && npm run build && npm run verify:outputs",
+    "verify": "npm run lint && npm run build && npm run verify:outputs && npm run test:e2e"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.15.3",

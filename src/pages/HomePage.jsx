@@ -200,9 +200,12 @@ We offer a library of education designed for your specific needs. This includes 
           <div className="relative mt-10 flex justify-center md:col-span-5 md:mt-0">
             <div className="relative aspect-[4/5] w-full max-w-[min(100%,20rem)] overflow-hidden rounded-[2.25rem] border-[8px] border-white shadow-[0_40px_80px_-15px_rgba(61,75,62,0.12)] ring-1 ring-slate-100 sm:max-w-sm sm:rounded-[3rem] sm:border-[12px] lg:max-w-lg lg:rounded-[4.5rem] lg:border-[16px]">
               <img
-                src="https://cogcare.org/wp-content/uploads/2024/09/marcus-aurelius-6787978.jpg"
+                src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=900"
                 alt="Portrait representing cognitive resilience and well-being"
-                className="w-full h-full object-cover grayscale-[0.05]"
+                className="h-full w-full object-cover grayscale-[0.05]"
+                width={900}
+                height={1125}
+                decoding="async"
               />
               <div className="absolute inset-0 bg-[#3D4B3E]/5 mix-blend-multiply" />
             </div>

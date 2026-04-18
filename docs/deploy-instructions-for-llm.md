@@ -67,7 +67,10 @@ Secrets are **not** “Hosting environment variables” for the frontend. They m
 - **Build spec:** Root `amplify.yml` (must stay at repo root).
 - **Backend entry:** `amplify/backend.ts` defines Cognito, AppSync (Amplify Data), S3, and a Lambda `completeAssessment` with a **Lambda Function URL** (public HTTPS POST).
 - **Email:** Production path is **`completeAssessment` Lambda** → Brevo REST API (one combined email: BHI report + magic link). Secrets are **`BREVO_API_KEY`** and **`BREVO_SENDER_EMAIL`** (see `amplify/functions/completeAssessment/resource.ts`). These are **Lambda secrets**, never `VITE_*`.
-- **Magic links:** The Lambda builds URLs as `${APP_BASE_URL}/auth/magic?email=…&token=…`. Set **`APP_BASE_URL`** to the public HTTPS origin of the SPA (**no trailing slash**, include GitHub Pages path prefix if used), e.g. `https://main.xxxxx.amplifyapp.com`. Default in `amplify/backend.ts` is `http://localhost:5173` (sandbox/local only). Configure **`APP_BASE_URL`** for production via the shell when running `ampx sandbox` / `ampx pipeline-deploy`, or your CI/backend env so the backend build sees it.
+- **Magic links:** The Lambda builds URLs as `${APP_BASE_URL}/auth/magic?email=…&token=…`. The value is **baked into the Lambda environment at backend-deploy time** (CDK synth), so it must be set in the **shell that runs `ampx pipeline-deploy` / `ampx sandbox`**, not at request time.
+  - **Amplify Hosting:** `amplify.yml` defaults **`APP_BASE_URL=https://cogcare.org`** before backend deploy. To override per branch (preview/staging), set **`APP_BASE_URL`** in the Amplify Hosting **Environment variables** for that branch and trigger a backend redeploy.
+  - **Local sandbox:** `export APP_BASE_URL=http://localhost:5173` (or your dev URL) before `npx ampx sandbox`.
+  - **Symptom of misconfig:** emailed magic links open `http://localhost:5173/auth/magic…`. Fix by setting `APP_BASE_URL` and **redeploying the backend** (frontend redeploy alone won't refresh the Lambda env).
 - **Client config:** The SPA needs real **`src/amplify_outputs.json`** at **build time** (or equivalent `VITE_*` overrides — see `src/lib/amplifyOutputs.js`). A stub JSON with empty `user_pool_client_id` disables auth and email UI.
 - **Hosting build flow (already in repo):**
   1. **Backend phase:** `npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID`

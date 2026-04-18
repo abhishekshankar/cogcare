@@ -30,7 +30,10 @@
 
 ## Backend environment (magic links)
 
-- **`APP_BASE_URL`** — Injected in `amplify/backend.ts` into the **`completeAssessment`** Lambda (`process.env.APP_BASE_URL`). Must be the **public HTTPS URL** of the SPA (no trailing slash; include a subpath if the app is hosted under one). Used to build **`/auth/magic?email=&token=`** links in onboarding email. Defaults to `http://localhost:5173` when unset (local/sandbox). **Set this for production** when running backend deploy so emailed links match your Hosting URL.
+- **`APP_BASE_URL`** — Injected in `amplify/backend.ts` into the **`completeAssessment`** Lambda (`process.env.APP_BASE_URL`). Must be the **public HTTPS URL** of the SPA (no trailing slash; include a subpath if the app is hosted under one). Used to build **`/auth/magic?email=&token=`** links in onboarding email. Read at **CDK synth time** (`ampx pipeline-deploy` / `ampx sandbox`), so it must be exported in the shell that runs the deploy — not at request time.
+  - `amplify.yml` defaults `APP_BASE_URL=https://cogcare.org` for Amplify Hosting builds when not already set (production custom domain).
+  - To target a different host (preview/staging branch), set `APP_BASE_URL` in the Amplify Hosting **Environment variables** for the branch and trigger a backend redeploy.
+  - For sandbox, `export APP_BASE_URL=http://localhost:5173` before `npx ampx sandbox`. If links land at `localhost`, the Lambda was synthesized without the var; redeploy the backend.
 - **Cognito custom auth** — Lambda triggers under `amplify/auth/` (`define-auth-challenge`, `create-auth-challenge`, `verify-auth-challenge-response`, `pre-sign-up`) implement **CUSTOM_WITHOUT_SRP** magic-link sign-in. The **`MagicLinkToken`** model stores hashed one-time tokens (see `amplify/data/resource.ts`).
 
 ## Frontend environment variables

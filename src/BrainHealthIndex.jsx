@@ -354,7 +354,7 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
             <p className="mt-2 text-sm font-medium leading-relaxed text-[#3D4B3E]">
               {completeAssessmentUrl
                 ? emailScenario === 'existing_user'
-                  ? 'We emailed you a copy of your report and a one-click dashboard link. Use the dialog to sign in if you prefer your password.'
+                  ? 'Check your email for a magic link—or, if you remember your password, sign in.'
                   : `We sent your Brain Health Index report and a one-click sign-in link to ${email.trim()}. The link expires in 15 minutes.`
                 : 'Check your inbox — we sent your Brain Health Index summary.'}
             </p>
@@ -427,7 +427,6 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
   const encEmail = encodeURIComponent(email.trim())
   /** quizFlow=existing skips the “temporary password” hint on LoginPage. */
   const signInQuizUrl = `/login?from=quiz&quizFlow=existing&returnTo=${returnToEnc}&prefillEmail=${encEmail}`
-  const forgotQuizUrl = `/login?mode=forgot&returnTo=${returnToEnc}&prefillEmail=${encEmail}`
 
   return (
     <div className="flex flex-col h-full">
@@ -452,13 +451,15 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[#3D4B3E]/90">
               This email is registered with CogCare. We added this quiz to your dashboard and emailed
-              you a report plus a one-click link to your dashboard. Sign in below if you prefer to
-              use your password.
+              you your report.
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <p className="mt-3 text-sm font-medium leading-relaxed text-[#3D4B3E]">
+              Check your email for a magic link—or, if you remember your password, sign in.
+            </p>
+            <div className="mt-6">
               <button
                 type="button"
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-[#3D4B3E] px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#2D382D]"
+                className="inline-flex min-h-[48px] w-full items-center justify-center rounded-xl bg-[#3D4B3E] px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#2D382D]"
                 onClick={() => {
                   setExistingAccountModalOpen(false)
                   onClose?.()
@@ -466,17 +467,6 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
                 }}
               >
                 Sign in
-              </button>
-              <button
-                type="button"
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-[#E8DCC4] bg-white px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] transition hover:bg-[#F3EFE9]"
-                onClick={() => {
-                  setExistingAccountModalOpen(false)
-                  onClose?.()
-                  navigate(forgotQuizUrl)
-                }}
-              >
-                Forgot my password
               </button>
             </div>
             <button

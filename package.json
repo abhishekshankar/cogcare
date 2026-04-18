@@ -3,33 +3,57 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "VITE_BASE_PATH=/cogcare/ npm run build && gh-pages -d dist"
+    "deploy": "VITE_BASE_PATH=/cogcare/ npm run build && gh-pages -d dist",
+    "sandbox": "ampx sandbox --outputs-out-dir src",
+    "test:e2e": "playwright test",
+    "write:email-config": "node scripts/write-runtime-email-config.cjs",
+    "verify:outputs": "node scripts/verify-amplify-outputs.cjs",
+    "verify:quick": "npm run lint && npm run write:email-config && npm run build && npm run verify:outputs",
+    "verify": "npm run lint && npm run write:email-config && npm run build && npm run verify:outputs && npm run test:e2e"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.15.3",
+    "@aws-sdk/client-cognito-identity-provider": "^3.787.0",
+    "@aws-sdk/client-sesv2": "^3.1031.0",
     "@fluentui/react-components": "^9.73.7",
+    "aws-amplify": "^6.16.4",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.14.1"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.22.0",
+    "@aws-amplify/backend-cli": "^1.8.2",
+    "@aws-amplify/backend-function": "^1.14.0",
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/vite": "^4.1.18",
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^25.6.0",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
+    "aws-cdk-lib": "^2.250.0",
+    "constructs": "^10.6.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "esbuild": "^0.27.2",
     "gh-pages": "^6.3.0",
     "globals": "^16.5.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
     "vite": "^7.2.4"
   }
 }

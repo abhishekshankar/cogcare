@@ -1,0 +1,16 @@
+---
+description: How Brevo is used in this repo — MCP vs REST
+alwaysApply: true
+---
+
+# Brevo: MCP (IDE) vs REST (app)
+
+- **End users (quiz, production builds)** cannot use MCP. The browser and serverless handlers must call Brevo over **HTTPS REST** only: `api/send-quiz-email.js` and `BREVO_API_KEY` / `BREVO_SENDER_EMAIL` in `.env`, or the Amplify `completeAssessment` Lambda. Do not try to embed or proxy MCP in React/Vite client code.
+
+- **Cursor agent (this chat)** may use the **Brevo MCP** server (`user-brevo`) for account checks: senders, transactional tests, templates, etc. Use MCP when debugging Brevo configuration or verifying sends without changing app code.
+
+- **Keys**: REST API keys live in `.env` (never `VITE_*` for secrets). MCP credentials live in Cursor MCP settings (`~/.cursor/mcp.json`), not in the repo.
+
+- **IP allowlist**: If Brevo rejects calls with “unrecognised IP”, add the public IP in the Brevo **web UI** (Security → Authorised IPs). There is **no** API or MCP tool to change that list — it is not something we can fix in code.
+
+- **Hosting**: Documented production path is **AWS Amplify** (Hosting + Gen 2 backend). Do not add or rely on Vercel for this project unless the user explicitly asks for a third-party host.

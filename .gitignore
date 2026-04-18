@@ -12,14 +12,10 @@ dist
 dist-ssr
 *.local
 
-# Env and secrets (never commit)
+# Env (secrets); keep .env.example tracked
 .env
 .env.*
 !.env.example
-
-# Playwright
-playwright-report/
-test-results/
 
 # Editor directories and files
 .vscode/*
@@ -31,3 +27,9 @@ test-results/
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

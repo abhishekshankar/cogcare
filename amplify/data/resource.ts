@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend'
 import { completeAssessment } from '../functions/completeAssessment/resource'
+import { verifyAuthChallengeResponse } from '../auth/verify-auth-challenge-response/resource'
 
 const schema = a.schema({
   /**
@@ -17,6 +18,22 @@ const schema = a.schema({
       createdAt: a.datetime(),
     })
     .authorization((allow) => [allow.ownerDefinedIn('owner')]),
+
+  /**
+   * One-time magic-link tokens for CUSTOM_WITHOUT_SRP sign-in (quiz email).
+   * PK = sha256(rawToken). IAM access from completeAssessment + verifyAuthChallengeResponse Lambdas.
+   */
+  MagicLinkToken: a
+    .model({
+      tokenHash: a.string().required(),
+      email: a.string().required(),
+      expiresAt: a.datetime().required(),
+      used: a.boolean().required(),
+    })
+    .identifier(['tokenHash'])
+    .authorization((allow) => [
+      allow.authenticated('identityPool').to(['create', 'read', 'update', 'delete']),
+    ]),
 
   /** Per-email daily cap for completeAssessment (Lambda). PK slotKey = email#YYYY-MM-DD (UTC). */
   OnboardingAttempt: a
@@ -55,6 +72,7 @@ const schema = a.schema({
     .authorization((allow) => [allow.authenticated().to(['read'])]),
 }).authorization((allow) => [
   allow.resource(completeAssessment).to(['mutate', 'query']),
+  allow.resource(verifyAuthChallengeResponse).to(['mutate', 'query']),
 ])
 
 export type Schema = ClientSchema<typeof schema>

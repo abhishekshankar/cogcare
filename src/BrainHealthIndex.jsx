@@ -313,10 +313,6 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
         setExistingAccountModalOpen(true)
         return
       }
-      if (resolvedFnUrl) {
-        onClose?.()
-        navigate('/login?from=quiz&returnTo=' + encodeURIComponent('/dashboard'))
-      }
     } catch (err) {
       setEmailStatus('error')
       let msg = err instanceof Error ? err.message : 'Could not send email.'
@@ -341,7 +337,7 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
           <p className="mt-1 text-[13px] leading-relaxed text-[#3D4B3E]/85">
             {canEmail
               ? completeAssessmentUrl
-                ? 'Create your account and save this assessment to your dashboard (check email for login).'
+                ? 'We’ll email your report and a one-click link to open your dashboard (link expires in 15 minutes).'
                 : 'Get a copy of this summary sent to your inbox.'
               : import.meta.env.DEV
                 ? 'Email sending is not configured locally. Add VITE_QUIZ_EMAIL_API_URL to .env, set VITE_COMPLETE_ASSESSMENT_URL, or run npm run sandbox so amplify_outputs.json includes your function URL.'
@@ -351,13 +347,31 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
       </div>
       {canEmail ? (
         emailStatus === 'sent' ? (
-          <p className="text-sm font-medium text-[#3D4B3E]" role="status">
-            {completeAssessmentUrl
-              ? emailScenario === 'existing_user'
-                ? 'We emailed you a copy of your report. Use the dialog to sign in and view this quiz on your dashboard.'
-                : 'Check your email for your report and temporary password, then sign in.'
-              : 'Check your inbox — we sent your Brain Health Index summary.'}
-          </p>
+          <div className="rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] p-4" role="status">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+              Check your inbox
+            </p>
+            <p className="mt-2 text-sm font-medium leading-relaxed text-[#3D4B3E]">
+              {completeAssessmentUrl
+                ? emailScenario === 'existing_user'
+                  ? 'We emailed you a copy of your report and a one-click dashboard link. Use the dialog to sign in if you prefer your password.'
+                  : `We sent your Brain Health Index report and a one-click sign-in link to ${email.trim()}. The link expires in 15 minutes.`
+                : 'Check your inbox — we sent your Brain Health Index summary.'}
+            </p>
+            {completeAssessmentUrl && emailScenario !== 'existing_user' ? (
+              <button
+                type="button"
+                className="mt-4 text-[13px] font-semibold text-[#A67B5B] underline-offset-4 hover:underline"
+                onClick={() => {
+                  setEmailStatus('idle')
+                  setEmailScenario(null)
+                  setEmailMessage('')
+                }}
+              >
+                Wrong email? Try again
+              </button>
+            ) : null}
+          </div>
         ) : (
           <>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
@@ -437,8 +451,9 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
               You already have an account
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[#3D4B3E]/90">
-              This email is registered with CogCare. We added this quiz to your dashboard and sent a
-              copy of your report to your inbox. Sign in to review your results.
+              This email is registered with CogCare. We added this quiz to your dashboard and emailed
+              you a report plus a one-click link to your dashboard. Sign in below if you prefer to
+              use your password.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button

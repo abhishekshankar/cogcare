@@ -19,6 +19,7 @@ backend.completeAssessment.resources.lambda.addToRolePolicy(
       'cognito-idp:AdminCreateUser',
       'cognito-idp:AdminDeleteUser',
       'cognito-idp:AdminGetUser',
+      'cognito-idp:AdminSetUserPassword',
     ],
     resources: [backend.auth.resources.userPool.userPoolArn],
   }),
@@ -27,6 +28,12 @@ backend.completeAssessment.resources.lambda.addToRolePolicy(
 backend.completeAssessment.addEnvironment(
   'USER_POOL_ID',
   backend.auth.resources.userPool.userPoolId,
+)
+
+/** Public origin + path prefix for magic links (no trailing slash). Set in CI / sandbox env. */
+backend.completeAssessment.addEnvironment(
+  'APP_BASE_URL',
+  process.env.APP_BASE_URL ?? 'http://localhost:5173',
 )
 
 // CloudFormation AllowMethods only allows GET|PUT|HEAD|POST|PATCH|DELETE|* — not OPTIONS.

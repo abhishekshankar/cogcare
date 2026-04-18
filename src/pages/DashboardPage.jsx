@@ -17,6 +17,7 @@ import { clearPendingNewPasswordFlag, hasPendingNewPasswordFlag } from '../lib/a
 export default function DashboardPage() {
   const navigate = useNavigate()
   const {
+    client,
     email,
     profile,
     assessments,
@@ -143,7 +144,10 @@ export default function DashboardPage() {
                   />
                 }
               />
-              <Route path="tests" element={<TestsTab assessments={assessments} onRefresh={load} />} />
+              <Route
+                path="tests"
+                element={<TestsTab client={client} assessments={assessments} onRefresh={load} />}
+              />
               <Route path="more-tests" element={<MoreTestsTab />} />
               <Route path="consultants" element={<ConsultantsTab rows={consultants} />} />
               <Route

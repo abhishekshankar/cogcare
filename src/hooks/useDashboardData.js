@@ -6,6 +6,22 @@ import { hasPendingNewPasswordFlag } from '../lib/authFlags'
 
 const client = generateClient()
 
+async function listAllAssessments() {
+  const all = []
+  let nextToken = undefined
+  for (;;) {
+    const res = await client.models.Assessment.list({
+      limit: 200,
+      ...(nextToken ? { nextToken } : {}),
+    })
+    const batch = res.data ?? []
+    all.push(...batch)
+    nextToken = res.nextToken
+    if (!nextToken) break
+  }
+  return all
+}
+
 /**
  * Loads dashboard entities from Amplify Data + optional avatar preview URL.
  */
@@ -29,8 +45,8 @@ export function useDashboardData() {
       setEmail(attrs.email || attrs.preferred_username || '')
       const { data: profiles } = await client.models.UserProfile.list({ limit: 1 })
       setProfile(profiles?.[0] ?? null)
-      const { data: assess } = await client.models.Assessment.list()
-      setAssessments(assess ?? [])
+      const assess = await listAllAssessments()
+      setAssessments(assess)
       const { data: cons } = await client.models.Consultant.list()
       setConsultants(cons ?? [])
     } catch (err) {

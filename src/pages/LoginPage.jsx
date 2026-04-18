@@ -23,6 +23,7 @@ export default function LoginPage() {
   const returnTo = searchParams.get('returnTo') || '/dashboard'
   const fromQuiz = searchParams.get('from') === 'quiz'
   const quizFlowExisting = searchParams.get('quizFlow') === 'existing'
+  const magicLinkError = searchParams.get('magicLinkError') === '1'
   const modeParam = searchParams.get('mode')
 
   const [view, setView] = useState(() =>
@@ -306,9 +307,16 @@ export default function LoginPage() {
           ) : null}
 
           <h1 className="font-serif text-2xl italic text-[#3D4B3E]">{title}</h1>
-          {fromQuiz && view === 'signIn' && !quizFlowExisting ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]/80">
-              Use the email and temporary password we sent you, then choose a new password on the next screen.
+          {view === 'signIn' && magicLinkError ? (
+            <p
+              className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900"
+              role="alert"
+            >
+              Your sign-in link expired or was already used. Sign in with your email and password below,{' '}
+              <Link to="/" className="font-semibold underline underline-offset-2">
+                retake the quiz
+              </Link>{' '}
+              to get a new link, or use <strong>Forgot password</strong>.
             </p>
           ) : null}
           {fromQuiz && view === 'signIn' && quizFlowExisting ? (
@@ -323,7 +331,7 @@ export default function LoginPage() {
           ) : null}
           {view === 'signUp' ? (
             <p className="mt-2 text-sm text-[#3D4B3E]/80">
-              Create your CogCare account with email and password. You can also get an account by completing the Brain Health Index on the home page — we will email you a login link.
+              Create your CogCare account with email and password. You can also start from the Brain Health Index on the home page — we’ll email a one-click dashboard link.
             </p>
           ) : null}
           {view === 'confirmSignUp' ? (

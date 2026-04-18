@@ -71,6 +71,16 @@ export default function BrainCreditTab({ profile, latestResults, assessmentCount
         title="Brain credit"
         subtitle='A single score derived from your latest Brain Health Index (v1). Higher reflects a stronger "normal aging" pattern in your results — not a diagnosis.'
       />
+      <div className="rounded-2xl border border-[#E8DCC4] bg-[#F3EFE9]/40 px-4 py-3 text-sm leading-relaxed text-[#3D4B3E]/85">
+        <Link
+          to="/dashboard/tests"
+          className="font-semibold text-[#3D4B3E] underline decoration-[#A67B5B]/40 underline-offset-2 hover:text-[#2D382D]"
+        >
+          My tests
+        </Link>{' '}
+        lists every Brain Health Index you saved by emailing your results (same email as this account). Open a report,
+        export JSON, or delete past runs.
+      </div>
       <div className="rounded-3xl border border-[#E8DCC4] bg-white p-8 shadow-sm">
         <SectionLabel className="text-[#3D4B3E]/50">Your score</SectionLabel>
         <p className="mt-4 font-serif text-6xl tabular-nums text-[#3D4B3E]">{score ?? '—'}</p>

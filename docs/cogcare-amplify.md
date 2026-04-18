@@ -28,6 +28,11 @@
 
 - **Brevo** API key and sender email are configured as Lambda **secrets** in `amplify/functions/completeAssessment/resource.ts` (`secret('BREVO_API_KEY')`, etc.). They are available only to the **`completeAssessment`** function, not to Vite env vars.
 
+## Backend environment (magic links)
+
+- **`APP_BASE_URL`** — Injected in `amplify/backend.ts` into the **`completeAssessment`** Lambda (`process.env.APP_BASE_URL`). Must be the **public HTTPS URL** of the SPA (no trailing slash; include a subpath if the app is hosted under one). Used to build **`/auth/magic?email=&token=`** links in onboarding email. Defaults to `http://localhost:5173` when unset (local/sandbox). **Set this for production** when running backend deploy so emailed links match your Hosting URL.
+- **Cognito custom auth** — Lambda triggers under `amplify/auth/` (`define-auth-challenge`, `create-auth-challenge`, `verify-auth-challenge-response`, `pre-sign-up`) implement **CUSTOM_WITHOUT_SRP** magic-link sign-in. The **`MagicLinkToken`** model stores hashed one-time tokens (see `amplify/data/resource.ts`).
+
 ## Frontend environment variables
 
 | Variable | Purpose |
@@ -37,7 +42,7 @@
 
 ## Shared BHI report HTML
 
-- Email HTML for the BHI report is built in **`lib/bhiReportEmailHtml.js`** (shared by the Lambda handler and **`api/send-quiz-email.js`**).
+- Email HTML for the BHI report is built in **`lib/bhiReportEmailHtml.js`** (shared by the Lambda handler and **`api/send-quiz-email.js`**). Use **`buildBhiReportWithMagicLinkEmailHtml`** for the combined report + CTA email from **`completeAssessment`**.
 - The Lambda handler imports it via **`../../../lib/bhiReportEmailHtml.js`** relative to `amplify/functions/completeAssessment/handler.ts` (bundled by `ampx`).
 
 ## Rate limiting

@@ -66,7 +66,8 @@ Secrets are **not** “Hosting environment variables” for the frontend. They m
 - **Stack:** Vite + React app in repo root; **Amplify Gen 2** backend under `amplify/`.
 - **Build spec:** Root `amplify.yml` (must stay at repo root).
 - **Backend entry:** `amplify/backend.ts` defines Cognito, AppSync (Amplify Data), S3, and a Lambda `completeAssessment` with a **Lambda Function URL** (public HTTPS POST).
-- **Email:** Production path is **`completeAssessment` Lambda** → Brevo REST API. Secrets are **`BREVO_API_KEY`** and **`BREVO_SENDER_EMAIL`** (see `amplify/functions/completeAssessment/resource.ts`). These are **Lambda secrets**, never `VITE_*`.
+- **Email:** Production path is **`completeAssessment` Lambda** → Brevo REST API (one combined email: BHI report + magic link). Secrets are **`BREVO_API_KEY`** and **`BREVO_SENDER_EMAIL`** (see `amplify/functions/completeAssessment/resource.ts`). These are **Lambda secrets**, never `VITE_*`.
+- **Magic links:** The Lambda builds URLs as `${APP_BASE_URL}/auth/magic?email=…&token=…`. Set **`APP_BASE_URL`** to the public HTTPS origin of the SPA (**no trailing slash**, include GitHub Pages path prefix if used), e.g. `https://main.xxxxx.amplifyapp.com`. Default in `amplify/backend.ts` is `http://localhost:5173` (sandbox/local only). Configure **`APP_BASE_URL`** for production via the shell when running `ampx sandbox` / `ampx pipeline-deploy`, or your CI/backend env so the backend build sees it.
 - **Client config:** The SPA needs real **`src/amplify_outputs.json`** at **build time** (or equivalent `VITE_*` overrides — see `src/lib/amplifyOutputs.js`). A stub JSON with empty `user_pool_client_id` disables auth and email UI.
 - **Hosting build flow (already in repo):**
   1. **Backend phase:** `npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID`
@@ -121,6 +122,10 @@ In the Amplify **Gen 2 backend / Sandbox / Secrets** UI (exact path varies by co
 
 These names must match `amplify/functions/completeAssessment/resource.ts` (`secret('BREVO_API_KEY')`, etc.).
 
+| Env (backend build / sandbox shell) | Value |
+|-------------------------------------|--------|
+| `APP_BASE_URL` | **Recommended for production:** public URL of the hosted app (see **Repository facts** → magic links). Wrong value ⇒ magic links in email point at the wrong host. |
+
 **Brevo IP allowlisting:** If email fails with **“unrecognised IP”**, add the relevant egress IP in the **Brevo dashboard** (Security → Authorised IPs). This cannot be fixed in application code.
 
 ---
@@ -156,7 +161,7 @@ After deploy, open the Hosting URL (e.g. `https://<branch>.<appid>.amplifyapp.co
 
 1. **`/login`** — Should show the real **Sign in** form (email + password), **not** “Authentication is not configured in this build.”
 2. **Brain Health Index** — Complete the quiz; **“Email my results”** should be enabled (not “Email delivery is not available…”).
-3. Submit email — Should hit the **completeAssessment** URL; user receives email per product flow (check spam). If Brevo errors, check Lambda logs in CloudWatch and Brevo dashboard.
+3. Submit email — Should hit the **completeAssessment** URL; user receives **one** email with the report and a **magic link** (check spam). Opening the link should land on **`/auth/magic`** and then the dashboard. If links open the wrong site, fix **`APP_BASE_URL`** for the backend build. If Brevo errors, check Lambda logs in CloudWatch and Brevo dashboard.
 
 ---
 

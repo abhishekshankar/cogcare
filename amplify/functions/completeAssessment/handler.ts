@@ -6,11 +6,12 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminGetUserCommand,
+  AdminSetUserPasswordCommand,
 } from '@aws-sdk/client-cognito-identity-provider'
-import { randomBytes } from 'crypto'
+import { createHash, randomBytes } from 'crypto'
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime'
 import type { Schema } from '../../data/resource'
-import { buildBhiReportEmailHtml, escapeHtml } from '../../../lib/bhiReportEmailHtml.js'
+import { buildBhiReportWithMagicLinkEmailHtml } from '../../../lib/bhiReportEmailHtml.js'
 import { computeBrainCreditFromResults } from '../../../lib/brainCredit.js'
 
 const cognito = new CognitoIdentityProviderClient({})
@@ -42,8 +43,21 @@ function responseHeaders() {
   }
 }
 
-function generateTempPassword() {
+/** Meets typical Cognito default password policy (upper, lower, number, symbol). */
+function generateOpaquePassword() {
+  return randomBytes(24).toString('base64url') + 'Aa1!'
+}
+
+function generateTempPasswordForCreate() {
   return randomBytes(12).toString('base64url').slice(0, 16) + 'Aa1!'
+}
+
+function hashToken(raw: string) {
+  return createHash('sha256').update(raw, 'utf8').digest('hex')
+}
+
+function generateMagicLinkRawToken() {
+  return randomBytes(32).toString('base64url')
 }
 
 async function sendBrevoEmail(params: {
@@ -97,9 +111,18 @@ async function resolveSub(
 
 const DAILY_CAP = 3
 
-/** Data client from `getDataClient()` — avoid explicit Schema generic here (TS stack depth). */
+const MAGIC_LINK_TTL_MS = 15 * 60 * 1000
+
+/** Data client from `getDataClient()` — loosely typed to avoid TS stack depth on Schema generics. */
 async function recordOnboardingHit(
-  client: { models: { OnboardingAttempt: { update: (input: unknown) => Promise<unknown>; create: (input: unknown) => Promise<unknown> } } },
+  client: {
+    models: {
+      OnboardingAttempt: {
+        update: (input: { slotKey: string; hitCount: number }) => Promise<{ errors?: Array<{ message: string }> }>
+        create: (input: { slotKey: string; hitCount: number }) => Promise<{ errors?: Array<{ message: string }> }>
+      }
+    }
+  },
   attemptRow: { slotKey: string; hitCount?: number | null } | null,
   slotKey: string,
 ) {
@@ -123,6 +146,62 @@ async function recordOnboardingHit(
   }
 }
 
+async function persistMagicLinkAndSendEmail(params: {
+  client: {
+    models: {
+      MagicLinkToken: {
+        create: (input: {
+          tokenHash: string
+          email: string
+          expiresAt: string
+          used: boolean
+        }) => Promise<{ errors?: Array<{ message: string }> }>
+      }
+    }
+  }
+  email: string
+  results: Record<string, unknown> | null
+  apiKey: string
+  senderEmail: string
+  senderName: string
+  isNewAccount: boolean
+  appBaseUrl: string
+}) {
+  const { client, email, results, apiKey, senderEmail, senderName, isNewAccount, appBaseUrl } = params
+  const rawToken = generateMagicLinkRawToken()
+  const tokenHash = hashToken(rawToken)
+  const expiresAt = new Date(Date.now() + MAGIC_LINK_TTL_MS).toISOString()
+
+  const { errors: tokErr } = await client.models.MagicLinkToken.create({
+    tokenHash,
+    email,
+    expiresAt,
+    used: false,
+  })
+  if (tokErr?.length) {
+    throw new Error(tokErr.map((e) => e.message).join('; '))
+  }
+
+  const base = appBaseUrl.replace(/\/$/, '')
+  const magicLinkUrl = `${base}/auth/magic?email=${encodeURIComponent(email)}&token=${encodeURIComponent(rawToken)}`
+
+  const html = buildBhiReportWithMagicLinkEmailHtml(results, {
+    magicLinkUrl,
+    email,
+    expiresInMinutes: 15,
+    isNewAccount,
+  })
+
+  await sendBrevoEmail({
+    apiKey,
+    senderEmail,
+    senderName,
+    to: email,
+    subject: 'Your Brain Health Index and dashboard link',
+    html,
+  })
+}
+
 export const handler: Handler = async (event) => {
   const headers = responseHeaders()
 
@@ -130,7 +209,6 @@ export const handler: Handler = async (event) => {
     (event as { requestContext?: { http?: { method?: string } } }).requestContext
       ?.http?.method || (event as { httpMethod?: string }).httpMethod || ''
 
-  // Function URL CORS handles preflight before Lambda is invoked; this branch is a fallback only.
   if (method === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' }
   }
@@ -147,6 +225,7 @@ export const handler: Handler = async (event) => {
   const apiKey = process.env.BREVO_API_KEY
   const senderEmail = process.env.BREVO_SENDER_EMAIL
   const senderName = process.env.BREVO_SENDER_NAME || 'CogCare'
+  const appBaseUrl = (process.env.APP_BASE_URL || 'http://localhost:5173').trim()
 
   if (!poolId || !apiKey || !senderEmail) {
     return {
@@ -198,8 +277,6 @@ export const handler: Handler = async (event) => {
     }
   }
 
-  const tempPassword = generateTempPassword()
-  const reportHtml = buildBhiReportEmailHtml(results, { footerSource: 'CogCare' })
   const credit = computeBrainCreditFromResults(results, { completedAssessmentCount: 1 })
 
   let createdUsername: string | null = null
@@ -213,7 +290,7 @@ export const handler: Handler = async (event) => {
           { Name: 'email', Value: email },
           { Name: 'email_verified', Value: 'true' },
         ],
-        TemporaryPassword: tempPassword,
+        TemporaryPassword: generateTempPasswordForCreate(),
         MessageAction: 'SUPPRESS',
       }),
     )
@@ -222,6 +299,15 @@ export const handler: Handler = async (event) => {
     if (!sub) {
       throw new Error('Missing Cognito sub after user creation')
     }
+
+    await cognito.send(
+      new AdminSetUserPasswordCommand({
+        UserPoolId: poolId,
+        Username: email,
+        Password: generateOpaquePassword(),
+        Permanent: true,
+      }),
+    )
 
     const completedAt = new Date().toISOString()
     const createdAt = completedAt
@@ -247,31 +333,15 @@ export const handler: Handler = async (event) => {
       throw new Error(assessmentErrors.map((e) => e.message).join('; '))
     }
 
-    await sendBrevoEmail({
+    await persistMagicLinkAndSendEmail({
+      client,
+      email,
+      results,
       apiKey,
       senderEmail,
       senderName,
-      to: email,
-      subject: 'Your Brain Health Index results',
-      html: reportHtml,
-    })
-
-    await sendBrevoEmail({
-      apiKey,
-      senderEmail,
-      senderName,
-      to: email,
-      subject: 'Your CogCare dashboard login',
-      html: `
-<!DOCTYPE html>
-<html><body style="font-family:sans-serif;color:#1A1A1A;max-width:560px;margin:0 auto;padding:24px;">
-  <h1 style="color:#3D4B3E;">Welcome to CogCare</h1>
-  <p>Use these credentials to sign in and view your dashboard:</p>
-  <p><strong>Username (email):</strong> ${escapeHtml(email)}</p>
-  <p><strong>Temporary password:</strong> ${escapeHtml(tempPassword)}</p>
-  <p>You will be asked to create a new password after you sign in.</p>
-  <p style="color:#666;font-size:14px;">If you did not request this, you can ignore this email.</p>
-</body></html>`,
+      isNewAccount: true,
+      appBaseUrl,
     })
 
     await recordOnboardingHit(client, attemptRow, slotKey)
@@ -279,7 +349,7 @@ export const handler: Handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ ok: true, scenario: 'new_user', nextStep: 'SIGN_IN' }),
+      body: JSON.stringify({ ok: true, scenario: 'new_user', nextStep: 'MAGIC_LINK' }),
     }
   } catch (e: unknown) {
     if (
@@ -351,13 +421,15 @@ export const handler: Handler = async (event) => {
           throw new Error(assessmentErrors.map((x) => x.message).join('; '))
         }
 
-        await sendBrevoEmail({
+        await persistMagicLinkAndSendEmail({
+          client,
+          email,
+          results,
           apiKey,
           senderEmail,
           senderName,
-          to: email,
-          subject: 'Your Brain Health Index results',
-          html: reportHtml,
+          isNewAccount: false,
+          appBaseUrl,
         })
 
         await recordOnboardingHit(client, attemptRow, slotKey)
@@ -365,7 +437,7 @@ export const handler: Handler = async (event) => {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ ok: true, scenario: 'existing_user', nextStep: 'SIGN_IN' }),
+          body: JSON.stringify({ ok: true, scenario: 'existing_user', nextStep: 'MAGIC_LINK' }),
         }
       } catch (inner: unknown) {
         const message = inner instanceof Error ? inner.message : 'Unexpected error'

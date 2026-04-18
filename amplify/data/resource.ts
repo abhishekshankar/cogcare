@@ -2,14 +2,21 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend'
 import { completeAssessment } from '../functions/completeAssessment/resource'
 
 const schema = a.schema({
+  /**
+   * Explicit `owner` field (vs. implicit `allow.owner()`) so the completeAssessment Lambda
+   * can set `owner` to the new Cognito `sub` on create. Implicit owner fields are stripped
+   * from the GraphQL CreateInput, which surfaces as
+   * `field that is not defined for input object type 'CreateUserProfileInput'` from the Lambda.
+   */
   UserProfile: a
     .model({
+      owner: a.string(),
       displayName: a.string(),
       avatarKey: a.string(),
       brainCreditScore: a.integer(),
       createdAt: a.datetime(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => [allow.ownerDefinedIn('owner')]),
 
   /** Per-email daily cap for completeAssessment (Lambda). PK slotKey = email#YYYY-MM-DD (UTC). */
   OnboardingAttempt: a
@@ -27,12 +34,13 @@ const schema = a.schema({
 
   Assessment: a
     .model({
+      owner: a.string(),
       type: a.string().required(),
       answersJson: a.string().required(),
       resultsJson: a.string().required(),
       completedAt: a.datetime().required(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => [allow.ownerDefinedIn('owner')]),
 
   Consultant: a
     .model({

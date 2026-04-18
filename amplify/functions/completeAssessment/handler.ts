@@ -30,12 +30,14 @@ async function getDataClient() {
   return dataClient
 }
 
-function corsHeaders(origin: string) {
+/**
+ * Response headers only. CORS is configured at the Lambda Function URL (see amplify/backend.ts):
+ * AWS injects `Access-Control-Allow-*` automatically on every response. Returning them again
+ * here yields duplicate ACAO headers, which browsers reject as a CORS failure (the user-visible
+ * symptom is `Failed to fetch` / `Load failed` even though the request actually reached Lambda).
+ */
+function responseHeaders() {
   return {
-    'Access-Control-Allow-Origin': origin || '*',
-    // Match Function URL CORS in amplify/backend.ts (preflight may request these headers).
-    'Access-Control-Allow-Headers': 'content-type, authorization',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json',
   }
 }
@@ -122,13 +124,13 @@ async function recordOnboardingHit(
 }
 
 export const handler: Handler = async (event) => {
-  const allowedOrigin = process.env.ALLOWED_ORIGIN || '*'
-  const headers = corsHeaders(allowedOrigin)
+  const headers = responseHeaders()
 
   const method =
     (event as { requestContext?: { http?: { method?: string } } }).requestContext
       ?.http?.method || (event as { httpMethod?: string }).httpMethod || ''
 
+  // Function URL CORS handles preflight before Lambda is invoked; this branch is a fallback only.
   if (method === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' }
   }

@@ -1,10 +1,11 @@
 import { getMergedAmplifyOutputs } from './amplifyOutputs.js'
 
-/**
- * Public HTTPS Function URL for POST completeAssessment.
- * Priority: VITE_COMPLETE_ASSESSMENT_URL → amplify_outputs custom → alternate keys (Gen 2 output shape drift).
- */
-export function getCompleteAssessmentUrl() {
+/** @type {string | null} */
+let runtimeUrl = null
+/** @type {Promise<void> | null} */
+let primePromise = null
+
+function syncResolveUrl() {
   const fromEnv = import.meta.env.VITE_COMPLETE_ASSESSMENT_URL
   if (typeof fromEnv === 'string' && fromEnv.trim()) return fromEnv.trim()
 
@@ -19,4 +20,37 @@ export function getCompleteAssessmentUrl() {
     if (typeof c === 'string' && c.trim().startsWith('http')) return c.trim()
   }
   return ''
+}
+
+/**
+ * Load same-origin /runtime-email-config.json (written at build from ampx outputs + env).
+ * Resolves before quiz email POST so production always picks up the merged URL.
+ */
+export function primeCompleteAssessmentUrl() {
+  if (primePromise) return primePromise
+  primePromise = (async () => {
+    try {
+      const base = import.meta.env.BASE_URL || '/'
+      const path = `${base.endsWith('/') ? base : `${base}/`}runtime-email-config.json`
+      const res = await fetch(path, { credentials: 'omit', cache: 'no-store' })
+      if (!res.ok) return
+      const j = await res.json()
+      const u = j?.completeAssessmentFunctionUrl
+      if (typeof u === 'string' && u.trim().startsWith('https://')) {
+        runtimeUrl = u.trim()
+      }
+    } catch {
+      /* ignore — fall back to syncResolveUrl */
+    }
+  })()
+  return primePromise
+}
+
+/**
+ * Public HTTPS Function URL for POST completeAssessment.
+ * Priority: runtime JSON → VITE_* → bundled amplify_outputs custom.
+ */
+export function getCompleteAssessmentUrl() {
+  if (runtimeUrl) return runtimeUrl
+  return syncResolveUrl()
 }

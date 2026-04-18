@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { FluentProvider, Button } from '@fluentui/react-components'
 import { Brain, X, ArrowRight, ChevronLeft, Mail, Loader2 } from 'lucide-react'
 import BHIReportContent from './components/BHIReportContent'
-import { getCompleteAssessmentUrl } from './lib/completeAssessmentUrl'
+import { getCompleteAssessmentUrl, primeCompleteAssessmentUrl } from './lib/completeAssessmentUrl'
 
 // ---- Quiz data (ported from main branch CCAQuiz) ----
 const CCA_QUIZ_QUESTIONS = [
@@ -235,7 +235,17 @@ const LEGACY_QUIZ_EMAIL_URL =
 // ---- BHIReport ----
 function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
   const navigate = useNavigate()
-  const completeAssessmentUrl = getCompleteAssessmentUrl()
+  const [fnUrl, setFnUrl] = useState(() => getCompleteAssessmentUrl())
+  useEffect(() => {
+    let alive = true
+    void primeCompleteAssessmentUrl().then(() => {
+      if (alive) setFnUrl(getCompleteAssessmentUrl())
+    })
+    return () => {
+      alive = false
+    }
+  }, [])
+  const completeAssessmentUrl = fnUrl
   const canEmail = Boolean(completeAssessmentUrl || LEGACY_QUIZ_EMAIL_URL)
 
   const [email, setEmail] = useState('')
@@ -253,8 +263,10 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
     setEmailStatus('sending')
     setEmailMessage('')
     try {
-      const url = completeAssessmentUrl || LEGACY_QUIZ_EMAIL_URL
-      const body = completeAssessmentUrl
+      await primeCompleteAssessmentUrl()
+      const resolvedFnUrl = getCompleteAssessmentUrl()
+      const url = resolvedFnUrl || LEGACY_QUIZ_EMAIL_URL
+      const body = resolvedFnUrl
         ? JSON.stringify({
             email: trimmed,
             results: quizResults,
@@ -287,7 +299,7 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
       }
       setEmailStatus('sent')
       setEmailMessage('')
-      if (completeAssessmentUrl) {
+      if (resolvedFnUrl) {
         onClose?.()
         navigate('/login?from=quiz&returnTo=' + encodeURIComponent('/dashboard'))
       }
@@ -296,7 +308,7 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
       let msg = err instanceof Error ? err.message : 'Could not send email.'
       if (msg === 'Failed to fetch' || msg === 'Load failed' || msg === 'NetworkError when attempting to fetch resource.') {
         msg =
-          'Could not reach the email service (network or browser blocked the request). If this persists, confirm the app has a valid assessment URL in deployment settings, or try another network.'
+          'Could not reach the email service. Try another network or browser, disable blockers, then confirm Amplify: backend deployed, Brevo secrets set, and Hosting env VITE_COMPLETE_ASSESSMENT_URL or build output runtime-email-config.json includes your Lambda Function URL.'
       }
       setEmailMessage(msg)
     }

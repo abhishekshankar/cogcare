@@ -43,6 +43,7 @@ frontend:
             exit 1
           fi
         - npx ampx generate outputs --branch "$AWS_BRANCH" --app-id "$AWS_APP_ID" --out-dir src
+        - npm run write:email-config
         - npm run verify:outputs
     build:
       commands:

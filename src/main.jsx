@@ -3,8 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { configureAmplify } from './lib/amplifyConfigure.js'
+import { primeCompleteAssessmentUrl } from './lib/completeAssessmentUrl.js'
 
 configureAmplify()
+void primeCompleteAssessmentUrl()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

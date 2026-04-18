@@ -43,6 +43,7 @@ frontend:
             exit 1
           fi
         - npx ampx generate outputs --branch "$AWS_BRANCH" --app-id "$AWS_APP_ID" --out-dir src
+        - node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('src/amplify_outputs.json','utf8'));const u=(j.custom&&j.custom.completeAssessmentFunctionUrl)||'';const ok=String(u).trim().startsWith('https://');console.log('[preBuild] completeAssessmentFunctionUrl looks valid:',ok);if(!ok)console.warn('[preBuild] WARNING: set Amplify Hosting env VITE_COMPLETE_ASSESSMENT_URL to the completeAssessment Lambda Function URL if email from the quiz fails.');"
     build:
       commands:
         - npm run build

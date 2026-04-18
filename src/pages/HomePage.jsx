@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import BrainHealthIndex from '../BrainHealthIndex'
+import { useAuthIdentity } from '../lib/useAuthIdentity'
 import {
   X,
   ArrowRight,
@@ -12,6 +13,7 @@ import {
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '')
 
 export default function HomePage() {
+  const authIdentity = useAuthIdentity()
   const [selectedCard, setSelectedCard] = useState(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
@@ -129,18 +131,25 @@ We offer a library of education designed for your specific needs. This includes 
             >
               Blog
             </a>
-            <Link
-              to="/login?mode=signup"
-              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
-            >
-              Create account
-            </Link>
-            <Link
-              to="/login"
-              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
-            >
-              Sign in
-            </Link>
+            {authIdentity === 'signedIn' ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
+              >
+                My dashboard
+              </Link>
+            ) : authIdentity === 'loading' ? (
+              <span className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 text-[#3D4B3E]/50">
+                …
+              </span>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap px-1 py-2 transition-opacity hover:opacity-60"
+              >
+                Get Inside
+              </Link>
+            )}
             <a
               href="https://cogcare.org/"
               className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-[#3D4B3E] px-3.5 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-white transition-all hover:bg-[#2D382D] sm:px-6 sm:py-2.5 sm:text-[10px] sm:tracking-[0.2em] md:px-10 md:py-3.5"

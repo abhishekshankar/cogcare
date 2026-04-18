@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { signIn, signUp, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth'
+import { getCurrentUser, signIn, signUp, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth'
 import { Brain } from 'lucide-react'
 import { isAmplifyConfigured } from '../lib/amplifyConfigure'
 import { setPendingNewPasswordFlag } from '../lib/authFlags'
@@ -24,6 +24,15 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
+  /** Skip login UI if already signed in (redirect to dashboard). */
+  const [sessionPhase, setSessionPhase] = useState('checking')
+
+  useEffect(() => {
+    if (!isAmplifyConfigured()) return
+    getCurrentUser()
+      .then(() => navigate(returnTo, { replace: true }))
+      .catch(() => setSessionPhase('show'))
+  }, [navigate, returnTo])
 
   function goView(next) {
     setView(next)
@@ -54,6 +63,14 @@ export default function LoginPage() {
             ← Back to home
           </Link>
         </div>
+      </div>
+    )
+  }
+
+  if (sessionPhase === 'checking') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7] px-4 text-[#3D4B3E]">
+        <p className="text-sm font-medium">Loading…</p>
       </div>
     )
   }

@@ -271,14 +271,19 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
         },
         body,
       })
+      const text = await res.text()
       let data = {}
       try {
-        data = await res.json()
+        data = text ? JSON.parse(text) : {}
       } catch {
-        /* ignore */
+        data = {}
       }
       if (!res.ok) {
-        throw new Error(data.error || `Request failed (${res.status})`)
+        const serverMsg =
+          (typeof data.error === 'string' && data.error) ||
+          (typeof data.message === 'string' && data.message) ||
+          (text && text.length < 400 ? text.trim() : '')
+        throw new Error(serverMsg || `Request failed (${res.status})`)
       }
       setEmailStatus('sent')
       setEmailMessage('')

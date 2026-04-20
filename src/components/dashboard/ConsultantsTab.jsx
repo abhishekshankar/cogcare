@@ -37,7 +37,7 @@ export default function ConsultantsTab({ rows, appointments = [] }) {
       <PanelHeader
         sectionLabel="Support"
         title="Consultations"
-        subtitle="Book a session below. Confirmed bookings from Calendly appear under Your appointments when the webhook is configured."
+        subtitle="Book a session below. Visits you complete in the scheduler appear under Your appointments (pending until server webhooks are enabled on a paid Calendly plan)."
       />
       <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
         <Link
@@ -66,10 +66,20 @@ export default function ConsultantsTab({ rows, appointments = [] }) {
                   className={`inline-flex w-fit rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                     a.status === 'canceled'
                       ? 'bg-stone-200/90 text-stone-700'
-                      : 'bg-[#3D4B3E]/10 text-[#3D4B3E]'
+                      : a.status === 'pending'
+                        ? 'bg-amber-100/90 text-amber-900'
+                        : a.status === 'completed'
+                          ? 'bg-[#B8D9C1]/40 text-[#2D3D2E]'
+                          : 'bg-[#3D4B3E]/10 text-[#3D4B3E]'
                   }`}
                 >
-                  {a.status === 'canceled' ? 'Canceled' : 'Scheduled'}
+                  {a.status === 'canceled'
+                    ? 'Canceled'
+                    : a.status === 'pending'
+                      ? 'Pending'
+                      : a.status === 'completed'
+                        ? 'Completed'
+                        : 'Scheduled'}
                 </span>
               </li>
             ))}

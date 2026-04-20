@@ -127,7 +127,7 @@ export default function BookConsultPage({
       <PanelHeader
         sectionLabel="Care"
         title="Book a consultation"
-        subtitle="Choose who this visit is for, then pick a specialist and time. Your booking is saved to this dashboard when Calendly confirms (webhook)."
+        subtitle="Choose who this visit is for, then pick a specialist and time. When you finish scheduling below, we save a pending visit here; your Calendly confirmation email has the exact time and calendar links."
       />
 
       {subjects?.length > 1 ? (
@@ -170,11 +170,11 @@ export default function BookConsultPage({
           className="rounded-2xl border border-[#B8D9C1] bg-[#EEF5F0] px-4 py-3 text-sm text-forest"
           role="status"
         >
-          Thanks — we recorded a pending booking. When Calendly confirms, details will appear under{' '}
+          Thanks — we saved this visit as pending under{' '}
           <Link to="/dashboard/consultants" className="font-semibold underline underline-offset-2">
             Consultations
           </Link>
-          .
+          . Check your Calendly email for the confirmed time and reschedule link.
         </div>
       ) : null}
 
@@ -187,10 +187,15 @@ export default function BookConsultPage({
       <div ref={widgetHostRef} className="min-h-[720px] w-full overflow-hidden rounded-2xl border border-border bg-white" />
 
       <p className="text-xs text-forest/60">
-        Point the Calendly webhook at your deployed <code className="rounded bg-surface px-1">calendly-webhook</code>{' '}
-        Function URL (see Amplify outputs) and set env <code className="rounded bg-surface px-1">CALENDLY_WEBHOOK_SIGNING_KEY</code>{' '}
-        for signature verification.
+        If you don&apos;t see a pending row after booking, confirm in your Calendly confirmation email — ad blockers or closing the tab early can prevent this page from recording the visit.
       </p>
+      {import.meta.env.DEV ? (
+        <p className="text-xs text-forest/50">
+          Dev: with Calendly Standard+, register <code className="rounded bg-surface px-1">calendly-webhook</code> via API and set{' '}
+          <code className="rounded bg-surface px-1">CALENDLY_WEBHOOK_SIGNING_KEY</code>. See{' '}
+          <code className="rounded bg-surface px-1">docs/integrations/calendly-free-tier.md</code>.
+        </p>
+      ) : null}
     </div>
   )
 }

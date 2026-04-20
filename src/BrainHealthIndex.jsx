@@ -24,6 +24,13 @@ const CAREGIVER_QUESTIONS = [
 
 const FREQUENCY_SCALE = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always']
 
+const ANALYZING_STEPS = [
+  'Reviewing symptom patterns...',
+  'Mapping to cognitive domains...',
+  'Identifying care pathway...',
+  'Preparing your report...',
+]
+
 function domainLevel(scores) {
   const valid = scores.filter(s => s != null && !isNaN(s))
   if (!valid.length) return 'low'
@@ -426,13 +433,6 @@ export default function BrainHealthIndex({
       document.body.style.overflow = prev
     }
   }, [open, onClose])
-
-  const ANALYZING_STEPS = [
-    'Reviewing symptom patterns...',
-    'Mapping to cognitive domains...',
-    'Identifying care pathway...',
-    'Preparing your report...',
-  ]
 
   const [analyzing, setAnalyzing] = useState(false)
   const [analyzingStep, setAnalyzingStep] = useState(0)

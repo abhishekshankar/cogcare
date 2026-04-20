@@ -47,7 +47,6 @@ export async function downloadReportPdf(quizResults, filename) {
     const margin = 12
     const contentW = pageW - margin * 2
     const contentH = (canvas.height / canvas.width) * contentW
-    const imgData = canvas.toDataURL('image/jpeg', 0.92)
 
     let remaining = contentH
     let srcY = 0

@@ -180,8 +180,13 @@ export default function BHIReportContent({
   email, setEmail,
   emailStatus, emailMessage,
   onSendEmail, canEmail,
-  emailScenario, onResetEmail,
+  onResetEmail,
 }) {
+  const [showEmailForm, setShowEmailForm] = useState(false)
+  const [showGuideForm, setShowGuideForm] = useState(false)
+  const [guideEmail, setGuideEmail] = useState('')
+  const [guideSent, setGuideSent] = useState(false)
+
   if (!quizResults) return null
 
   const { lovedOneName, lovedOneAge, stageIndex, memory, language, attention, behavior } = quizResults
@@ -196,11 +201,6 @@ export default function BHIReportContent({
   ]
   const elevatedCount = domains.filter(d => d.level === 'elevated').length
   const moderateCount = domains.filter(d => d.level === 'moderate').length
-
-  const [showEmailForm, setShowEmailForm] = useState(false)
-  const [showGuideForm, setShowGuideForm] = useState(false)
-  const [guideEmail, setGuideEmail] = useState('')
-  const [guideSent, setGuideSent] = useState(false)
 
   const handleShareClick = () => {
     setShowEmailForm(true)

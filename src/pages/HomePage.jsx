@@ -17,6 +17,7 @@ export default function HomePage() {
   const [selectedCard, setSelectedCard] = useState(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
+  const [showIntro, setShowIntro] = useState(false)
   const [quizAnswers, setQuizAnswers] = useState({})
   const [quizResults, setQuizResults] = useState(null)
   const handleCloseQuiz = useCallback(() => setShowQuiz(false), [])
@@ -52,7 +53,7 @@ export default function HomePage() {
         'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=800',
       content: `Dementia does not see borders, but it does affect communities differently. Research shows that older Black Americans are about twice as likely to have Alzheimer's or other dementias as older whites. Hispanic and Latino Americans are about one and a half times as likely. These differences aren't just about biology; they are often tied to things like access to healthcare, quality of education, and heart health.
 
-When we say "Dementia Does Not Differentiate," we mean that everyone deserves the same chance at a healthy brain. By focusing on health equity, we can make sure that life-saving information and care reach every neighborhood. Whether it is through community workshops or culturally relevant health tips, our goal is to empower every person—regardless of their race, gender, or income—to take charge of their cognitive future. Hope belongs to everyone.`,
+When we say "Dementia Does Not Differentiate," we mean that everyone deserves the same chance at a healthy brain. By focusing on health equity, we can make sure that life-saving information and care reach every neighborhood. Whether it is through community workshops or culturally relevant health tips, our goal is to empower every person, regardless of their race, gender, or income, to take charge of their cognitive future. Hope belongs to everyone.`,
     },
     {
       id: 2,
@@ -62,7 +63,7 @@ When we say "Dementia Does Not Differentiate," we mean that everyone deserves th
         'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800',
       content: `Did you know that nearly 40% of dementia cases worldwide might be prevented or delayed? This is one of the most hopeful discoveries in modern medicine. Science tells us that dementia is modifiable. This means our daily habits can actually lower our risk or slow down cognitive decline. 
 
-To keep your brain strong, focus on these key areas: Keep your blood pressure in check, stay physically active every day, and protect your hearing with earplugs or hearing aids if needed. It is also vital to stay socially connected with friends and family, eat nutritious foods, and avoid smoking. Even small changes, like taking a daily walk or learning a new hobby, can build "cognitive reserve." Your brain is resilient, and it is never too late—or too early—to start protecting it.`,
+To keep your brain strong, focus on these key areas: Keep your blood pressure in check, stay physically active every day, and protect your hearing with earplugs or hearing aids if needed. It is also vital to stay socially connected with friends and family, eat nutritious foods, and avoid smoking. Even small changes, like taking a daily walk or learning a new hobby, can build "cognitive reserve." Your brain is resilient, and it is never too late, or too early, to start protecting it.`,
     },
     {
       id: 3,
@@ -82,7 +83,7 @@ Using respectful language helps break down the stigma that keeps people from see
         'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=800',
       content: `If you are caring for someone living with dementia, you are doing one of the most important jobs in the world. But you don't have to do it alone. Caregiving can be rewarding, but it can also be physically and emotionally tiring. Providing "Shared Hope" means supporting the supporters. 
 
-We offer a library of education designed for your specific needs. This includes tips on how to communicate when words become difficult, how to manage daily safety at home, and how to find local support groups. Remember that "self-care" isn't selfish—it is necessary. When you take a moment to rest or talk to a counselor, you are becoming a more resilient caregiver. From online training modules to 24/7 helplines, we are here to provide the tools you need.`,
+We offer a library of education designed for your specific needs. This includes tips on how to communicate when words become difficult, how to manage daily safety at home, and how to find local support groups. Remember that "self-care" isn't selfish. It is necessary. When you take a moment to rest or talk to a counselor, you are becoming a more resilient caregiver. From online training modules to 24/7 helplines, we are here to provide the tools you need.`,
     },
   ]
 
@@ -188,7 +189,7 @@ We offer a library of education designed for your specific needs. This includes 
               </p>
               <button
                 type="button"
-                onClick={() => setShowQuiz(true)}
+                onClick={() => setShowIntro(true)}
                 className="w-full bg-[#3D4B3E] text-white px-8 py-4 rounded-full font-bold uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-3 hover:shadow-2xl hover:-translate-y-1 transition-all"
               >
                 Begin Assessment
@@ -229,8 +230,8 @@ We offer a library of education designed for your specific needs. This includes 
           </div>
 
           <p className="md:col-span-12 mt-10 w-full text-center text-base font-light leading-[1.65] text-slate-600 sm:mt-12 sm:text-lg md:mt-14 md:text-xl md:leading-relaxed lg:text-[1.35rem] lg:leading-[1.7]">
-            CogCare is a nonprofit devoted to brain health. Our physicians—trained
-            at UCLA, Mayo Clinic, Penn, Harvard, and other leading institutions—came
+            CogCare is a nonprofit devoted to brain health. Our physicians, trained
+            at UCLA, Mayo Clinic, Penn, Harvard, and other leading institutions, came
             together to develop a new approach to brain assessment.
           </p>
         </div>
@@ -440,6 +441,72 @@ We offer a library of education designed for your specific needs. This includes 
           </div>
         </div>
       </footer>
+
+      {showIntro && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#3D4B3E]/30 backdrop-blur-md p-4 sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="intro-title"
+        >
+          <div className="relative w-full max-w-lg rounded-3xl bg-[#FDFBF7] shadow-2xl p-8 sm:p-10">
+            <button
+              type="button"
+              onClick={() => setShowIntro(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Bottom line up front */}
+            <div className="rounded-2xl bg-[#3D4B3E] text-white px-6 py-5 mb-7">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">
+                The clinical bottom line
+              </p>
+              <p className="text-base font-semibold leading-snug">
+                By the time most people <em>notice</em> cognitive decline, it has been quietly progressing for 10–20 years. The window to act is now. Not later.
+              </p>
+            </div>
+
+            <h2 id="intro-title" className="text-xl font-bold text-[#3D4B3E] mb-4 leading-snug">
+              What we're actually measuring
+            </h2>
+
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              {[
+                { label: 'Memory', sub: 'encoding & recall' },
+                { label: 'Attention', sub: 'focus & vigilance' },
+                { label: 'Processing speed', sub: 'reaction & fluency' },
+                { label: 'Executive function', sub: 'planning & control' },
+              ].map(({ label, sub }) => (
+                <div key={label} className="rounded-xl border border-[#3D4B3E]/10 bg-white px-4 py-3">
+                  <p className="text-xs font-bold text-[#3D4B3E]">{label}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{sub}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => { setShowIntro(false); setShowQuiz(true) }}
+              className="w-full bg-[#3D4B3E] text-white px-8 py-4 rounded-full font-bold uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-3 hover:shadow-2xl hover:-translate-y-1 transition-all mb-6"
+            >
+              Start My Assessment
+              <ArrowRight className="w-4 h-4" aria-hidden />
+            </button>
+
+            {/* What you get */}
+            <div className="rounded-2xl bg-[#3D4B3E]/5 border border-[#3D4B3E]/10 px-5 py-4 mb-5 text-sm text-slate-600 flex gap-3 items-start">
+              <Brain className="w-5 h-5 text-[#3D4B3E] mt-0.5 shrink-0" />
+              <p>
+                You'll receive a <strong className="text-[#3D4B3E]">personalised Brain Health report</strong> for your loved one, saved to your account and emailable to their doctor, so your observations are always on record.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       <BrainHealthIndex
         open={showQuiz}

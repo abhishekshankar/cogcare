@@ -107,23 +107,29 @@ Question 17 (index 16) uses `CCA_GLOBAL_SCALE`; all others use `CCA_LIKERT`.
 | Element | Value |
 |---|---|
 | Panel background | `#FDFBF7` |
+| Subtle section background | `#F3EFE9` |
 | Primary text | `#1A1A1A` |
 | Brand green | `#3D4B3E` |
+| Brand green dark (hover) | `#2D382D` |
 | Accent terracotta | `#A67B5B` |
 | Border/divider | `#E8DCC4` |
-| Question font | Serif, italic |
+| Question font | Serif, italic (matches site `font-serif`) |
 | UI font | System sans-serif (Fluent default) |
 | Panel width | 58vw desktop, 100vw mobile |
 | Border radius | `2.5rem` top-left on panel |
+
+These are the only colors used in `feature/cogcare-3-frontpage`. No others should be introduced.
 
 ### Fluent 2 custom theme tokens
 ```js
 {
   colorBrandBackground: '#3D4B3E',
-  colorBrandBackgroundHover: '#4a5c4b',
-  colorBrandBackgroundPressed: '#2c3b2d',
+  colorBrandBackgroundHover: '#2D382D',
+  colorBrandBackgroundPressed: '#2D382D',
   colorNeutralBackground1: '#FDFBF7',
+  colorNeutralBackground2: '#F3EFE9',
   colorNeutralStroke1: '#E8DCC4',
+  colorNeutralForeground1: '#1A1A1A',
 }
 ```
 

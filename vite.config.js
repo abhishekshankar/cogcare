@@ -19,5 +19,8 @@ export default defineConfig(({ mode }) => {
   return {
     base,
     plugins: [react(), tailwindcss(), localEmailApiPlugin()],
+    server: {
+      allowedHosts: true,
+    },
   }
 })

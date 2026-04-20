@@ -1,74 +1,58 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FluentProvider, Button } from '@fluentui/react-components'
-import { Brain, X, ArrowRight, ChevronLeft, Mail, Loader2 } from 'lucide-react'
+import { Brain, X, ArrowRight, ChevronLeft } from 'lucide-react'
 import BHIReportContent from './components/BHIReportContent'
 import { getCompleteAssessmentUrl, primeCompleteAssessmentUrl } from './lib/completeAssessmentUrl'
 
-// ---- Quiz data (ported from main branch CCAQuiz) ----
-const CCA_QUIZ_QUESTIONS = [
-  { text: "Does the person have difficulty staying focused on a task for more than 15 minutes?", domain: "Attention" },
-  { text: "Does the person feel mentally exhausted or 'foggy' for most of the day?", domain: "Cognitive" },
-  { text: "Has the person's sleep quality noticeably changed in the past 12 months?", domain: "Sleep" },
-  { text: "Does the person feel anxious, worried, or on edge most of the time?", domain: "Mood" },
-  { text: "Has the person's mood been persistently low or flat — not just sad, but emotionally blunted?", domain: "Mood" },
-  { text: "Does the person repeat the same questions, statements, or actions within minutes of doing them?", domain: "FTD-Compulsive" },
-  { text: "Has the person shown a noticeable reduction in warmth, compassion, or interest in other people?", domain: "FTD-Social" },
-  { text: "Has the person done or said things that are socially inappropriate and seemed unaware it was wrong?", domain: "FTD-Disinhibition" },
-  { text: "Has the person's personality changed significantly in the past 1–3 years?", domain: "FTD-Core" },
-  { text: "Does the person have difficulty finding words or expressing themselves verbally?", domain: "Language" },
-  { text: "Has the person's ability to plan, organize, or sequence tasks declined?", domain: "Executive" },
-  { text: "Does the person have unusual eating habits, food cravings, or overeat compulsively?", domain: "FTD-Compulsive" },
-  { text: "Is the person less aware of their own behavioral changes than family members are?", domain: "Anosognosia" },
-  { text: "Has the person become more rigid, inflexible, or insistent on routines?", domain: "FTD-Compulsive" },
-  { text: "Has the person lost interest in hobbies, relationships, or activities they previously enjoyed?", domain: "Apathy" },
-  { text: "Does the person show any signs of motor difficulties: slowing, stiffness, tremor, or falls?", domain: "Motor" },
-  { text: "How would you rate the overall change in this person's day-to-day functioning compared to 2 years ago?", domain: "Global" },
+// ---- Caregiver quiz questions ----
+const CAREGIVER_QUESTIONS = [
+  { id: 'name',       type: 'text',      domain: 'About your loved one', text: "What is your loved one's first name?", placeholder: 'First name' },
+  { id: 'age',        type: 'number',    domain: 'About your loved one', text: 'How old are they?', placeholder: 'Age' },
+  { id: 'relation',   type: 'choice',    domain: 'About your loved one', text: 'What is your relationship to them?', options: ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other'] },
+  { id: 'memory1',    type: 'frequency', domain: 'Memory',    text: 'How often does {name} repeat the same question or story within the same conversation?' },
+  { id: 'memory2',    type: 'frequency', domain: 'Memory',    text: 'Does {name} forget recent events or conversations from the past day or two?' },
+  { id: 'language1',  type: 'frequency', domain: 'Language',  text: 'Does {name} pause mid-sentence searching for words, or use the wrong word without realising it?' },
+  { id: 'language2',  type: 'frequency', domain: 'Language',  text: 'Does {name} have difficulty following a conversation or lose their train of thought?' },
+  { id: 'attention1', type: 'frequency', domain: 'Attention', text: 'Does {name} seem confused in familiar places, like their own home or neighbourhood?' },
+  { id: 'attention2', type: 'frequency', domain: 'Attention', text: 'Does {name} have difficulty following multi-step instructions, like a recipe or directions?' },
+  { id: 'behavior',   type: 'frequency', domain: 'Behaviour', text: "Has {name}'s personality, mood, or social behaviour changed noticeably compared to 1-2 years ago?" },
+  { id: 'judgment',   type: 'frequency', domain: 'Judgement', text: 'Has {name} made unusual financial decisions, had trouble managing bills, or seemed more vulnerable to being taken advantage of?' },
+  { id: 'function',   type: 'choice',    domain: 'Daily Function', text: 'Is {name} still managing daily tasks independently?', options: ['Fully independent', 'Mostly independent, with occasional help', 'Needs help with some tasks', 'Needs help with most tasks', 'Requires full-time assistance'] },
+  { id: 'trajectory', type: 'choice',    domain: 'Trajectory', text: 'Over the past 6 months, have the changes you are seeing gotten:', options: ['Better', 'Stayed the same', 'Slightly worse', 'Noticeably worse', 'Much worse'] },
 ]
 
-const CCA_LIKERT = ["Not at all", "Rarely", "Sometimes", "Often", "Almost always"]
-const CCA_GLOBAL_SCALE = ["No change", "Mild decline", "Moderate decline", "Significant decline", "Severe decline"]
+const FREQUENCY_SCALE = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always']
+
+function domainLevel(scores) {
+  const valid = scores.filter(s => s != null && !isNaN(s))
+  if (!valid.length) return 'low'
+  const avg = valid.reduce((a, b) => a + b, 0) / valid.length
+  if (avg >= 3.5) return 'elevated'
+  if (avg >= 2.0) return 'moderate'
+  return 'low'
+}
 
 function computeResults(answers) {
-  const ftdScore = (
-    (answers[6] || 1) + (answers[7] || 1) + (answers[8] || 1) + (answers[9] || 1) +
-    (answers[12] || 1) + (answers[13] || 1) + (answers[14] || 1)
-  ) / 7
-  const depressionScore = ((answers[4] || 1) + (answers[5] || 1) + (answers[15] || 1) + (answers[3] || 1)) / 4
-  const cognitiveScore = ((answers[1] || 1) + (answers[2] || 1) + (answers[10] || 1) + (answers[11] || 1)) / 4
-  const globalDecline = answers[17] || 1
-  let bvftd = ftdScore * 25
-  let eoad = (cognitiveScore * 15) + (globalDecline * 3)
-  let depression = depressionScore * 20
-  let mixed = ((ftdScore + depressionScore) / 2) * 15
-  let normal = Math.max(5, 100 - bvftd - eoad - depression - mixed)
-  const total = bvftd + eoad + depression + mixed + normal
-  bvftd = Math.round((bvftd / total) * 100)
-  eoad = Math.round((eoad / total) * 100)
-  depression = Math.round((depression / total) * 100)
-  mixed = Math.round((mixed / total) * 100)
-  normal = 100 - bvftd - eoad - depression - mixed
-  const urgency = ftdScore >= 3.5 ? 'HIGH' : ftdScore >= 2.5 ? 'UNCERTAIN' : 'LOW'
-  return {
-    differentials: [
-      { label: 'bvFTD-Probable', probability: bvftd, color: '#c0392b' },
-      { label: 'EOAD Pattern', probability: eoad, color: '#e67e22' },
-      { label: 'Late-Onset Depression', probability: depression, color: '#2980b9' },
-      { label: 'Mixed/Uncertain', probability: mixed, color: '#8e44ad' },
-      { label: 'Normal Aging', probability: normal, color: '#27ae60' },
-    ],
-    domains: {
-      'Social Cognition': Math.round(((answers[7] || 1) / 5) * 100),
-      'Disinhibition': Math.round(((answers[8] || 1) / 5) * 100),
-      'Compulsive Behaviors': Math.round(((answers[14] || 1) + (answers[6] || 1) + (answers[12] || 1)) / 15 * 100),
-      'Apathy': Math.round(((answers[15] || 1) / 5) * 100),
-      'Executive Function': Math.round(((answers[11] || 1) / 5) * 100),
-      'Mood/Affect': Math.round(((answers[5] || 1) / 5) * 100),
-    },
-    urgency,
-    motorFlag: (answers[16] || 1) >= 3,
-    ftdScore: Math.round(ftdScore * 10) / 10,
-  }
+  const lovedOneName = (typeof answers.name === 'string' ? answers.name : 'Your loved one').trim() || 'Your loved one'
+  const lovedOneAge = answers.age || null
+  const relationOptions = ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other']
+  const caregiverRelation = answers.relation ? (relationOptions[answers.relation - 1] || '') : ''
+
+  const memory   = domainLevel([answers.memory1, answers.memory2])
+  const language = domainLevel([answers.language1, answers.language2])
+  const attention = domainLevel([answers.attention1, answers.attention2])
+  const behavior  = domainLevel([answers.behavior, answers.judgment])
+
+  const ds = { elevated: 2, moderate: 1, low: 0 }
+  const domainTotal = ds[memory] + ds[language] + ds[attention] + ds[behavior]
+  const functionScore = answers.function ? Math.floor((answers.function - 1) * 0.75) : 0
+  const trajectoryScore = answers.trajectory ? Math.max(0, answers.trajectory - 2) : 0
+  const total = domainTotal + functionScore + trajectoryScore
+
+  const stageIndex = total <= 1 ? 0 : total <= 3 ? 1 : total <= 6 ? 2 : total <= 9 ? 3 : 4
+
+  return { lovedOneName, lovedOneAge, caregiverRelation, stageIndex, memory, language, attention, behavior }
 }
 
 // ---- Fluent 2 theme (exact CogCare 3.0 colors) ----
@@ -77,6 +61,7 @@ const cogcareTheme = {
   colorBrandBackgroundHover: '#2D382D',
   colorBrandBackgroundPressed: '#2D382D',
   colorBrandForeground1: '#3D4B3E',
+  colorNeutralForegroundOnBrand: '#FFFFFF',
   colorNeutralBackground1: '#FDFBF7',
   colorNeutralBackground2: '#F3EFE9',
   colorNeutralBackground3: '#F3EFE9',
@@ -92,38 +77,36 @@ const cogcareTheme = {
 // ---- BHIQuiz ----
 function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
   const [qi, setQi] = useState(0)
-  const total = CCA_QUIZ_QUESTIONS.length
-  const q = CCA_QUIZ_QUESTIONS[qi]
-  const isGlobal = qi === 16
-  const scale = isGlobal ? CCA_GLOBAL_SCALE : CCA_LIKERT
-  const selected = quizAnswers[qi + 1] || null
+  const total = CAREGIVER_QUESTIONS.length
+  const q = CAREGIVER_QUESTIONS[qi]
   const pct = (qi + 1) / total
+  const name = (typeof quizAnswers.name === 'string' && quizAnswers.name.trim()) || 'your loved one'
+  const questionText = q.text.replace(/\{name\}/g, name)
+  const currentValue = quizAnswers[q.id]
 
-  const handleSelect = (_ev, data) => {
-    setQuizAnswers(prev => ({ ...prev, [qi + 1]: Number(data.value) }))
-  }
+  const canProceed = (() => {
+    if (q.type === 'text') return typeof currentValue === 'string' && currentValue.trim().length > 0
+    if (q.type === 'number') return typeof currentValue === 'number' && currentValue > 0 && currentValue < 130
+    return currentValue != null
+  })()
+
+  const setAnswer = (val) => setQuizAnswers(prev => ({ ...prev, [q.id]: val }))
 
   const handleNext = () => {
-    if (qi < total - 1) {
-      setQi(qi + 1)
-    } else {
-      const finalAnswers = selected
-        ? { ...quizAnswers, [qi + 1]: selected }
-        : quizAnswers
-      onComplete(computeResults(finalAnswers))
-    }
+    if (!canProceed) return
+    if (qi < total - 1) { setQi(qi + 1) } else { onComplete(computeResults(quizAnswers)) }
   }
 
-  const handleBack = () => {
-    if (qi > 0) setQi(qi - 1)
-  }
+  const handleBack = () => { if (qi > 0) setQi(qi - 1) }
+
+  const options = q.type === 'frequency' ? FREQUENCY_SCALE : (q.options || [])
 
   return (
     <div className="flex h-full flex-col">
       {/* Progress + domain */}
-      <div className="shrink-0 border-b border-[#E8DCC4]/80 bg-[#FDFBF7] px-4 pb-5 pt-5 sm:px-8 sm:pb-6 sm:pt-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <span className="inline-flex items-center rounded-full bg-[#F3EFE9] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#A67B5B] ring-1 ring-[#E8DCC4]/60">
+      <div className="shrink-0 border-b border-[#E8DCC4]/80 bg-[#FDFBF7] px-4 pb-3 pt-3 sm:px-8 sm:pb-4 sm:pt-4">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <span className="inline-flex items-center rounded-full bg-[#F3EFE9] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#A67B5B] ring-1 ring-[#E8DCC4]/60">
             {q.domain}
           </span>
           <span className="text-[11px] font-semibold tabular-nums text-[#3D4B3E]/80">
@@ -132,75 +115,86 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
             {total}
           </span>
         </div>
-        <div className="mb-1.5 flex justify-between text-[10px] font-medium uppercase tracking-[0.12em] text-[#3D4B3E]/45">
-          <span>Progress</span>
-          <span>{Math.round(pct * 100)}%</span>
-        </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-[#E8DCC4]/90">
-          <div
-            className="h-full rounded-full bg-[#3D4B3E] transition-[width] duration-500 ease-out"
-            style={{ width: `${Math.min(100, pct * 100)}%` }}
-          />
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E8DCC4]/90">
+          <div className="h-full rounded-full bg-[#3D4B3E] transition-[width] duration-500 ease-out" style={{ width: `${Math.min(100, pct * 100)}%` }} />
         </div>
       </div>
 
-      {/* Question + options */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8">
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E]/40">
-          {isGlobal ? 'Overall function' : 'How often'}
+      {/* Question + input */}
+      <div className="flex flex-1 min-h-0 flex-col px-4 py-4 sm:px-8 sm:py-5">
+        <p className="mb-1.5 shrink-0 text-[10px] font-bold uppercase tracking-[0.25em] text-[#3D4B3E]/40">
+          {q.domain}
         </p>
-        <h2 className="mb-8 font-serif text-[1.35rem] leading-[1.35] tracking-tight text-[#1A1A1A] sm:mb-10 sm:text-2xl sm:leading-snug md:text-[1.65rem]">
-          {q.text}
+        <h2 className="mb-4 shrink-0 font-serif text-[1.1rem] leading-snug tracking-tight text-[#1A1A1A] sm:text-xl">
+          {questionText}
         </h2>
 
-        <fieldset className="min-w-0 border-0 p-0">
-          <legend className="sr-only">Choose one answer</legend>
-          <div className="flex flex-col gap-2.5 sm:gap-3">
-            {scale.map((label, i) => {
-              const value = i + 1
-              const isOn = selected === value
-              return (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() =>
-                    handleSelect(null, { value: String(value) })
-                  }
-                  className={[
-                    'group flex w-full min-h-[52px] items-center gap-3 rounded-2xl border px-3.5 py-3.5 text-left transition-all duration-200 sm:min-h-[56px] sm:gap-4 sm:px-4 sm:py-4',
-                    isOn
-                      ? 'border-[#3D4B3E] bg-[#F3EFE9] shadow-[0_0_0_1px_rgba(61,75,62,0.12)] ring-2 ring-[#3D4B3E]/15'
-                      : 'border-[#E8DCC4] bg-white hover:border-[#A67B5B]/45 hover:bg-[#FFFCF8] active:scale-[0.99]',
-                  ].join(' ')}
-                >
-                  <span
+        {/* Text input */}
+        {q.type === 'text' && (
+          <input
+            type="text"
+            value={currentValue || ''}
+            onChange={e => setAnswer(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && canProceed) handleNext() }}
+            placeholder={q.placeholder}
+            autoFocus
+            className="w-full rounded-xl border border-[#E8DCC4] bg-white px-4 py-3 text-base text-[#1A1A1A] outline-none placeholder:text-slate-400 focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+          />
+        )}
+
+        {/* Number input */}
+        {q.type === 'number' && (
+          <input
+            type="number"
+            value={currentValue || ''}
+            onChange={e => setAnswer(Number(e.target.value))}
+            onKeyDown={e => { if (e.key === 'Enter' && canProceed) handleNext() }}
+            placeholder={q.placeholder}
+            min={1}
+            max={120}
+            autoFocus
+            className="w-full rounded-xl border border-[#E8DCC4] bg-white px-4 py-3 text-base text-[#1A1A1A] outline-none placeholder:text-slate-400 focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+          />
+        )}
+
+        {/* Choice or frequency buttons */}
+        {(q.type === 'choice' || q.type === 'frequency') && (
+          <fieldset className="min-h-0 min-w-0 flex-1 border-0 p-0">
+            <legend className="sr-only">Choose one answer</legend>
+            <div className="flex h-full flex-col justify-between gap-2">
+              {options.map((label, i) => {
+                const value = i + 1
+                const isOn = currentValue === value
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => setAnswer(value)}
                     className={[
-                      'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold tabular-nums sm:h-10 sm:w-10 sm:text-sm',
+                      'group flex w-full flex-1 items-center gap-3 rounded-xl border px-3 py-2 text-left transition-all duration-200',
                       isOn
-                        ? 'bg-[#3D4B3E] text-white'
-                        : 'bg-[#F3EFE9] text-[#3D4B3E] group-hover:bg-[#E8DCC4]/80',
-                    ].join(' ')}
-                    aria-hidden
-                  >
-                    {value}
-                  </span>
-                  <span
-                    className={[
-                      'min-w-0 flex-1 text-[13px] font-medium leading-snug sm:text-sm',
-                      isOn ? 'text-[#1A1A1A]' : 'text-[#3D4B3E]',
+                        ? 'border-[#3D4B3E] bg-[#F3EFE9] ring-2 ring-[#3D4B3E]/15'
+                        : 'border-[#E8DCC4] bg-white hover:border-[#A67B5B]/45 hover:bg-[#FFFCF8] active:scale-[0.99]',
                     ].join(' ')}
                   >
-                    {label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </fieldset>
+                    {q.type === 'frequency' && (
+                      <span className={['flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums', isOn ? 'bg-[#3D4B3E] text-white' : 'bg-[#F3EFE9] text-[#3D4B3E] group-hover:bg-[#E8DCC4]/80'].join(' ')} aria-hidden>
+                        {value}
+                      </span>
+                    )}
+                    <span className={['min-w-0 flex-1 text-[13px] font-medium leading-snug', isOn ? 'text-[#1A1A1A]' : 'text-[#3D4B3E]'].join(' ')}>
+                      {label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </fieldset>
+        )}
       </div>
 
       {/* Navigation */}
-      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[#E8DCC4] bg-[#F3EFE9]/50 px-4 py-4 backdrop-blur-sm sm:px-8 sm:py-5">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[#E8DCC4] bg-[#F3EFE9]/50 px-4 py-3 backdrop-blur-sm sm:px-8 sm:py-4">
         {qi > 0 ? (
           <Button
             appearance="subtle"
@@ -214,11 +208,11 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
         )}
         <Button
           appearance="primary"
-          disabled={!selected}
+          disabled={!canProceed}
           onClick={handleNext}
           icon={<ArrowRight className="h-4 w-4" />}
           iconPosition="after"
-          className={!selected ? 'opacity-50' : ''}
+          className={!canProceed ? 'opacity-50' : ''}
         >
           {qi < total - 1 ? 'Next' : 'View results'}
         </Button>
@@ -324,105 +318,6 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
     }
   }
 
-  const emailCard = (
-    <div className="mb-8 rounded-2xl border border-[#E8DCC4] bg-white/80 p-5 shadow-sm sm:p-6">
-      <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F3EFE9] text-[#3D4B3E]">
-          <Mail className="h-5 w-5" strokeWidth={1.5} aria-hidden />
-        </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
-            Email my results
-          </p>
-          <p className="mt-1 text-[13px] leading-relaxed text-[#3D4B3E]/85">
-            {canEmail
-              ? completeAssessmentUrl
-                ? 'We’ll email your report and a one-click link to open your dashboard (link expires in 15 minutes).'
-                : 'Get a copy of this summary sent to your inbox.'
-              : import.meta.env.DEV
-                ? 'Email sending is not configured locally. Add VITE_QUIZ_EMAIL_API_URL to .env, set VITE_COMPLETE_ASSESSMENT_URL, or run npm run sandbox so amplify_outputs.json includes your function URL.'
-                : 'Email delivery is not available from this app right now. Save or screenshot your results, or try again later.'}
-          </p>
-        </div>
-      </div>
-      {canEmail ? (
-        emailStatus === 'sent' ? (
-          <div className="rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] p-4" role="status">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
-              Check your inbox
-            </p>
-            <p className="mt-2 text-sm font-medium leading-relaxed text-[#3D4B3E]">
-              {completeAssessmentUrl
-                ? emailScenario === 'existing_user'
-                  ? 'Check your email for a magic link—or, if you remember your password, sign in.'
-                  : `We sent your Brain Health Index report and a one-click sign-in link to ${email.trim()}. The link expires in 15 minutes.`
-                : 'Check your inbox — we sent your Brain Health Index summary.'}
-            </p>
-            {completeAssessmentUrl && emailScenario !== 'existing_user' ? (
-              <button
-                type="button"
-                className="mt-4 text-[13px] font-semibold text-[#A67B5B] underline-offset-4 hover:underline"
-                onClick={() => {
-                  setEmailStatus('idle')
-                  setEmailScenario(null)
-                  setEmailMessage('')
-                }}
-              >
-                Wrong email? Try again
-              </button>
-            ) : null}
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <label className="sr-only" htmlFor="bhi-email">
-                Email address
-              </label>
-              <input
-                id="bhi-email"
-                type="email"
-                name="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  if (emailStatus === 'error') {
-                    setEmailStatus('idle')
-                    setEmailMessage('')
-                  }
-                  setEmailScenario(null)
-                }}
-                disabled={emailStatus === 'sending'}
-                className="min-h-[48px] flex-1 rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 text-sm text-[#1A1A1A] outline-none ring-0 transition placeholder:text-slate-400 focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20 disabled:opacity-60"
-              />
-              <button
-                type="button"
-                onClick={sendResultsEmail}
-                disabled={emailStatus === 'sending'}
-                className="inline-flex min-h-[48px] shrink-0 items-center justify-center gap-2 rounded-xl bg-[#3D4B3E] px-5 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#2D382D] disabled:opacity-50 sm:px-6"
-              >
-                {emailStatus === 'sending' ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                    Sending
-                  </>
-                ) : (
-                  'Send'
-                )}
-              </button>
-            </div>
-            {emailStatus === 'error' && emailMessage ? (
-              <p className="mt-3 text-[13px] text-red-700" role="alert">
-                {emailMessage}
-              </p>
-            ) : null}
-          </>
-        )
-      ) : null}
-    </div>
-  )
-
   const returnToEnc = encodeURIComponent('/dashboard')
   const encEmail = encodeURIComponent(email.trim())
   /** quizFlow=existing skips the “temporary password” hint on LoginPage. */
@@ -481,11 +376,20 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
       ) : null}
 
       <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-6">
-        <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B]">
+        <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#A67B5B] sr-only">
           Assessment Complete
         </p>
-        <BHIReportContent quizResults={quizResults} middleSlot={emailCard} />
-
+        <BHIReportContent
+          quizResults={quizResults}
+          email={email}
+          setEmail={setEmail}
+          emailStatus={emailStatus}
+          emailMessage={emailMessage}
+          onSendEmail={sendResultsEmail}
+          canEmail={canEmail}
+          emailScenario={emailScenario}
+          onResetEmail={() => { setEmailStatus('idle'); setEmailScenario(null); setEmailMessage('') }}
+        />
       </div>
 
       {/* Footer */}
@@ -523,16 +427,47 @@ export default function BrainHealthIndex({
     }
   }, [open, onClose])
 
+  const ANALYZING_STEPS = [
+    'Reviewing symptom patterns...',
+    'Mapping to cognitive domains...',
+    'Identifying care pathway...',
+    'Preparing your report...',
+  ]
+
+  const [analyzing, setAnalyzing] = useState(false)
+  const [analyzingStep, setAnalyzingStep] = useState(0)
+  const pendingResults = useRef(null)
+  const analyzingInterval = useRef(null)
+
   const handleComplete = useCallback((results) => {
-    setQuizResults(results)
+    pendingResults.current = results
+    setAnalyzing(true)
+    setAnalyzingStep(0)
+    let step = 0
+    analyzingInterval.current = setInterval(() => {
+      step++
+      if (step >= ANALYZING_STEPS.length) {
+        clearInterval(analyzingInterval.current)
+        setTimeout(() => {
+          setAnalyzing(false)
+          setQuizResults(pendingResults.current)
+        }, 600)
+      } else {
+        setAnalyzingStep(step)
+      }
+    }, 650)
   }, [setQuizResults])
 
   const handleReset = useCallback(() => {
+    clearInterval(analyzingInterval.current)
+    setAnalyzing(false)
+    setAnalyzingStep(0)
+    pendingResults.current = null
     setQuizAnswers({})
     setQuizResults(null)
   }, [setQuizAnswers, setQuizResults])
 
-  const step = quizResults ? 'report' : 'quiz'
+  const step = analyzing ? 'analyzing' : quizResults ? 'report' : 'quiz'
 
   if (!open) return null
 
@@ -588,6 +523,33 @@ export default function BrainHealthIndex({
               setQuizAnswers={setQuizAnswers}
               onComplete={handleComplete}
             />
+          )}
+          {step === 'analyzing' && (
+            <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: '50%', background: '#F3EFE9',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  animation: 'bhi-pulse 1.4s ease-in-out infinite',
+                }}>
+                  <Brain className="h-[18px] w-[18px] text-[#A67B5B]" strokeWidth={1.5} />
+                </div>
+              </div>
+              <p style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: '1.2rem', fontStyle: 'italic', color: '#3D4B3E',
+                marginBottom: 10, textAlign: 'center',
+              }}>
+                Analysing your responses
+              </p>
+              <p style={{
+                fontSize: 13, color: '#A67B5B', fontWeight: 600,
+                letterSpacing: '0.05em', minHeight: 20, textAlign: 'center',
+                transition: 'opacity 0.3s',
+              }}>
+                {ANALYZING_STEPS[analyzingStep]}
+              </p>
+            </div>
           )}
           {step === 'report' && quizResults && (
             <BHIReport

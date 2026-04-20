@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronRight, Download, Trash2 } from 'lucide-react'
+import { ChevronRight, Download, Trash2, Loader2 } from 'lucide-react'
 import BHIReportContent from '../BHIReportContent'
 import PanelHeader from '../bhi/PanelHeader'
+import { downloadReportPdf } from '../../lib/downloadReportPdf'
 
 function getFocusableElements(container) {
   if (!container) return []
@@ -52,6 +53,7 @@ function exportFilenameStub(completedAt, id) {
 export default function TestsTab({ client, assessments, onRefresh }) {
   const [open, setOpen] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [downloadingPdfId, setDownloadingPdfId] = useState(null)
   const [actionError, setActionError] = useState(null)
   const panelRef = useRef(null)
   const openTriggerRef = useRef(null)
@@ -103,14 +105,18 @@ export default function TestsTab({ client, assessments, onRefresh }) {
     }
   }, [open])
 
-  function handleExportOne(a) {
+  async function handleDownloadPdf(a) {
+    if (downloadingPdfId) return
     setActionError(null)
-    const payload = {
-      app: 'CogCare',
-      exportedAt: new Date().toISOString(),
-      assessment: buildExportRecord(a),
+    setDownloadingPdfId(a.id)
+    try {
+      const results = safeParseJson(a.resultsJson)
+      await downloadReportPdf(results, exportFilenameStub(a.completedAt, a.id))
+    } catch {
+      setActionError('Could not generate PDF. Please try again.')
+    } finally {
+      setDownloadingPdfId(null)
     }
-    downloadJson(`${exportFilenameStub(a.completedAt, a.id)}.json`, payload)
   }
 
   function handleExportAll() {
@@ -229,15 +235,17 @@ export default function TestsTab({ client, assessments, onRefresh }) {
                   <div className="flex shrink-0 items-center gap-0 border-l border-[#F3EFE9] pr-2 sm:pr-3">
                     <button
                       type="button"
-                      disabled={busy}
+                      disabled={busy || downloadingPdfId === a.id}
                       onClick={(e) => {
                         e.stopPropagation()
-                        handleExportOne(a)
+                        void handleDownloadPdf(a)
                       }}
                       className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-[#3D4B3E] hover:bg-[#F3EFE9] disabled:opacity-50"
-                      aria-label="Export this test as JSON"
+                      aria-label="Download report as PDF"
                     >
-                      <Download className="h-5 w-5" aria-hidden />
+                      {downloadingPdfId === a.id
+                        ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                        : <Download className="h-5 w-5" aria-hidden />}
                     </button>
                     <button
                       type="button"
@@ -300,7 +308,7 @@ export default function TestsTab({ client, assessments, onRefresh }) {
               {(() => {
                 try {
                   const r = JSON.parse(open.resultsJson || '{}')
-                  return <BHIReportContent quizResults={r} />
+                  return <BHIReportContent quizResults={r} showActions={false} />
                 } catch {
                   return <p className="text-sm text-red-700">Could not load results.</p>
                 }
@@ -310,11 +318,13 @@ export default function TestsTab({ client, assessments, onRefresh }) {
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => handleExportOne(open)}
-                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full border border-[#E8DCC4] bg-white px-4 py-2 text-sm font-semibold text-[#3D4B3E] hover:bg-[#F3EFE9] sm:min-h-0 sm:flex-initial"
+                  disabled={!!downloadingPdfId}
+                  onClick={() => void handleDownloadPdf(open)}
+                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full border border-[#E8DCC4] bg-white px-4 py-2 text-sm font-semibold text-[#3D4B3E] hover:bg-[#F3EFE9] disabled:opacity-50 sm:min-h-0 sm:flex-initial"
                 >
-                  <Download className="h-4 w-4" aria-hidden />
-                  Export JSON
+                  {downloadingPdfId === open.id
+                    ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden />Generating...</>
+                    : <><Download className="h-4 w-4" aria-hidden />Download PDF</>}
                 </button>
                 <button
                   type="button"

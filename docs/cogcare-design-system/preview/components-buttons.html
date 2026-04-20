@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 20px 24px; background: var(--color-bg); font-family: var(--font-sans); }
+  .group-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--color-clay); margin-bottom: 12px; margin-top: 16px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="group-label">Primary Buttons</div>
+<div class="row">
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:14px 28px;background:#3D4B3E;color:white;border-radius:9999px;border:none;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;cursor:pointer">
+    Begin Assessment →
+  </button>
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#3D4B3E;color:white;border-radius:9999px;border:none;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">
+    Sign In
+  </button>
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#3D4B3E;color:white;border-radius:9999px;border:none;font-family:var(--font-sans);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer" disabled>
+    Disabled
+  </button>
+</div>
+
+<div class="group-label">Ghost / Outline Buttons</div>
+<div class="row">
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:transparent;color:#3D4B3E;border-radius:9999px;border:1px solid #E8DCC4;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">
+    Export All
+  </button>
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:transparent;color:#3D4B3E;border-radius:9999px;border:1px solid #E8DCC4;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">
+    Refresh
+  </button>
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;color:#3D4B3E;border-radius:9999px;border:1px solid #E8DCC4;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">
+    Sign Out
+  </button>
+</div>
+
+<div class="group-label">Destructive / Special</div>
+<div class="row">
+  <button style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:white;color:#7f1d1d;border-radius:9999px;border:1px solid #fecaca;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">
+    Delete
+  </button>
+  <button style="padding:8px 18px;background:#3D4B3E;color:white;border-radius:9999px;border:none;font-family:var(--font-sans);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">
+    Upload
+    <input type="file" style="display:none">
+  </button>
+  <a style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#3D4B3E;color:white;border-radius:9999px;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;text-decoration:none">
+    Donate
+  </a>
+</div>
+
+<div class="group-label">Tab Switcher</div>
+<div style="display:inline-flex;border-radius:9999px;border:1px solid #E8DCC4;background:#FDFBF7;padding:4px;gap:0">
+  <button style="padding:10px 20px;background:white;color:#3D4B3E;border-radius:9999px;border:none;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;box-shadow:0 1px 3px rgba(26,60,52,0.08);cursor:pointer">Sign in</button>
+  <button style="padding:10px 20px;background:transparent;color:rgba(61,75,62,0.6);border-radius:9999px;border:none;font-family:var(--font-sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;cursor:pointer">New here</button>
+</div>
+</body>
+</html>

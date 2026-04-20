@@ -112,23 +112,23 @@ export default function SettingsTab({ email, profile, onProfileSaved }) {
     <div className="space-y-10">
       <PanelHeader sectionLabel="Account" title="Settings" />
 
-      <section className="rounded-2xl border border-[#E8DCC4] bg-white p-6 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]/50">Email</p>
-        <p className="mt-2 text-sm font-medium text-[#1A1A1A]">{email || '—'}</p>
+      <section className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">Email</p>
+        <p className="mt-2 text-sm font-medium text-ink">{email || '—'}</p>
       </section>
 
-      <section className="rounded-2xl border border-[#E8DCC4] bg-white p-6 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]/50">Profile photo</p>
+      <section className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">Profile photo</p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
-          <div className="h-20 w-20 overflow-hidden rounded-full border border-[#E8DCC4] bg-[#F3EFE9]">
+          <div className="h-20 w-20 overflow-hidden rounded-full border border-border bg-surface">
             {avatarUrl ? (
               <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-[#3D4B3E]/40">No photo</div>
+              <div className="flex h-full w-full items-center justify-center text-xs text-forest/40">No photo</div>
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <label className="cursor-pointer rounded-full bg-[#3D4B3E] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-[#2D382D]">
+            <label className="cursor-pointer rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark">
               {fileBusy ? '…' : 'Upload'}
               <input type="file" accept="image/*" className="sr-only" onChange={onPickFile} disabled={fileBusy} />
             </label>
@@ -137,18 +137,18 @@ export default function SettingsTab({ email, profile, onProfileSaved }) {
                 type="button"
                 onClick={clearAvatar}
                 disabled={fileBusy}
-                className="rounded-full border border-[#E8DCC4] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E]"
+                className="rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest"
               >
                 Remove
               </button>
             ) : null}
           </div>
         </div>
-        {avatarMsg ? <p className="mt-3 text-sm text-[#3D4B3E]">{avatarMsg}</p> : null}
+        {avatarMsg ? <p className="mt-3 text-sm text-forest">{avatarMsg}</p> : null}
       </section>
 
-      <section className="rounded-2xl border border-[#E8DCC4] bg-white p-6 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]/50">Change password</p>
+      <section className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">Change password</p>
         <form onSubmit={handlePw} className="mt-4 max-w-md space-y-3">
           <input
             type="password"
@@ -156,7 +156,7 @@ export default function SettingsTab({ email, profile, onProfileSaved }) {
             placeholder="Current password"
             value={currentPw}
             onChange={(e) => setCurrentPw(e.target.value)}
-            className="w-full rounded-xl border border-[#E8DCC4] px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-border px-4 py-3 text-sm"
             required
           />
           <input
@@ -165,7 +165,7 @@ export default function SettingsTab({ email, profile, onProfileSaved }) {
             placeholder="New password"
             value={newPw}
             onChange={(e) => setNewPw(e.target.value)}
-            className="w-full rounded-xl border border-[#E8DCC4] px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-border px-4 py-3 text-sm"
             required
           />
           <input
@@ -174,22 +174,22 @@ export default function SettingsTab({ email, profile, onProfileSaved }) {
             placeholder="Confirm new password"
             value={confirmPw}
             onChange={(e) => setConfirmPw(e.target.value)}
-            className="w-full rounded-xl border border-[#E8DCC4] px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-border px-4 py-3 text-sm"
             required
           />
           <button
             type="submit"
-            className="rounded-full bg-[#3D4B3E] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white"
+            className="rounded-full bg-forest px-5 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white"
           >
             Update password
           </button>
         </form>
-        {pwMsg ? <p className="mt-3 text-sm text-[#3D4B3E]">{pwMsg}</p> : null}
+        {pwMsg ? <p className="mt-3 text-sm text-forest">{pwMsg}</p> : null}
       </section>
 
-      <section className="rounded-2xl border border-dashed border-[#E8DCC4] bg-[#F3EFE9]/40 p-6">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3D4B3E]/50">Notifications</p>
-        <p className="mt-2 text-sm text-[#3D4B3E]/70">Email reminders — coming soon.</p>
+      <section className="rounded-2xl border border-dashed border-border bg-surface/40 p-6">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">Notifications</p>
+        <p className="mt-2 text-sm text-forest/70">Email reminders — coming soon.</p>
       </section>
     </div>
   )

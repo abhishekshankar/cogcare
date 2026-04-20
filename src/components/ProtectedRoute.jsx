@@ -22,7 +22,7 @@ export default function ProtectedRoute({ children }) {
 
   if (state === 'checking') {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center bg-[#FDFBF7] text-[#3D4B3E]">
+      <div className="flex min-h-[50vh] items-center justify-center bg-page text-forest">
         <p className="text-sm font-medium">Loading…</p>
       </div>
     )

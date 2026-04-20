@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--color-bg); font-family: var(--font-sans); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .swatch { border-radius: 12px; height: 64px; flex: 1; min-width: 80px; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px 10px; }
+  .swatch-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; }
+  .swatch-hex { font-size: 10px; font-weight: 500; opacity: 0.7; margin-top: 2px; font-family: monospace; }
+  .group-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--color-clay); margin-bottom: 8px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="group-label">Greens</div>
+<div class="row">
+  <div class="swatch" style="background:#1A3C34"><span class="swatch-label" style="color:rgba(255,255,255,0.7)">forest-deep</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#1A3C34</span></div>
+  <div class="swatch" style="background:#2D382D"><span class="swatch-label" style="color:rgba(255,255,255,0.7)">forest-dark</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#2D382D</span></div>
+  <div class="swatch" style="background:#3D4B3E"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">forest</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#3D4B3E</span></div>
+  <div class="swatch" style="background:#4A7C59"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">forest-mid</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#4A7C59</span></div>
+  <div class="swatch" style="background:#5A9C69"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">forest-light</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#5A9C69</span></div>
+</div>
+<div class="group-label">Accent &amp; Neutrals</div>
+<div class="row">
+  <div class="swatch" style="background:#A67B5B"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">clay</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#A67B5B</span></div>
+  <div class="swatch" style="background:#C9A882"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">clay-light</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#C9A882</span></div>
+  <div class="swatch" style="background:#E8DCC4; border:1px solid #d5c9b0"><span class="swatch-label" style="color:#5a4a30">border</span><span class="swatch-hex" style="color:#7a6040">#E8DCC4</span></div>
+  <div class="swatch" style="background:#F3EFE9; border:1px solid #e5dfd5"><span class="swatch-label" style="color:#7a5a38">surface</span><span class="swatch-hex" style="color:#9a7050">#F3EFE9</span></div>
+  <div class="swatch" style="background:#FDFBF7; border:1px solid #ece8e0"><span class="swatch-label" style="color:#7a5a38">bg</span><span class="swatch-hex" style="color:#9a7050">#FDFBF7</span></div>
+</div>
+<div class="group-label">Text</div>
+<div class="row">
+  <div class="swatch" style="background:#1A1A1A"><span class="swatch-label" style="color:rgba(255,255,255,0.7)">ink</span><span class="swatch-hex" style="color:rgba(255,255,255,0.4)">#1A1A1A</span></div>
+  <div class="swatch" style="background:rgba(61,75,62,0.7); border:1px solid #ccc"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">ink-muted</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">70% forest</span></div>
+  <div class="swatch" style="background:#64748B"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">slate</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#64748B</span></div>
+  <div class="swatch" style="background:#94A3B8"><span class="swatch-label" style="color:rgba(255,255,255,0.8)">slate-light</span><span class="swatch-hex" style="color:rgba(255,255,255,0.5)">#94A3B8</span></div>
+</div>
+</body>
+</html>

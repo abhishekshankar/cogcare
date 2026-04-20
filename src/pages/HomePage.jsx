@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import BrainHealthIndex from '../BrainHealthIndex'
 import { useAuthIdentity } from '../lib/useAuthIdentity'
 import {
@@ -13,6 +13,7 @@ import {
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '')
 
 export default function HomePage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const authIdentity = useAuthIdentity()
   const [selectedCard, setSelectedCard] = useState(null)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -28,6 +29,15 @@ export default function HomePage() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    if (searchParams.get('startQuiz') !== 'newSubject') return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- open quiz modal when landing with ?startQuiz=newSubject from dashboard
+    setShowQuiz(true)
+    const next = new URLSearchParams(searchParams)
+    next.delete('startQuiz')
+    setSearchParams(next, { replace: true })
+  }, [searchParams, setSearchParams])
 
   useEffect(() => {
     if (!selectedCard) return

@@ -9,6 +9,8 @@ import TestsTab from '../components/dashboard/TestsTab'
 import MoreTestsTab from '../components/dashboard/MoreTestsTab'
 import ConsultantsTab from '../components/dashboard/ConsultantsTab'
 import SettingsTab from '../components/dashboard/SettingsTab'
+import BookConsultPage from '../components/dashboard/BookConsultPage'
+import SubjectSwitcher from '../components/dashboard/SubjectSwitcher'
 import DashboardErrorBanner from '../components/dashboard/DashboardErrorBanner'
 import DashboardMainSkeleton from '../components/dashboard/DashboardMainSkeleton'
 import { useDashboardData } from '../hooks/useDashboardData'
@@ -19,10 +21,14 @@ export default function DashboardPage() {
   const {
     client,
     email,
+    sub,
     profile,
-    assessments,
+    subjects,
+    activeSubjectId,
+    setActiveSubjectId,
+    assessmentsForActiveSubject,
     consultants,
-    consultAppointments,
+    appointmentsForActiveSubject,
     loading,
     loadError,
     load,
@@ -40,7 +46,7 @@ export default function DashboardPage() {
 
   const latestResults = useMemo(() => {
     try {
-      const sorted = [...assessments].sort(
+      const sorted = [...assessmentsForActiveSubject].sort(
         (a, b) => new Date(b.completedAt || 0) - new Date(a.completedAt || 0),
       )
       if (sorted[0]?.resultsJson) return JSON.parse(sorted[0].resultsJson)
@@ -48,7 +54,7 @@ export default function DashboardPage() {
       /* ignore */
     }
     return null
-  }, [assessments])
+  }, [assessmentsForActiveSubject])
 
   async function handleSignOut() {
     clearPendingNewPasswordFlag()
@@ -86,20 +92,29 @@ export default function DashboardPage() {
               Dashboard
             </Link>
             <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
-            <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
-              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-forest/35">
-                    {displayName.slice(0, 1)}
-                  </div>
-                )}
+            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+              <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
+                <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-forest/35">
+                      {displayName.slice(0, 1)}
+                    </div>
+                  )}
+                </div>
+                <p className="truncate text-sm font-medium text-forest">
+                  <span className="text-forest/60">Hi, </span>
+                  {displayName}
+                </p>
               </div>
-              <p className="truncate text-sm font-medium text-forest">
-                <span className="text-forest/60">Hi, </span>
-                {displayName}
-              </p>
+              {subjects?.length ? (
+                <SubjectSwitcher
+                  subjects={subjects}
+                  activeSubjectId={activeSubjectId}
+                  onChange={setActiveSubjectId}
+                />
+              ) : null}
             </div>
           </div>
           <button
@@ -140,23 +155,56 @@ export default function DashboardPage() {
                   <BrainCreditTab
                     profile={profile}
                     latestResults={latestResults}
-                    assessmentCount={assessments.length}
-                    assessments={assessments}
+                    assessmentCount={assessmentsForActiveSubject.length}
+                    assessments={assessmentsForActiveSubject}
                   />
                 }
               />
               <Route
                 path="tests"
-                element={<TestsTab client={client} assessments={assessments} onRefresh={load} />}
+                element={
+                  <TestsTab
+                    client={client}
+                    assessments={assessmentsForActiveSubject}
+                    onRefresh={load}
+                  />
+                }
               />
               <Route path="more-tests" element={<MoreTestsTab />} />
               <Route
                 path="consultants"
-                element={<ConsultantsTab rows={consultants} appointments={consultAppointments} />}
+                element={
+                  <ConsultantsTab
+                    rows={consultants}
+                    appointments={appointmentsForActiveSubject}
+                  />
+                }
+              />
+              <Route
+                path="consultations/book"
+                element={
+                  <BookConsultPage
+                    client={client}
+                    email={email}
+                    ownerSub={sub}
+                    consultants={consultants}
+                    subjects={subjects}
+                    activeSubjectId={activeSubjectId}
+                    setActiveSubjectId={setActiveSubjectId}
+                    onRefresh={load}
+                  />
+                }
               />
               <Route
                 path="settings"
-                element={<SettingsTab email={email} profile={profile} onProfileSaved={load} />}
+                element={
+                  <SettingsTab
+                    email={email}
+                    profile={profile}
+                    subjects={subjects}
+                    onProfileSaved={load}
+                  />
+                }
               />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

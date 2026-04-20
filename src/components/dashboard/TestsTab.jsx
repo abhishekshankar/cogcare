@@ -308,7 +308,19 @@ export default function TestsTab({ client, assessments, onRefresh }) {
               {(() => {
                 try {
                   const r = JSON.parse(open.resultsJson || '{}')
-                  return <BHIReportContent quizResults={r} showActions={false} />
+                  const consultBookingTo = open?.id
+                    ? `/dashboard/consultations/book?${new URLSearchParams({
+                        ...(open.subjectId ? { subjectId: String(open.subjectId) } : {}),
+                        assessmentId: String(open.id),
+                      }).toString()}`
+                    : '/dashboard/consultations/book'
+                  return (
+                    <BHIReportContent
+                      quizResults={r}
+                      showActions={false}
+                      consultBookingTo={consultBookingTo}
+                    />
+                  )
                 } catch {
                   return <p className="text-sm text-red-700">Could not load results.</p>
                 }

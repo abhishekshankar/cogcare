@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Brain, Calendar, Map, Shield, Download, Mail, Share2, Check, Info, Loader2 } from 'lucide-react'
 
 const STAGES = [
@@ -181,11 +182,28 @@ export default function BHIReportContent({
   emailStatus, emailMessage,
   onSendEmail, canEmail,
   onResetEmail,
+  /** Quiz/report overlay: sign-in + inline scheduler flow */
+  onConsultClick,
+  /** Dashboard saved report: deep-link to booking with query params */
+  consultBookingTo,
+  /** Show banner above email block when user chose to book but must email first */
+  consultEmailHint,
 }) {
   const [showEmailForm, setShowEmailForm] = useState(false)
   const [showGuideForm, setShowGuideForm] = useState(false)
   const [guideEmail, setGuideEmail] = useState('')
   const [guideSent, setGuideSent] = useState(false)
+
+  useEffect(() => {
+    if (!consultEmailHint) return
+    const t = window.setTimeout(() => {
+      document.getElementById('bhi-share-email-input')?.focus()
+      document.getElementById('bhi-share-email-input')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
+    return () => window.clearTimeout(t)
+  }, [consultEmailHint])
+
+  const showEmailSection = showEmailForm || Boolean(consultEmailHint)
 
   if (!quizResults) return null
 
@@ -357,22 +375,57 @@ export default function BHIReportContent({
         borderRadius: 28, padding: '28px 28px 24px', marginBottom: 20,
         boxShadow: '0 12px 40px rgba(26,60,52,0.18)',
       }}>
-        <a
-          href="https://calendly.com/cogcare/30min"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-            width: '100%', padding: '18px 28px',
-            background: 'var(--color-white)', color: 'var(--color-forest)', border: 'none', borderRadius: 9999,
-            fontSize: 14, fontWeight: 700, letterSpacing: '0.02em',
-            textDecoration: 'none', marginBottom: 14,
-            boxSizing: 'border-box',
-          }}
-        >
-          Review these results with a cognitive specialist
-          <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.6, fontWeight: 500 }}>Recommended</span>
-        </a>
+        {typeof onConsultClick === 'function' ? (
+          <button
+            type="button"
+            onClick={onConsultClick}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              width: '100%', padding: '18px 28px',
+              background: 'var(--color-white)', color: 'var(--color-forest)', border: 'none', borderRadius: 9999,
+              fontSize: 14, fontWeight: 700, letterSpacing: '0.02em',
+              cursor: 'pointer',
+              marginBottom: 14,
+              boxSizing: 'border-box',
+              fontFamily: 'inherit',
+            }}
+          >
+            Review these results with a cognitive specialist
+            <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.6, fontWeight: 500 }}>Recommended</span>
+          </button>
+        ) : consultBookingTo ? (
+          <Link
+            to={consultBookingTo}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              width: '100%', padding: '18px 28px',
+              background: 'var(--color-white)', color: 'var(--color-forest)', border: 'none', borderRadius: 9999,
+              fontSize: 14, fontWeight: 700, letterSpacing: '0.02em',
+              textDecoration: 'none', marginBottom: 14,
+              boxSizing: 'border-box',
+            }}
+          >
+            Review these results with a cognitive specialist
+            <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.6, fontWeight: 500 }}>Recommended</span>
+          </Link>
+        ) : (
+          <a
+            href="https://calendly.com/cogcare/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              width: '100%', padding: '18px 28px',
+              background: 'var(--color-white)', color: 'var(--color-forest)', border: 'none', borderRadius: 9999,
+              fontSize: 14, fontWeight: 700, letterSpacing: '0.02em',
+              textDecoration: 'none', marginBottom: 14,
+              boxSizing: 'border-box',
+            }}
+          >
+            Review these results with a cognitive specialist
+            <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.6, fontWeight: 500 }}>Recommended</span>
+          </a>
+        )}
         <p style={{
           textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.75)',
           lineHeight: 1.6, fontStyle: 'italic', margin: 0,
@@ -383,6 +436,24 @@ export default function BHIReportContent({
 
       {/* 7. Save / share */}
       {showActions && <>
+      {consultEmailHint ? (
+        <div
+          className="fade-up d6"
+          style={{
+            marginBottom: 16,
+            borderRadius: 16,
+            border: '1px solid rgba(74,144,96,0.35)',
+            background: 'rgba(238,245,240,0.95)',
+            padding: '14px 16px',
+            fontSize: 13,
+            color: 'var(--color-forest)',
+            lineHeight: 1.55,
+          }}
+          role="status"
+        >
+          {consultEmailHint}
+        </div>
+      ) : null}
       <div className="fade-up d7" style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(61,75,62,0.45)', textAlign: 'center', marginBottom: 14 }}>
           Save or share this report
@@ -408,7 +479,7 @@ export default function BHIReportContent({
           ))}
         </div>
 
-        {showEmailForm && (
+        {showEmailSection && (
           <div style={{ marginTop: 12, border: '1px solid var(--color-border)', borderRadius: 16, padding: '16px 18px', background: 'var(--color-bg)' }}>
             {emailStatus === 'sent' ? (
               <div>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import PanelHeader from '../bhi/PanelHeader'
 import { FALLBACK_CONSULTANTS } from './consultantsFallback'
 
@@ -38,6 +39,14 @@ export default function ConsultantsTab({ rows, appointments = [] }) {
         title="Consultations"
         subtitle="Book a session below. Confirmed bookings from Calendly appear under Your appointments when the webhook is configured."
       />
+      <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+        <Link
+          to="/dashboard/consultations/book"
+          className="inline-flex min-h-[44px] items-center rounded-full bg-forest px-5 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
+        >
+          Book a consultation (inline scheduler)
+        </Link>
+      </div>
       {sortedAppts.length ? (
         <div className="rounded-2xl border border-[#E8DCC4] bg-white p-5 shadow-sm">
           <p className="font-serif text-base text-[#3D4B3E]">Your appointments</p>
@@ -90,12 +99,16 @@ export default function ConsultantsTab({ rows, appointments = [] }) {
                 <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.12em] text-clay">{c.title}</p>
               ) : null}
               {c.bio ? <p className="mt-3 text-sm leading-relaxed text-forest/85">{c.bio}</p> : null}
-              <a
-                href={c.bookingUrl || `mailto:${c.contactEmail || ''}`}
+              <Link
+                to={
+                  c.id
+                    ? `/dashboard/consultations/book?consultantId=${encodeURIComponent(c.id)}`
+                    : '/dashboard/consultations/book'
+                }
                 className="mt-4 inline-flex min-h-[44px] items-center rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:min-h-0"
               >
                 Request consultation
-              </a>
+              </Link>
             </div>
           </div>
         ))}

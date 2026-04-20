@@ -113,6 +113,107 @@ const DAILY_CAP = 3
 
 const MAGIC_LINK_TTL_MS = 15 * 60 * 1000
 
+const RELATION_CHOICES = ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other'] as const
+
+function sanitizeReturnTo(input: unknown): string | null {
+  if (typeof input !== 'string' || !input.startsWith('/')) return null
+  if (!input.startsWith('/dashboard')) return null
+  if (input.includes('..')) return null
+  return input
+}
+
+function parseQuizSubject(answers: Record<string, unknown>): {
+  name: string
+  age: number | null
+  relationLabel: string
+} {
+  const nameRaw = answers.name
+  const name = typeof nameRaw === 'string' ? nameRaw.trim() : ''
+  const age =
+    typeof answers.age === 'number' && !Number.isNaN(answers.age) && answers.age > 0
+      ? Math.floor(answers.age)
+      : null
+  let relationLabel = ''
+  const rel = answers.relation
+  if (typeof rel === 'number' && rel >= 1 && rel <= RELATION_CHOICES.length) {
+    relationLabel = RELATION_CHOICES[rel - 1] ?? ''
+  }
+  return {
+    name: name || 'Your loved one',
+    age,
+    relationLabel,
+  }
+}
+
+async function ensureSelfSubject(
+  client: Awaited<ReturnType<typeof getDataClient>>,
+  sub: string,
+): Promise<string> {
+  const { data: profiles } = await client.models.UserProfile.list({
+    filter: { owner: { eq: sub } },
+    limit: 1,
+  })
+  const profile = profiles?.[0]
+  if (profile?.defaultSubjectId) {
+    const { data: existing } = await client.models.Subject.get({ id: profile.defaultSubjectId })
+    if (existing?.id) return existing.id
+  }
+  const createdAt = new Date().toISOString()
+  const { data: selfRow, errors } = await client.models.Subject.create({
+    owner: sub,
+    displayName: 'Myself',
+    relation: 'self',
+    isSelf: true,
+    createdAt,
+  })
+  if (errors?.length || !selfRow?.id) {
+    throw new Error(errors?.map((e) => e.message).join('; ') || 'Could not create self subject')
+  }
+  if (profile?.id) {
+    await client.models.UserProfile.update({
+      id: profile.id,
+      defaultSubjectId: selfRow.id,
+    })
+  }
+  return selfRow.id
+}
+
+async function upsertLovedOneSubject(
+  client: Awaited<ReturnType<typeof getDataClient>>,
+  sub: string,
+  parsed: { name: string; age: number | null; relationLabel: string },
+): Promise<string> {
+  const displayName = parsed.name
+  const age = parsed.age
+  const keyName = displayName.trim().toLowerCase()
+  const { data: list } = await client.models.Subject.list({
+    filter: { owner: { eq: sub } },
+    limit: 200,
+  })
+  const match = list?.find(
+    (s) =>
+      !s.isSelf &&
+      (s.displayName?.trim().toLowerCase() ?? '') === keyName &&
+      (s.age ?? null) === (age ?? null),
+  )
+  if (match?.id) {
+    return match.id
+  }
+  const createdAt = new Date().toISOString()
+  const { data: row, errors } = await client.models.Subject.create({
+    owner: sub,
+    displayName,
+    age: age ?? undefined,
+    relation: parsed.relationLabel || undefined,
+    isSelf: false,
+    createdAt,
+  })
+  if (errors?.length || !row?.id) {
+    throw new Error(errors?.map((e) => e.message).join('; ') || 'Could not create subject')
+  }
+  return row.id
+}
+
 /** Data client from `getDataClient()` — loosely typed to avoid TS stack depth on Schema generics. */
 async function recordOnboardingHit(
   client: {
@@ -166,8 +267,21 @@ async function persistMagicLinkAndSendEmail(params: {
   senderName: string
   isNewAccount: boolean
   appBaseUrl: string
+  subjectId: string
+  assessmentId: string
 }) {
-  const { client, email, results, apiKey, senderEmail, senderName, isNewAccount, appBaseUrl } = params
+  const {
+    client,
+    email,
+    results,
+    apiKey,
+    senderEmail,
+    senderName,
+    isNewAccount,
+    appBaseUrl,
+    subjectId,
+    assessmentId,
+  } = params
   const rawToken = generateMagicLinkRawToken()
   const tokenHash = hashToken(rawToken)
   const expiresAt = new Date(Date.now() + MAGIC_LINK_TTL_MS).toISOString()
@@ -183,10 +297,17 @@ async function persistMagicLinkAndSendEmail(params: {
   }
 
   const base = appBaseUrl.replace(/\/$/, '')
-  const magicLinkUrl = `${base}/auth/magic?email=${encodeURIComponent(email)}&token=${encodeURIComponent(rawToken)}`
+  const q = `email=${encodeURIComponent(email)}&token=${encodeURIComponent(rawToken)}`
+  const returnDashboard = encodeURIComponent('/dashboard')
+  const returnBook = encodeURIComponent(
+    `/dashboard/consultations/book?subjectId=${encodeURIComponent(subjectId)}&assessmentId=${encodeURIComponent(assessmentId)}`,
+  )
+  const magicLinkUrl = `${base}/auth/magic?${q}&returnTo=${returnDashboard}`
+  const bookConsultMagicLinkUrl = `${base}/auth/magic?${q}&returnTo=${returnBook}`
 
   const html = buildBhiReportWithMagicLinkEmailHtml(results, {
     magicLinkUrl,
+    bookConsultMagicLinkUrl,
     email,
     expiresInMinutes: 15,
     isNewAccount,
@@ -238,7 +359,8 @@ export const handler: Handler = async (event) => {
   let body: {
     email?: string
     results?: Record<string, unknown>
-    answers?: Record<string, number>
+    answers?: Record<string, unknown>
+    returnTo?: string
   }
   try {
     const raw = (event as { body?: string }).body
@@ -253,7 +375,11 @@ export const handler: Handler = async (event) => {
 
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
   const results = body.results ?? null
-  const answers = body.answers && typeof body.answers === 'object' ? body.answers : {}
+  const answers =
+    body.answers && typeof body.answers === 'object' && !Array.isArray(body.answers)
+      ? (body.answers as Record<string, unknown>)
+      : {}
+  void sanitizeReturnTo(body.returnTo)
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return {
@@ -322,15 +448,20 @@ export const handler: Handler = async (event) => {
       throw new Error(profileErrors.map((e) => e.message).join('; '))
     }
 
-    const { errors: assessmentErrors } = await client.models.Assessment.create({
+    await ensureSelfSubject(client, sub)
+    const loved = parseQuizSubject(answers)
+    const subjectId = await upsertLovedOneSubject(client, sub, loved)
+
+    const { data: createdAssessment, errors: assessmentErrors } = await client.models.Assessment.create({
       type: 'BHI',
       answersJson: JSON.stringify(answers),
       resultsJson: JSON.stringify(results ?? {}),
       completedAt,
       owner: sub,
+      subjectId,
     })
-    if (assessmentErrors?.length) {
-      throw new Error(assessmentErrors.map((e) => e.message).join('; '))
+    if (assessmentErrors?.length || !createdAssessment?.id) {
+      throw new Error(assessmentErrors?.map((e) => e.message).join('; ') || 'Assessment create failed')
     }
 
     await persistMagicLinkAndSendEmail({
@@ -342,6 +473,8 @@ export const handler: Handler = async (event) => {
       senderName,
       isNewAccount: true,
       appBaseUrl,
+      subjectId,
+      assessmentId: createdAssessment.id,
     })
 
     await recordOnboardingHit(client, attemptRow, slotKey)
@@ -410,15 +543,20 @@ export const handler: Handler = async (event) => {
           }
         }
 
-        const { errors: assessmentErrors } = await client.models.Assessment.create({
+        await ensureSelfSubject(client, sub)
+        const lovedEx = parseQuizSubject(answers)
+        const subjectIdEx = await upsertLovedOneSubject(client, sub, lovedEx)
+
+        const { data: createdEx, errors: assessmentErrors } = await client.models.Assessment.create({
           type: 'BHI',
           answersJson: JSON.stringify(answers),
           resultsJson: JSON.stringify(results ?? {}),
           completedAt,
           owner: sub,
+          subjectId: subjectIdEx,
         })
-        if (assessmentErrors?.length) {
-          throw new Error(assessmentErrors.map((x) => x.message).join('; '))
+        if (assessmentErrors?.length || !createdEx?.id) {
+          throw new Error(assessmentErrors?.map((x) => x.message).join('; ') || 'Assessment create failed')
         }
 
         await persistMagicLinkAndSendEmail({
@@ -430,6 +568,8 @@ export const handler: Handler = async (event) => {
           senderName,
           isNewAccount: false,
           appBaseUrl,
+          subjectId: subjectIdEx,
+          assessmentId: createdEx.id,
         })
 
         await recordOnboardingHit(client, attemptRow, slotKey)

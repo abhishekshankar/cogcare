@@ -4,6 +4,7 @@ import { FluentProvider, Button } from '@fluentui/react-components'
 import { Brain, X, ArrowRight, ChevronLeft } from 'lucide-react'
 import BHIReportContent from './components/BHIReportContent'
 import { getCompleteAssessmentUrl, primeCompleteAssessmentUrl } from './lib/completeAssessmentUrl'
+import { useAuthIdentity } from './lib/useAuthIdentity'
 
 // ---- Caregiver quiz questions ----
 const CAREGIVER_QUESTIONS = [
@@ -240,6 +241,8 @@ const LEGACY_QUIZ_EMAIL_URL =
 // ---- BHIReport ----
 function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
   const navigate = useNavigate()
+  const authIdentity = useAuthIdentity()
+  const [consultEmailHint, setConsultEmailHint] = useState('')
   const [fnUrl, setFnUrl] = useState(() => getCompleteAssessmentUrl())
   useEffect(() => {
     let alive = true
@@ -330,6 +333,17 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
   /** quizFlow=existing skips the “temporary password” hint on LoginPage. */
   const signInQuizUrl = `/login?from=quiz&quizFlow=existing&returnTo=${returnToEnc}&prefillEmail=${encEmail}`
 
+  const handleConsultClick = () => {
+    if (authIdentity === 'signedIn') {
+      onClose?.()
+      navigate('/dashboard/consultations/book')
+      return
+    }
+    setConsultEmailHint(
+      'To book a consultation, enter your email below. We will send a secure sign-in link. The email includes buttons to open your dashboard and the inline scheduler after you sign in.',
+    )
+  }
+
   return (
     <div className="flex flex-col h-full">
       {existingAccountModalOpen ? (
@@ -395,7 +409,14 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
           onSendEmail={sendResultsEmail}
           canEmail={canEmail}
           emailScenario={emailScenario}
-          onResetEmail={() => { setEmailStatus('idle'); setEmailScenario(null); setEmailMessage('') }}
+          onResetEmail={() => {
+            setEmailStatus('idle')
+            setEmailScenario(null)
+            setEmailMessage('')
+            setConsultEmailHint('')
+          }}
+          onConsultClick={handleConsultClick}
+          consultEmailHint={consultEmailHint}
         />
       </div>
 

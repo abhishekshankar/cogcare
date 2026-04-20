@@ -5,12 +5,14 @@ import { auth } from './auth/resource'
 import { data } from './data/resource'
 import { storage } from './storage/resource'
 import { completeAssessment } from './functions/completeAssessment/resource'
+import { calendlyWebhook } from './functions/calendlyWebhook/resource'
 
 const backend = defineBackend({
   auth,
   data,
   storage,
   completeAssessment,
+  calendlyWebhook,
 })
 
 backend.completeAssessment.resources.lambda.addToRolePolicy(
@@ -36,6 +38,18 @@ backend.completeAssessment.addEnvironment(
   process.env.APP_BASE_URL ?? 'http://localhost:5173',
 )
 
+backend.calendlyWebhook.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['cognito-idp:AdminGetUser'],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  }),
+)
+
+backend.calendlyWebhook.addEnvironment(
+  'USER_POOL_ID',
+  backend.auth.resources.userPool.userPoolId,
+)
+
 // CloudFormation AllowMethods only allows GET|PUT|HEAD|POST|PATCH|DELETE|* — not OPTIONS.
 // Use * so browsers’ CORS preflight (OPTIONS) is allowed; listing OPTIONS fails validation.
 const fnUrl = backend.completeAssessment.resources.lambda.addFunctionUrl({
@@ -47,8 +61,18 @@ const fnUrl = backend.completeAssessment.resources.lambda.addFunctionUrl({
   },
 })
 
+const calendlyFnUrl = backend.calendlyWebhook.resources.lambda.addFunctionUrl({
+  authType: FunctionUrlAuthType.NONE,
+  cors: {
+    allowedOrigins: ['*'],
+    allowedMethods: [HttpMethod.ALL],
+    allowedHeaders: ['content-type', 'calendly-webhook-signature'],
+  },
+})
+
 backend.addOutput({
   custom: {
     completeAssessmentFunctionUrl: fnUrl.url,
+    calendlyWebhookFunctionUrl: calendlyFnUrl.url,
   },
 } as Parameters<typeof backend.addOutput>[0])

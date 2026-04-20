@@ -19,5 +19,10 @@ export default defineConfig(({ mode }) => {
   return {
     base,
     plugins: [react(), tailwindcss(), localEmailApiPlugin()],
+    server: {
+      port: 5173,
+      strictPort: true,
+      open: true,
+    },
   }
 })

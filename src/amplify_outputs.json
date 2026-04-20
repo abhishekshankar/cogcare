@@ -17,6 +17,7 @@
     "bucket_name": ""
   },
   "custom": {
-    "completeAssessmentFunctionUrl": ""
+    "completeAssessmentFunctionUrl": "",
+    "calendlyWebhookFunctionUrl": ""
   }
 }

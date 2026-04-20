@@ -22,6 +22,24 @@ async function listAllAssessments() {
   return all
 }
 
+async function listConsultAppointmentsForOwner(ownerSub) {
+  if (!ownerSub) return []
+  const all = []
+  let nextToken = undefined
+  for (;;) {
+    const res = await client.models.ConsultAppointment.list({
+      filter: { owner: { eq: ownerSub } },
+      limit: 100,
+      ...(nextToken ? { nextToken } : {}),
+    })
+    const batch = res.data ?? []
+    all.push(...batch)
+    nextToken = res.nextToken
+    if (!nextToken) break
+  }
+  return all
+}
+
 /**
  * Loads dashboard entities from Amplify Data + optional avatar preview URL.
  */
@@ -30,6 +48,7 @@ export function useDashboardData() {
   const [profile, setProfile] = useState(null)
   const [assessments, setAssessments] = useState([])
   const [consultants, setConsultants] = useState([])
+  const [consultAppointments, setConsultAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
   const [avatarUrl, setAvatarUrl] = useState(null)
@@ -43,12 +62,15 @@ export function useDashboardData() {
       }
       const attrs = await fetchUserAttributes()
       setEmail(attrs.email || attrs.preferred_username || '')
+      const ownerSub = attrs.sub || ''
       const { data: profiles } = await client.models.UserProfile.list({ limit: 1 })
       setProfile(profiles?.[0] ?? null)
       const assess = await listAllAssessments()
       setAssessments(assess)
       const { data: cons } = await client.models.Consultant.list()
       setConsultants(cons ?? [])
+      const appts = await listConsultAppointmentsForOwner(ownerSub)
+      setConsultAppointments(appts)
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : 'Could not load your data. Please try again.'
@@ -89,6 +111,7 @@ export function useDashboardData() {
     profile,
     assessments,
     consultants,
+    consultAppointments,
     loading,
     loadError,
     load,

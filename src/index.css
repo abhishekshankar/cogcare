@@ -1,25 +1,62 @@
 @import "tailwindcss";
 
-/* Mobile optimizations */
-* {
-  -webkit-tap-highlight-color: transparent;
+/* CogCare design system — tokens, typography, cg-* utilities */
+@import "../docs/cogcare-design-system/colors_and_type.css";
+
+/* Tailwind v4 — semantic colors & fonts (see docs/cogcare-design-system/README.md) */
+@theme {
+  --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+
+  --color-page: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+
+  --color-forest: var(--color-forest);
+  --color-forest-dark: var(--color-forest-dark);
+  --color-forest-deep: var(--color-forest-deep);
+  --color-forest-mid: var(--color-forest-mid);
+  --color-forest-light: var(--color-forest-light);
+
+  --color-clay: var(--color-clay);
+  --color-clay-light: var(--color-clay-light);
+
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-faint: var(--color-ink-faint);
+
+  --shadow-brand-sm: var(--shadow-sm);
+  --shadow-brand-md: var(--shadow-md);
+  --shadow-brand-lg: var(--shadow-lg);
+  --shadow-brand-xl: var(--shadow-xl);
+  --shadow-brand-2xl: var(--shadow-2xl);
 }
 
+/* App shell — warm paper background, DM Sans, never pure-white page bg */
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  background-color: var(--color-bg);
 }
 
 body {
   overflow-x: hidden;
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
+/* Mobile optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Keep site header on one row; global span rules must not split the wordmark */
-/* Keep site header on one row; global span/word rules must not split the wordmark */
 header a,
 header span {
   overflow-wrap: normal;
@@ -28,7 +65,10 @@ header span {
 }
 
 /* Better touch targets for mobile - minimum 44x44px */
-button, a, input, select {
+button,
+a,
+input,
+select {
   touch-action: manipulation;
   min-height: 44px;
 }
@@ -40,7 +80,15 @@ button {
 }
 
 /* Ensure text doesn't overflow on mobile */
-p, span, div, h1, h2, h3, h4, h5, h6 {
+p,
+span,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -54,67 +102,65 @@ table {
 }
 
 /* Improve form inputs on mobile */
-input, select, textarea {
+input,
+select,
+textarea {
   font-size: 16px; /* Prevents zoom on iOS */
 }
 
 @media (max-width: 640px) {
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     font-size: 16px !important;
   }
 }
 
-/* Enhanced Visual Design System */
-
-/* Custom gradient utilities */
+/* Legacy utility aliases → design tokens (prefer cg-* / theme utilities in new code) */
 .gradient-primary {
-  background: linear-gradient(135deg, #1a3c34 0%, #2a5c4f 50%, #1a3c34 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-forest-deep) 0%,
+    var(--color-forest) 50%,
+    var(--color-forest-deep) 100%
+  );
 }
 
 .gradient-accent {
-  background: linear-gradient(135deg, #4a7c59 0%, #5a9c69 100%);
+  background: linear-gradient(135deg, var(--color-forest-mid) 0%, var(--color-forest-light) 100%);
 }
 
 .gradient-accent-hover {
-  background: linear-gradient(135deg, #3a6347 0%, #4a8c59 100%);
+  background: linear-gradient(135deg, var(--color-forest-mid) 0%, var(--color-forest-light) 100%);
+  filter: brightness(0.92);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #1a3c34 0%, #4a7c59 100%);
+  background: linear-gradient(135deg, var(--color-forest-deep) 0%, var(--color-forest-mid) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Enhanced shadow system */
 .shadow-elegant {
-  box-shadow: 0 4px 6px -1px rgba(26, 60, 52, 0.05), 0 2px 4px -1px rgba(26, 60, 52, 0.03);
+  box-shadow: var(--shadow-sm);
 }
 
 .shadow-elegant-lg {
-  box-shadow: 0 10px 15px -3px rgba(26, 60, 52, 0.1), 0 4px 6px -2px rgba(26, 60, 52, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
 .shadow-elegant-xl {
-  box-shadow: 0 20px 25px -5px rgba(26, 60, 52, 0.1), 0 10px 10px -5px rgba(26, 60, 52, 0.04);
+  box-shadow: var(--shadow-lg);
 }
 
 .shadow-elegant-2xl {
-  box-shadow: 0 25px 50px -12px rgba(26, 60, 52, 0.15);
-}
-
-/* Smooth animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  box-shadow: var(--shadow-xl);
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -132,7 +178,7 @@ input, select, textarea {
 }
 
 .animate-float {
-  animation: float 3s ease-in-out infinite;
+  animation: cg-float 3s ease-in-out infinite;
 }
 
 .animate-gradient {
@@ -140,7 +186,6 @@ input, select, textarea {
   animation: gradient-shift 3s ease infinite;
 }
 
-/* Glassmorphism effect */
 .glass {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
@@ -155,7 +200,6 @@ input, select, textarea {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Enhanced text shadows */
 .text-shadow-sm {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -168,16 +212,14 @@ input, select, textarea {
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Smooth transitions */
 .transition-smooth {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-base) var(--ease-smooth);
 }
 
 .transition-bounce {
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all var(--duration-base) var(--ease-bounce);
 }
 
-/* Cogcare 3.0 — side panel + backdrop (no tailwindcss-animate plugin) */
 @keyframes modal-backdrop-in {
   from {
     opacity: 0;

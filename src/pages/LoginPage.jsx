@@ -64,19 +64,19 @@ export default function LoginPage() {
 
   if (!isAmplifyConfigured()) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] px-4 py-16 text-[#1A1A1A]">
-        <div className="mx-auto max-w-md rounded-3xl border border-[#E8DCC4] bg-white p-8 shadow-sm">
-          <p className="text-sm leading-relaxed text-[#3D4B3E]">
+      <div className="min-h-screen bg-page px-4 py-16 text-ink">
+        <div className="mx-auto max-w-md rounded-3xl border border-border bg-white p-8 shadow-sm">
+          <p className="text-sm leading-relaxed text-forest">
             Authentication is not configured in this build. For production, deploy the Amplify Gen 2
-            backend and ensure the Hosting build runs <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">ampx generate outputs</code> (see{' '}
-            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">amplify.yml</code>) or set{' '}
-            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">VITE_USER_POOL_CLIENT_ID</code> and related vars. Locally, run{' '}
-            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">npm run sandbox</code> to write{' '}
-            <code className="rounded bg-[#F3EFE9] px-1.5 py-0.5 text-xs">src/amplify_outputs.json</code>, then refresh.
+            backend and ensure the Hosting build runs <code className="rounded bg-surface px-1.5 py-0.5 text-xs">ampx generate outputs</code> (see{' '}
+            <code className="rounded bg-surface px-1.5 py-0.5 text-xs">amplify.yml</code>) or set{' '}
+            <code className="rounded bg-surface px-1.5 py-0.5 text-xs">VITE_USER_POOL_CLIENT_ID</code> and related vars. Locally, run{' '}
+            <code className="rounded bg-surface px-1.5 py-0.5 text-xs">npm run sandbox</code> to write{' '}
+            <code className="rounded bg-surface px-1.5 py-0.5 text-xs">src/amplify_outputs.json</code>, then refresh.
           </p>
           <Link
             to="/"
-            className="mt-6 inline-flex text-sm font-semibold text-[#A67B5B] underline-offset-4 hover:underline"
+            className="mt-6 inline-flex text-sm font-semibold text-clay underline-offset-4 hover:underline"
           >
             ← Back to home
           </Link>
@@ -87,7 +87,7 @@ export default function LoginPage() {
 
   if (sessionPhase === 'checking') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7] px-4 text-[#3D4B3E]">
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-forest">
         <p className="text-sm font-medium">Loading…</p>
       </div>
     )
@@ -266,28 +266,28 @@ export default function LoginPage() {
             : 'Sign in'
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] px-4 py-12 text-[#1A1A1A]">
+    <div className="min-h-screen bg-page px-4 py-12 text-ink">
       <div className="mx-auto max-w-md">
         <Link
           to="/"
-          className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-[#3D4B3E]"
+          className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-forest"
         >
-          <Brain className="h-5 w-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+          <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
           CogCare
         </Link>
 
-        <div className="rounded-3xl border border-[#E8DCC4] bg-white p-8 shadow-sm">
+        <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
           {view !== 'confirmSignUp' &&
           view !== 'forgotPassword' &&
           view !== 'confirmForgotPassword' ? (
-            <div className="mb-6 flex gap-2 rounded-full border border-[#E8DCC4] bg-[#FDFBF7] p-1">
+            <div className="mb-6 flex gap-2 rounded-full border border-border bg-page p-1">
               <button
                 type="button"
                 onClick={() => goView('signIn')}
                 className={`flex-1 rounded-full py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] transition ${
                   view === 'signIn'
-                    ? 'bg-white text-[#3D4B3E] shadow-sm'
-                    : 'text-[#3D4B3E]/60 hover:text-[#3D4B3E]'
+                    ? 'bg-white text-forest shadow-sm'
+                    : 'text-forest/60 hover:text-forest'
                 }`}
               >
                 Sign in
@@ -297,8 +297,8 @@ export default function LoginPage() {
                 onClick={() => goView('signUp')}
                 className={`flex-1 rounded-full py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] transition ${
                   view === 'signUp'
-                    ? 'bg-white text-[#3D4B3E] shadow-sm'
-                    : 'text-[#3D4B3E]/60 hover:text-[#3D4B3E]'
+                    ? 'bg-white text-forest shadow-sm'
+                    : 'text-forest/60 hover:text-forest'
                 }`}
               >
                 New here
@@ -306,7 +306,7 @@ export default function LoginPage() {
             </div>
           ) : null}
 
-          <h1 className="font-serif text-2xl italic text-[#3D4B3E]">{title}</h1>
+          <h1 className="font-serif text-2xl italic text-forest">{title}</h1>
           {view === 'signIn' && magicLinkError ? (
             <p
               className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900"
@@ -320,32 +320,32 @@ export default function LoginPage() {
             </p>
           ) : null}
           {fromQuiz && view === 'signIn' && quizFlowExisting ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]/80">
+            <p className="mt-2 text-sm text-forest/80">
               Sign in with your CogCare email and password to see this quiz on your dashboard.
             </p>
           ) : null}
           {view === 'signIn' && info ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]" role="status">
+            <p className="mt-2 text-sm text-forest" role="status">
               {info}
             </p>
           ) : null}
           {view === 'signUp' ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]/80">
+            <p className="mt-2 text-sm text-forest/80">
               Create your CogCare account with email and password. You can also start from the Brain Health Index on the home page — we’ll email a one-click dashboard link.
             </p>
           ) : null}
           {view === 'confirmSignUp' ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]/80">
+            <p className="mt-2 text-sm text-forest/80">
               We sent a verification code to <strong className="font-medium">{email.trim() || 'your email'}</strong>.
             </p>
           ) : null}
           {view === 'forgotPassword' ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]/80">
+            <p className="mt-2 text-sm text-forest/80">
               Enter your email and we will send a code to reset your password.
             </p>
           ) : null}
           {view === 'confirmForgotPassword' ? (
-            <p className="mt-2 text-sm text-[#3D4B3E]/80">
+            <p className="mt-2 text-sm text-forest/80">
               Enter the code from your email and choose a new password.
             </p>
           ) : null}
@@ -353,7 +353,7 @@ export default function LoginPage() {
           {view === 'signIn' ? (
             <form onSubmit={handleSignIn} className="mt-8 space-y-4">
               <div>
-                <label htmlFor="login-email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="login-email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Email
                 </label>
                 <input
@@ -362,12 +362,12 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="login-password" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="login-password" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Password
                 </label>
                 <input
@@ -376,7 +376,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                 />
               </div>
@@ -387,7 +387,7 @@ export default function LoginPage() {
               ) : null}
               <button
                 type="button"
-                className="w-full text-left text-sm text-[#A67B5B] underline-offset-4 hover:underline"
+                className="w-full text-left text-sm text-clay underline-offset-4 hover:underline"
                 onClick={() => goView('forgotPassword')}
               >
                 Forgot password?
@@ -395,7 +395,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#3D4B3E] py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2D382D] disabled:opacity-50"
+                className="w-full rounded-full bg-forest py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-forest-dark disabled:opacity-50"
               >
                 {loading ? 'Signing in…' : 'Sign in'}
               </button>
@@ -405,7 +405,7 @@ export default function LoginPage() {
           {view === 'forgotPassword' ? (
             <form onSubmit={handleForgotPasswordRequest} className="mt-8 space-y-4">
               <div>
-                <label htmlFor="fp-email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="fp-email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Email
                 </label>
                 <input
@@ -414,7 +414,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                 />
               </div>
@@ -424,21 +424,21 @@ export default function LoginPage() {
                 </p>
               ) : null}
               {info ? (
-                <p className="text-sm text-[#3D4B3E]" role="status">
+                <p className="text-sm text-forest" role="status">
                   {info}
                 </p>
               ) : null}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#3D4B3E] py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2D382D] disabled:opacity-50"
+                className="w-full rounded-full bg-forest py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-forest-dark disabled:opacity-50"
               >
                 {loading ? 'Sending…' : 'Send reset code'}
               </button>
               <button
                 type="button"
                 onClick={() => goView('signIn')}
-                className="w-full text-sm text-[#A67B5B] underline-offset-4 hover:underline"
+                className="w-full text-sm text-clay underline-offset-4 hover:underline"
               >
                 ← Back to sign in
               </button>
@@ -448,12 +448,12 @@ export default function LoginPage() {
           {view === 'confirmForgotPassword' ? (
             <form onSubmit={handleConfirmForgotPassword} className="mt-8 space-y-4">
               {info ? (
-                <p className="text-sm text-[#3D4B3E]" role="status">
+                <p className="text-sm text-forest" role="status">
                   {info}
                 </p>
               ) : null}
               <div>
-                <label htmlFor="fp-code" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="fp-code" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Verification code
                 </label>
                 <input
@@ -463,13 +463,13 @@ export default function LoginPage() {
                   autoComplete="one-time-code"
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm tracking-widest outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm tracking-widest outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   placeholder="123456"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="fp-newpw" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="fp-newpw" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   New password
                 </label>
                 <input
@@ -478,14 +478,14 @@ export default function LoginPage() {
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                   minLength={8}
                 />
-                <p className="mt-1.5 text-xs text-[#3D4B3E]/65">{PASSWORD_HINT}</p>
+                <p className="mt-1.5 text-xs text-forest/65">{PASSWORD_HINT}</p>
               </div>
               <div>
-                <label htmlFor="fp-newpw2" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="fp-newpw2" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Confirm new password
                 </label>
                 <input
@@ -494,7 +494,7 @@ export default function LoginPage() {
                   autoComplete="new-password"
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                   minLength={8}
                 />
@@ -507,7 +507,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#3D4B3E] py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2D382D] disabled:opacity-50"
+                className="w-full rounded-full bg-forest py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-forest-dark disabled:opacity-50"
               >
                 {loading ? 'Updating…' : 'Reset password'}
               </button>
@@ -519,7 +519,7 @@ export default function LoginPage() {
                   setError('')
                   setInfo('')
                 }}
-                className="w-full text-sm text-[#A67B5B] underline-offset-4 hover:underline"
+                className="w-full text-sm text-clay underline-offset-4 hover:underline"
               >
                 ← Request a new code
               </button>
@@ -529,7 +529,7 @@ export default function LoginPage() {
           {view === 'signUp' ? (
             <form onSubmit={handleSignUp} className="mt-8 space-y-4">
               <div>
-                <label htmlFor="su-email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="su-email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Email
                 </label>
                 <input
@@ -538,12 +538,12 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="su-password" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="su-password" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Password
                 </label>
                 <input
@@ -552,14 +552,14 @@ export default function LoginPage() {
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                   minLength={8}
                 />
-                <p className="mt-1.5 text-xs text-[#3D4B3E]/65">{PASSWORD_HINT}</p>
+                <p className="mt-1.5 text-xs text-forest/65">{PASSWORD_HINT}</p>
               </div>
               <div>
-                <label htmlFor="su-password2" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="su-password2" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Confirm password
                 </label>
                 <input
@@ -568,7 +568,7 @@ export default function LoginPage() {
                   autoComplete="new-password"
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   required
                   minLength={8}
                 />
@@ -581,7 +581,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#3D4B3E] py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2D382D] disabled:opacity-50"
+                className="w-full rounded-full bg-forest py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-forest-dark disabled:opacity-50"
               >
                 {loading ? 'Creating account…' : 'Create account'}
               </button>
@@ -591,7 +591,7 @@ export default function LoginPage() {
           {view === 'confirmSignUp' ? (
             <form onSubmit={handleConfirmSignUp} className="mt-8 space-y-4">
               <div>
-                <label htmlFor="confirm-code" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                <label htmlFor="confirm-code" className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                   Verification code
                 </label>
                 <input
@@ -601,7 +601,7 @@ export default function LoginPage() {
                   autoComplete="one-time-code"
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-[#E8DCC4] bg-[#FDFBF7] px-4 py-3 text-sm tracking-widest outline-none focus:border-[#3D4B3E] focus:ring-2 focus:ring-[#3D4B3E]/20"
+                  className="mt-2 w-full rounded-xl border border-border bg-page px-4 py-3 text-sm tracking-widest outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
                   placeholder="123456"
                   required
                 />
@@ -612,14 +612,14 @@ export default function LoginPage() {
                 </p>
               ) : null}
               {info ? (
-                <p className="text-sm text-[#3D4B3E]" role="status">
+                <p className="text-sm text-forest" role="status">
                   {info}
                 </p>
               ) : null}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#3D4B3E] py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2D382D] disabled:opacity-50"
+                className="w-full rounded-full bg-forest py-3.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition hover:bg-forest-dark disabled:opacity-50"
               >
                 {loading ? 'Verifying…' : 'Verify and continue'}
               </button>
@@ -627,7 +627,7 @@ export default function LoginPage() {
                 type="button"
                 disabled={loading}
                 onClick={handleResendCode}
-                className="w-full rounded-full border border-[#E8DCC4] py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] transition hover:bg-[#F3EFE9] disabled:opacity-50"
+                className="w-full rounded-full border border-border py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-forest transition hover:bg-surface disabled:opacity-50"
               >
                 Resend code
               </button>
@@ -638,7 +638,7 @@ export default function LoginPage() {
                   setConfirmationCode('')
                   setError('')
                 }}
-                className="w-full text-sm text-[#A67B5B] underline-offset-4 hover:underline"
+                className="w-full text-sm text-clay underline-offset-4 hover:underline"
               >
                 ← Back to sign up
               </button>

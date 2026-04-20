@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend'
 import { completeAssessment } from '../functions/completeAssessment/resource'
+import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
 import { verifyAuthChallengeResponse } from '../auth/verify-auth-challenge-response/resource'
 
 const schema = a.schema({
@@ -70,8 +71,31 @@ const schema = a.schema({
       sortOrder: a.integer(),
     })
     .authorization((allow) => [allow.authenticated().to(['read'])]),
+
+  /**
+   * Consultation bookings mirrored from Calendly (`invitee.created` / `invitee.canceled` webhooks).
+   * PK = invitee URI so updates/cancels upsert the same row.
+   */
+  ConsultAppointment: a
+    .model({
+      owner: a.string(),
+      calendlyInviteeUri: a.string().required(),
+      calendlyScheduledEventUri: a.string(),
+      inviteeEmail: a.string(),
+      inviteeName: a.string(),
+      eventName: a.string(),
+      startTime: a.datetime(),
+      endTime: a.datetime(),
+      status: a.string().required(),
+    })
+    .identifier(['calendlyInviteeUri'])
+    .authorization((allow) => [
+      allow.ownerDefinedIn('owner'),
+      allow.resource(calendlyWebhook).to(['mutate', 'query']),
+    ]),
 }).authorization((allow) => [
   allow.resource(completeAssessment).to(['mutate', 'query']),
+  allow.resource(calendlyWebhook).to(['mutate', 'query']),
   allow.resource(verifyAuthChallengeResponse).to(['mutate', 'query']),
 ])
 

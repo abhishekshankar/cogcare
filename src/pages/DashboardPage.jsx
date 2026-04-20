@@ -22,6 +22,7 @@ export default function DashboardPage() {
     profile,
     assessments,
     consultants,
+    consultAppointments,
     loading,
     loadError,
     load,
@@ -58,9 +59,9 @@ export default function DashboardPage() {
   const showMainSkeleton = loading && !showPwdCard
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="min-h-screen bg-page text-ink">
       {showPwdCard ? (
-        <div className="border-b border-[#E8DCC4] bg-[#F3EFE9]/95 px-4 py-6 sm:px-6">
+        <div className="border-b border-border bg-surface/95 px-4 py-6 sm:px-6">
           <div className="mx-auto max-w-5xl">
             <CreatePasswordCard
               subtitle="Choose a permanent password to finish signing in."
@@ -74,29 +75,29 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : null}
-      <header className="border-b border-[#E8DCC4] bg-white/90 backdrop-blur-md">
+      <header className="border-b border-border bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
             <Link
               to="/"
-              className="flex shrink-0 items-center gap-2 font-serif text-lg italic text-[#3D4B3E]"
+              className="flex shrink-0 items-center gap-2 font-serif text-lg italic text-forest"
             >
-              <Brain className="h-5 w-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+              <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
               Dashboard
             </Link>
-            <span className="hidden h-4 w-px shrink-0 bg-[#E8DCC4] sm:block" aria-hidden />
+            <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
             <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
-              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-[#E8DCC4] bg-[#F3EFE9]">
+              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-[#3D4B3E]/35">
+                  <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-forest/35">
                     {displayName.slice(0, 1)}
                   </div>
                 )}
               </div>
-              <p className="truncate text-sm font-medium text-[#3D4B3E]">
-                <span className="text-[#3D4B3E]/60">Hi, </span>
+              <p className="truncate text-sm font-medium text-forest">
+                <span className="text-forest/60">Hi, </span>
                 {displayName}
               </p>
             </div>
@@ -104,7 +105,7 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={handleSignOut}
-            className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border border-[#E8DCC4] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] hover:bg-[#F3EFE9] sm:min-h-0"
+            className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
           >
             <LogOut className="h-4 w-4" aria-hidden />
             Sign out
@@ -149,7 +150,10 @@ export default function DashboardPage() {
                 element={<TestsTab client={client} assessments={assessments} onRefresh={load} />}
               />
               <Route path="more-tests" element={<MoreTestsTab />} />
-              <Route path="consultants" element={<ConsultantsTab rows={consultants} />} />
+              <Route
+                path="consultants"
+                element={<ConsultantsTab rows={consultants} appointments={consultAppointments} />}
+              />
               <Route
                 path="settings"
                 element={<SettingsTab email={email} profile={profile} onProfileSaved={load} />}

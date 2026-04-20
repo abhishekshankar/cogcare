@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--color-bg); font-family: var(--font-sans); }
+  .section { margin-bottom: 20px; }
+  .group-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--color-clay); margin-bottom: 10px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+  .radius-demo { background: var(--color-forest); display: flex; align-items: center; justify-content: center; }
+  .meta { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.7); margin-top: 4px; text-align: center; }
+  .token-label { font-size: 8px; color: var(--color-ink-muted); font-weight: 600; margin-top: 4px; text-align: center; font-family: monospace; }
+  .item { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+<div class="section">
+  <div class="group-label">Border Radius Scale</div>
+  <div class="row">
+    <div class="item"><div class="radius-demo" style="width:40px;height:40px;border-radius:12px"></div><div class="token-label">sm 12px</div></div>
+    <div class="item"><div class="radius-demo" style="width:48px;height:48px;border-radius:16px"></div><div class="token-label">md 16px</div></div>
+    <div class="item"><div class="radius-demo" style="width:56px;height:56px;border-radius:24px"></div><div class="token-label">lg 24px</div></div>
+    <div class="item"><div class="radius-demo" style="width:64px;height:64px;border-radius:32px"></div><div class="token-label">xl 32px</div></div>
+    <div class="item"><div class="radius-demo" style="width:72px;height:72px;border-radius:40px"></div><div class="token-label">2xl 40px</div></div>
+    <div class="item"><div class="radius-demo" style="width:80px;height:80px;border-radius:48px"></div><div class="token-label">3xl 48px</div></div>
+    <div class="item"><div class="radius-demo" style="width:88px;height:88px;border-radius:72px"></div><div class="token-label">4xl 72px</div></div>
+    <div class="item"><div class="radius-demo" style="width:80px;height:40px;border-radius:9999px"></div><div class="token-label">full pill</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="group-label">Shadow Scale</div>
+  <div class="row" style="align-items:center">
+    <div class="item">
+      <div style="width:72px;height:72px;background:white;border-radius:12px;box-shadow:0 1px 3px 0 rgba(26,60,52,0.04)"></div>
+      <div class="token-label">xs</div>
+    </div>
+    <div class="item">
+      <div style="width:72px;height:72px;background:white;border-radius:12px;box-shadow:0 4px 6px -1px rgba(26,60,52,0.05),0 2px 4px -1px rgba(26,60,52,0.03)"></div>
+      <div class="token-label">sm</div>
+    </div>
+    <div class="item">
+      <div style="width:72px;height:72px;background:white;border-radius:12px;box-shadow:0 10px 15px -3px rgba(26,60,52,0.10),0 4px 6px -2px rgba(26,60,52,0.05)"></div>
+      <div class="token-label">md</div>
+    </div>
+    <div class="item">
+      <div style="width:72px;height:72px;background:white;border-radius:12px;box-shadow:0 20px 25px -5px rgba(26,60,52,0.10),0 10px 10px -5px rgba(26,60,52,0.04)"></div>
+      <div class="token-label">lg</div>
+    </div>
+    <div class="item">
+      <div style="width:72px;height:72px;background:white;border-radius:12px;box-shadow:0 25px 50px -12px rgba(26,60,52,0.15)"></div>
+      <div class="token-label">xl</div>
+    </div>
+    <div class="item">
+      <div style="width:72px;height:72px;background:white;border-radius:12px;box-shadow:0 40px 80px -15px rgba(61,75,62,0.12)"></div>
+      <div class="token-label">2xl</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="group-label">Glass Effect</div>
+  <div style="background:linear-gradient(135deg,#3D4B3E,#4A7C59);padding:16px;border-radius:16px;display:flex;gap:12px">
+    <div style="flex:1;padding:14px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);border-radius:16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:var(--color-forest)">glass (light)</div>
+      <div style="font-size:9px;color:var(--color-clay);margin-top:4px">rgba(255,255,255,0.8) + blur(10px)</div>
+    </div>
+    <div style="flex:1;padding:14px;background:rgba(26,60,52,0.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:rgba(255,255,255,0.8)">glass (dark)</div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.5);margin-top:4px">rgba(26,60,52,0.8) + blur(10px)</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

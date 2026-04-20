@@ -75,6 +75,8 @@ const schema = a.schema({
   /**
    * Consultation bookings mirrored from Calendly (`invitee.created` / `invitee.canceled` webhooks).
    * PK = invitee URI so updates/cancels upsert the same row.
+   * Lambda IAM access for calendlyWebhook is only on the schema (`.authorization` below);
+   * per-model `allow` does not support `.resource()` — that caused AssemblyError at deploy.
    */
   ConsultAppointment: a
     .model({
@@ -89,10 +91,7 @@ const schema = a.schema({
       status: a.string().required(),
     })
     .identifier(['calendlyInviteeUri'])
-    .authorization((allow) => [
-      allow.ownerDefinedIn('owner'),
-      allow.resource(calendlyWebhook).to(['mutate', 'query']),
-    ]),
+    .authorization((allow) => [allow.ownerDefinedIn('owner')]),
 }).authorization((allow) => [
   allow.resource(completeAssessment).to(['mutate', 'query']),
   allow.resource(calendlyWebhook).to(['mutate', 'query']),

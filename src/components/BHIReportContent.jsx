@@ -358,23 +358,24 @@ export default function BHIReportContent({
         boxShadow: '0 12px 40px rgba(26,60,52,0.18)',
       }}>
         {/* Doctor intro */}
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 22 }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 22 }}>
           <img
             src="https://bri.ucla.edu/wp-content/uploads/2025/03/Nasir_I_Photo.jpg"
             alt="Dr. Imaad Nasir, M.D."
             style={{
-              width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-              border: '2px solid rgba(255,255,255,0.25)',
+              width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+              border: '2px solid rgba(255,255,255,0.3)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
             }}
           />
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: 'white', margin: '0 0 2px' }}>
+          <div style={{ paddingTop: 4 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: 'white', margin: '0 0 3px' }}>
               Dr. Imaad Nasir, M.D.
             </p>
-            <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#A67B5B', margin: '0 0 6px' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#A67B5B', margin: '0 0 8px' }}>
               Neurology · UCLA Brain Research Institute
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.55, margin: 0 }}>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>
               Assistant Clinical Professor at UCLA's David Geffen School of Medicine. Book a free consult to discuss what these results mean for your loved one.
             </p>
           </div>

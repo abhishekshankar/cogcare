@@ -182,10 +182,14 @@ We offer a library of education designed for your specific needs. This includes 
               </span>
             </div>
 
-            <h1 className="mb-6 text-4xl font-serif leading-[1.05] tracking-tight text-ink sm:mb-8 sm:text-5xl md:mb-10 md:text-6xl lg:text-8xl lg:leading-[1.05]">
+            <h1 className="mb-4 text-4xl font-serif leading-[1.05] tracking-tight text-ink sm:mb-5 sm:text-5xl md:mb-6 md:text-6xl lg:mb-8 lg:text-8xl lg:leading-[1.05]">
               Dementia is <br />
               <span className="italic text-forest">Modifiable.</span>
             </h1>
+
+            <p className="mb-6 max-w-2xl text-lg font-serif font-light leading-snug text-ink sm:mb-8 sm:text-xl md:mb-10 md:text-2xl lg:text-3xl lg:leading-tight">
+              Expert backed actionable pathway to care for your loved one
+            </p>
 
             <p className="mb-8 max-w-xl text-base font-light leading-relaxed text-ink-muted sm:mb-10 sm:text-lg md:text-xl lg:text-2xl">
               Scientific breakthroughs reveal that 40% of dementia risk is linked
@@ -211,9 +215,9 @@ We offer a library of education designed for your specific needs. This includes 
           <div className="relative mt-10 flex justify-center md:col-span-5 md:mt-0">
             <div className="relative aspect-[4/5] w-full max-w-[min(100%,20rem)] overflow-hidden rounded-[2.25rem] border-[8px] border-white shadow-brand-2xl ring-1 ring-border sm:max-w-sm sm:rounded-[3rem] sm:border-[12px] lg:max-w-lg lg:rounded-[4.5rem] lg:border-[16px]">
               <img
-                src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=900"
-                alt="Portrait representing cognitive resilience and well-being"
-                className="h-full w-full object-cover grayscale-[0.05]"
+                src="/hero-home.png"
+                alt="Adult and older adult family members seated together in a warm home setting, hands clasped"
+                className="h-full w-full object-cover object-[center_25%] grayscale-[0.05]"
                 width={900}
                 height={1125}
                 decoding="async"

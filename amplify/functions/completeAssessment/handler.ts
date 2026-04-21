@@ -139,10 +139,29 @@ function parseQuizSubject(answers: Record<string, unknown>): {
     relationLabel = RELATION_CHOICES[rel - 1] ?? ''
   }
   return {
-    name: name || 'Your loved one',
+    name,
     age,
     relationLabel,
   }
+}
+
+function isGenericLovedOneDisplayName(displayName: string): boolean {
+  const n = displayName.trim().toLowerCase()
+  if (!n) return true
+  return n === 'your loved one' || n === 'my loved one' || n === 'loved one'
+}
+
+async function resolveBhiSubjectId(
+  client: Awaited<ReturnType<typeof getDataClient>>,
+  sub: string,
+  answers: Record<string, unknown>,
+): Promise<string> {
+  const loved = parseQuizSubject(answers)
+  if (!loved.name || isGenericLovedOneDisplayName(loved.name)) {
+    return ensureSelfSubject(client, sub)
+  }
+  await ensureSelfSubject(client, sub)
+  return upsertLovedOneSubject(client, sub, loved)
 }
 
 async function ensureSelfSubject(
@@ -448,9 +467,7 @@ export const handler: Handler = async (event) => {
       throw new Error(profileErrors.map((e) => e.message).join('; '))
     }
 
-    await ensureSelfSubject(client, sub)
-    const loved = parseQuizSubject(answers)
-    const subjectId = await upsertLovedOneSubject(client, sub, loved)
+    const subjectId = await resolveBhiSubjectId(client, sub, answers)
 
     const { data: createdAssessment, errors: assessmentErrors } = await client.models.Assessment.create({
       type: 'BHI',
@@ -543,9 +560,7 @@ export const handler: Handler = async (event) => {
           }
         }
 
-        await ensureSelfSubject(client, sub)
-        const lovedEx = parseQuizSubject(answers)
-        const subjectIdEx = await upsertLovedOneSubject(client, sub, lovedEx)
+        const subjectIdEx = await resolveBhiSubjectId(client, sub, answers)
 
         const { data: createdEx, errors: assessmentErrors } = await client.models.Assessment.create({
           type: 'BHI',

@@ -1,4 +1,6 @@
 import { computeBrainCreditFromResults } from '../../lib/brainCredit.js'
+import { ensureSelfSubject } from './ensureSelfSubject.js'
+import { isGenericLovedOneDisplayName } from './subjectLabels.js'
 
 const RELATION_CHOICES = ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other']
 
@@ -15,7 +17,7 @@ function parseQuizSubject(answers) {
     relationLabel = RELATION_CHOICES[rel - 1] ?? ''
   }
   return {
-    name: name || 'Your loved one',
+    name,
     age,
     relationLabel,
   }
@@ -89,9 +91,16 @@ export async function persistDashboardAssessment({
   let careDisplayName = ''
   if (!subjectId) {
     const parsed = parseQuizSubject(answers)
-    careDisplayName = parsed.name
-    subjectId = await upsertLovedOneSubject(client, ownerSub, parsed)
-    createdNewSubject = true
+    if (!parsed.name || isGenericLovedOneDisplayName(parsed.name)) {
+      subjectId = await ensureSelfSubject(client, ownerSub)
+      careDisplayName = 'Myself'
+      createdNewSubject = false
+    } else {
+      await ensureSelfSubject(client, ownerSub)
+      careDisplayName = parsed.name
+      subjectId = await upsertLovedOneSubject(client, ownerSub, parsed)
+      createdNewSubject = true
+    }
   } else {
     const { data: subRow } = await client.models.Subject.get({ id: existingSubjectId })
     careDisplayName = subRow?.displayName?.trim() || 'This person'

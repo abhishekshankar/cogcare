@@ -4,6 +4,9 @@ import { fetchUserAttributes } from 'aws-amplify/auth'
 import { getUrl } from 'aws-amplify/storage'
 import { useSearchParams } from 'react-router-dom'
 import { hasPendingNewPasswordFlag } from '../lib/authFlags'
+import { ensureSelfSubject } from '../lib/ensureSelfSubject.js'
+import { mergeGenericLovedOneSubjects } from '../lib/mergeGenericLovedOneSubjects.js'
+import { isGenericLovedOneDisplayName } from '../lib/subjectLabels.js'
 
 const client = generateClient()
 const BACKFILL_KEY = 'cogcare:subjectBackfillDone'
@@ -72,30 +75,35 @@ async function backfillAssessmentSubjects(assessments, ownerSub) {
       const name =
         typeof r.lovedOneName === 'string' && r.lovedOneName.trim()
           ? r.lovedOneName.trim()
-          : 'Your loved one'
+          : ''
       const age = typeof r.lovedOneAge === 'number' ? r.lovedOneAge : null
       const relation = typeof r.caregiverRelation === 'string' ? r.caregiverRelation : ''
 
       const { data: subs } = await client.models.Subject.list({ limit: 200 })
-      const key = name.toLowerCase()
-      let sid = subs?.find(
-        (s) =>
-          !s.isSelf &&
-          (s.displayName?.trim().toLowerCase() ?? '') === key &&
-          (s.age ?? null) === (age ?? null),
-      )?.id
+      let sid = null
+      if (!name || isGenericLovedOneDisplayName(name)) {
+        sid = await ensureSelfSubject(client, ownerSub)
+      } else {
+        const key = name.toLowerCase()
+        sid = subs?.find(
+          (s) =>
+            !s.isSelf &&
+            (s.displayName?.trim().toLowerCase() ?? '') === key &&
+            (s.age ?? null) === (age ?? null),
+        )?.id
 
-      if (!sid) {
-        const { data: created, errors } = await client.models.Subject.create({
-          owner: ownerSub,
-          displayName: name,
-          age: age ?? undefined,
-          relation: relation || undefined,
-          isSelf: false,
-          createdAt: new Date().toISOString(),
-        })
-        if (errors?.length || !created?.id) continue
-        sid = created.id
+        if (!sid) {
+          const { data: created, errors } = await client.models.Subject.create({
+            owner: ownerSub,
+            displayName: name,
+            age: age ?? undefined,
+            relation: relation || undefined,
+            isSelf: false,
+            createdAt: new Date().toISOString(),
+          })
+          if (errors?.length || !created?.id) continue
+          sid = created.id
+        }
       }
       if (sid && a.id) {
         const { errors: upErr } = await client.models.Assessment.update({ id: a.id, subjectId: sid })
@@ -175,12 +183,26 @@ export function useDashboardData() {
       if (ownerSub) {
         assess = await backfillAssessmentSubjects(assess, ownerSub)
       }
+      let subjList = await listAllSubjects()
+      let appts = await listConsultAppointments()
+      if (ownerSub) {
+        const { mutated } = await mergeGenericLovedOneSubjects(
+          client,
+          ownerSub,
+          subjList,
+          assess,
+          appts,
+        )
+        if (mutated) {
+          assess = await listAllAssessments()
+          subjList = await listAllSubjects()
+          appts = await listConsultAppointments()
+        }
+      }
       setAssessments(assess)
-      const subjList = await listAllSubjects()
       setSubjects(subjList.filter((s) => !s.archivedAt))
       const { data: cons } = await client.models.Consultant.list()
       setConsultants(cons ?? [])
-      const appts = await listConsultAppointments()
       setConsultAppointments(appts ?? [])
     } catch (err) {
       const msg =

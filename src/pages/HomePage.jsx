@@ -187,14 +187,8 @@ We offer a library of education designed for your specific needs. This includes 
               <span className="italic text-forest">Modifiable.</span>
             </h1>
 
-            <p className="mb-6 max-w-2xl text-lg font-serif font-light leading-snug text-ink sm:mb-8 sm:text-xl md:mb-10 md:text-2xl lg:text-3xl lg:leading-tight">
+            <p className="mb-8 max-w-2xl text-lg font-serif font-light leading-snug text-ink sm:mb-10 sm:text-xl md:mb-12 md:text-2xl lg:text-3xl lg:leading-tight">
               Expert backed actionable pathway to care for your loved one
-            </p>
-
-            <p className="mb-8 max-w-xl text-base font-light leading-relaxed text-ink-muted sm:mb-10 sm:text-lg md:text-xl lg:text-2xl">
-              Scientific breakthroughs reveal that 40% of dementia risk is linked
-              to factors we can change. Your protective journey begins with daily
-              rituals.
             </p>
 
             <div className="w-full max-w-sm rounded-[2rem] border border-surface bg-white/40 p-5 shadow-sm backdrop-blur-md sm:rounded-[2.5rem] sm:p-6 lg:max-w-md lg:rounded-[3rem] lg:p-8">

@@ -193,42 +193,43 @@ export default function DashboardPage() {
         </div>
       ) : null}
       <header className="border-b border-border bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-start justify-between gap-x-4 gap-y-4 px-4 py-5 sm:items-center sm:px-6">
-          <div className="flex min-w-0 flex-1 flex-wrap items-start gap-3 sm:gap-4">
+        <div className="mx-auto flex max-w-5xl min-w-0 items-center justify-between gap-3 px-4 py-5 sm:gap-4 sm:px-6">
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto sm:gap-3 md:gap-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <Link
               to="/"
-              className="flex shrink-0 items-center gap-2 self-center font-serif text-lg italic text-forest"
+              className="flex shrink-0 items-center gap-2 font-serif text-lg italic text-forest"
             >
               <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
               Dashboard
             </Link>
-            <span className="hidden h-4 w-px shrink-0 self-center bg-border sm:block" aria-hidden />
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              <div className="flex min-w-0 items-center gap-2">
-                <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-forest/35">
-                      {displayName.slice(0, 1)}
-                    </div>
-                  )}
-                </div>
-                <p className="min-w-0 truncate text-sm font-medium text-forest">
-                  <span className="text-forest/60">Hi, </span>
-                  {displayName}
-                </p>
+            <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
+            <div className="flex min-w-0 shrink-0 items-center gap-2">
+              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-forest/35">
+                    {displayName.slice(0, 1)}
+                  </div>
+                )}
               </div>
-              {subjects?.length ? (
+              <p className="max-w-[10rem] truncate text-sm font-medium text-forest sm:max-w-[14rem] md:max-w-none">
+                <span className="text-forest/60">Hi, </span>
+                {displayName}
+              </p>
+            </div>
+            {subjects?.length ? (
+              <>
+                <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
                 <SubjectSwitcher
                   subjects={subjects}
                   activeSubjectId={activeSubjectId}
                   onChange={setActiveSubjectId}
                 />
-              ) : null}
-            </div>
+              </>
+            ) : null}
           </div>
-          <div className="flex w-full shrink-0 flex-col gap-2 sm:ml-auto sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+          <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
               onClick={openAssessmentChooser}

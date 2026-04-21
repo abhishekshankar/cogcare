@@ -5,6 +5,7 @@ import { Brain, X, ArrowRight, ChevronLeft } from 'lucide-react'
 import BHIReportContent from './components/BHIReportContent'
 import { getCompleteAssessmentUrl, primeCompleteAssessmentUrl } from './lib/completeAssessmentUrl'
 import { useAuthIdentity } from './lib/useAuthIdentity'
+import { persistDashboardAssessment } from './lib/persistDashboardAssessment.js'
 
 // ---- Caregiver quiz questions ----
 const CAREGIVER_QUESTIONS = [
@@ -83,10 +84,11 @@ const cogcareTheme = {
 }
 
 // ---- BHIQuiz ----
-function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
+function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds = [] }) {
+  const questions = CAREGIVER_QUESTIONS.filter((item) => !excludedQuestionIds.includes(item.id))
   const [qi, setQi] = useState(0)
-  const total = CAREGIVER_QUESTIONS.length
-  const q = CAREGIVER_QUESTIONS[qi]
+  const total = questions.length
+  const q = questions[qi]
   const pct = (qi + 1) / total
   const name = (typeof quizAnswers.name === 'string' && quizAnswers.name.trim()) || 'your loved one'
   const questionText = q.text.replace(/\{name\}/g, name)
@@ -102,10 +104,16 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete }) {
 
   const handleNext = () => {
     if (!canProceed) return
-    if (qi < total - 1) { setQi(qi + 1) } else { onComplete(computeResults(quizAnswers)) }
+    if (qi < total - 1) {
+      setQi(qi + 1)
+    } else {
+      onComplete(computeResults(quizAnswers))
+    }
   }
 
-  const handleBack = () => { if (qi > 0) setQi(qi - 1) }
+  const handleBack = () => {
+    if (qi > 0) setQi(qi - 1)
+  }
 
   const options = q.type === 'frequency' ? FREQUENCY_SCALE : (q.options || [])
 
@@ -239,7 +247,14 @@ const LEGACY_QUIZ_EMAIL_URL =
   (import.meta.env.DEV ? '/api/send-quiz-email' : '')
 
 // ---- BHIReport ----
-function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
+function BHIReport({
+  quizResults,
+  onReset,
+  quizAnswers,
+  onClose,
+  dashboardNotice,
+  dashboardSaveError,
+}) {
   const navigate = useNavigate()
   const authIdentity = useAuthIdentity()
   const [consultEmailHint, setConsultEmailHint] = useState('')
@@ -400,6 +415,22 @@ function BHIReport({ quizResults, onReset, quizAnswers, onClose }) {
         <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-clay sr-only">
           Assessment Complete
         </p>
+        {dashboardNotice ? (
+          <div
+            className="mb-4 rounded-xl border border-emerald-200/90 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-950"
+            role="status"
+          >
+            {dashboardNotice}
+          </div>
+        ) : null}
+        {dashboardSaveError ? (
+          <div
+            className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900"
+            role="alert"
+          >
+            {dashboardSaveError}
+          </div>
+        ) : null}
         <BHIReportContent
           quizResults={quizResults}
           email={email}
@@ -441,6 +472,13 @@ export default function BrainHealthIndex({
   setQuizAnswers,
   quizResults,
   setQuizResults,
+  /** Question `id`s from CAREGIVER_QUESTIONS to omit (e.g. name/age/relation for an existing subject). */
+  excludedQuestionIds = [],
+  /** Merged into quiz answers when resetting “Start over”. */
+  quizAnswersDefaults = {},
+  /** When set, saves assessment + updates brain credit after analysis (signed-in dashboard). */
+  persistToDashboard = null,
+  onDashboardPersisted = undefined,
 }) {
   // ESC to close + body scroll lock
   useEffect(() => {
@@ -459,33 +497,83 @@ export default function BrainHealthIndex({
   const [analyzingStep, setAnalyzingStep] = useState(0)
   const pendingResults = useRef(null)
   const analyzingInterval = useRef(null)
+  const [dashboardNotice, setDashboardNotice] = useState(null)
+  const [dashboardSaveError, setDashboardSaveError] = useState(null)
+  const quizAnswersDefaultsRef = useRef(quizAnswersDefaults)
 
-  const handleComplete = useCallback((results) => {
-    pendingResults.current = results
-    setAnalyzing(true)
+  useEffect(() => {
+    quizAnswersDefaultsRef.current = quizAnswersDefaults
+  }, [quizAnswersDefaults])
+
+  useEffect(() => {
+    if (!open) return
+    setDashboardNotice(null)
+    setDashboardSaveError(null)
+  }, [open])
+
+  useEffect(() => {
+    if (open) return
+    clearInterval(analyzingInterval.current)
+    setAnalyzing(false)
     setAnalyzingStep(0)
-    let step = 0
-    analyzingInterval.current = setInterval(() => {
-      step++
-      if (step >= ANALYZING_STEPS.length) {
-        clearInterval(analyzingInterval.current)
-        setTimeout(() => {
-          setAnalyzing(false)
-          setQuizResults(pendingResults.current)
-        }, 600)
-      } else {
-        setAnalyzingStep(step)
-      }
-    }, 650)
-  }, [setQuizResults])
+    pendingResults.current = null
+  }, [open])
+
+  const handleComplete = useCallback(
+    (results) => {
+      pendingResults.current = results
+      setAnalyzing(true)
+      setAnalyzingStep(0)
+      let step = 0
+      analyzingInterval.current = setInterval(() => {
+        step++
+        if (step >= ANALYZING_STEPS.length) {
+          clearInterval(analyzingInterval.current)
+          setTimeout(async () => {
+            if (persistToDashboard?.ownerSub) {
+              try {
+                const info = await persistDashboardAssessment({
+                  client: persistToDashboard.client,
+                  ownerSub: persistToDashboard.ownerSub,
+                  answers: quizAnswers ?? {},
+                  results: pendingResults.current,
+                  existingSubjectId: persistToDashboard.existingSubjectId ?? null,
+                })
+                setDashboardNotice('This assessment is saved to your dashboard.')
+                setDashboardSaveError(null)
+                onDashboardPersisted?.(info)
+              } catch (err) {
+                const msg =
+                  err instanceof Error ? err.message : 'Could not save to your dashboard.'
+                setDashboardSaveError(msg)
+                if (import.meta.env.DEV) console.error('[dashboard persist]', err)
+              }
+            }
+            setAnalyzing(false)
+            setQuizResults(pendingResults.current)
+          }, 600)
+        } else {
+          setAnalyzingStep(step)
+        }
+      }, 650)
+    },
+    [
+      persistToDashboard,
+      quizAnswers,
+      setQuizResults,
+      onDashboardPersisted,
+    ],
+  )
 
   const handleReset = useCallback(() => {
     clearInterval(analyzingInterval.current)
     setAnalyzing(false)
     setAnalyzingStep(0)
     pendingResults.current = null
-    setQuizAnswers({})
+    setQuizAnswers({ ...quizAnswersDefaultsRef.current })
     setQuizResults(null)
+    setDashboardNotice(null)
+    setDashboardSaveError(null)
   }, [setQuizAnswers, setQuizResults])
 
   const step = analyzing ? 'analyzing' : quizResults ? 'report' : 'quiz'
@@ -540,9 +628,11 @@ export default function BrainHealthIndex({
         <div className="flex-1 overflow-hidden flex flex-col">
           {step === 'quiz' && (
             <BHIQuiz
+              key={excludedQuestionIds.length ? excludedQuestionIds.join('|') : 'all-questions'}
               quizAnswers={quizAnswers}
               setQuizAnswers={setQuizAnswers}
               onComplete={handleComplete}
+              excludedQuestionIds={excludedQuestionIds}
             />
           )}
           {step === 'analyzing' && (
@@ -578,6 +668,8 @@ export default function BrainHealthIndex({
               quizAnswers={quizAnswers}
               onReset={handleReset}
               onClose={onClose}
+              dashboardNotice={dashboardNotice}
+              dashboardSaveError={dashboardSaveError}
             />
           )}
         </div>

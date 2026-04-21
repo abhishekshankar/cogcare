@@ -190,7 +190,8 @@ export default function SettingsTab({ email, profile, subjects = [], onProfileSa
       <section className="rounded-2xl border border-border bg-white p-6 shadow-sm">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">People you care for</p>
         <p className="mt-2 text-sm text-forest/75">
-          Each Brain Health Index is saved per person. Use the selector in the header to switch, or add someone new from the home page.
+          Each Brain Health Index is saved per person. Use the selector in the header to switch, or use Add loved one /
+          Take Brain Health Index on the dashboard to add someone or run the quiz here.
         </p>
         {subjects?.length ? (
           <ul className="mt-4 space-y-2 text-sm text-forest/90">
@@ -205,7 +206,9 @@ export default function SettingsTab({ email, profile, subjects = [], onProfileSa
             ))}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-forest/60">No profiles yet — complete the assessment on the home page.</p>
+          <p className="mt-3 text-sm text-forest/60">
+            No profiles yet — use Take Brain Health Index under My tests or add a profile from the header.
+          </p>
         )}
       </section>
 

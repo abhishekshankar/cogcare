@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
 import { confirmSignIn, signOut } from 'aws-amplify/auth'
 import { Brain, LogOut, Settings2 } from 'lucide-react'
@@ -13,8 +13,13 @@ import BookConsultPage from '../components/dashboard/BookConsultPage'
 import SubjectSwitcher from '../components/dashboard/SubjectSwitcher'
 import DashboardErrorBanner from '../components/dashboard/DashboardErrorBanner'
 import DashboardMainSkeleton from '../components/dashboard/DashboardMainSkeleton'
+import DashboardQuizChooser from '../components/dashboard/DashboardQuizChooser'
+import AddProfileOnlyDialog from '../components/dashboard/AddProfileOnlyDialog'
+import BrainHealthIndex from '../BrainHealthIndex'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { clearPendingNewPasswordFlag, hasPendingNewPasswordFlag } from '../lib/authFlags'
+import { buildInitialAnswersFromSubject } from '../lib/persistDashboardAssessment.js'
+import { BHI_SUBJECT_QUESTION_IDS } from '../lib/bhiQuizConfig.js'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -36,6 +41,88 @@ export default function DashboardPage() {
   } = useDashboardData()
 
   const [showPwdCard, setShowPwdCard] = useState(() => hasPendingNewPasswordFlag())
+
+  const [quizChooserOpen, setQuizChooserOpen] = useState(false)
+  const [addProfileOpen, setAddProfileOpen] = useState(false)
+  const [dashboardQuizOpen, setDashboardQuizOpen] = useState(false)
+  const [dashboardQuizSessionKey, setDashboardQuizSessionKey] = useState(0)
+  const [dashQuizExcludedIds, setDashQuizExcludedIds] = useState([])
+  const [dashQuizPersistSubjectId, setDashQuizPersistSubjectId] = useState(null)
+  const [dashQuizAnswersDefaults, setDashQuizAnswersDefaults] = useState({})
+  const [dashboardQuizAnswers, setDashboardQuizAnswers] = useState({})
+  const [dashboardQuizResults, setDashboardQuizResults] = useState(null)
+  const [postQuizSwitch, setPostQuizSwitch] = useState(null)
+
+  const activeSubjectIdRef = useRef(activeSubjectId)
+  const subjectsRef = useRef(subjects)
+  useEffect(() => {
+    activeSubjectIdRef.current = activeSubjectId
+  }, [activeSubjectId])
+  useEffect(() => {
+    subjectsRef.current = subjects
+  }, [subjects])
+
+  const openAssessmentChooser = useCallback(() => setQuizChooserOpen(true), [])
+
+  const startQuizForSubject = useCallback(
+    (subjectId) => {
+      const s = subjects.find((x) => x.id === subjectId)
+      if (!s) return
+      const initial = buildInitialAnswersFromSubject(s)
+      setDashQuizAnswersDefaults(initial)
+      setDashboardQuizAnswers(initial)
+      setDashQuizExcludedIds(BHI_SUBJECT_QUESTION_IDS)
+      setDashQuizPersistSubjectId(subjectId)
+      setDashboardQuizResults(null)
+      setDashboardQuizSessionKey((k) => k + 1)
+      setDashboardQuizOpen(true)
+    },
+    [subjects],
+  )
+
+  const startQuizNewPerson = useCallback(() => {
+    setDashQuizAnswersDefaults({})
+    setDashboardQuizAnswers({})
+    setDashQuizExcludedIds([])
+    setDashQuizPersistSubjectId(null)
+    setDashboardQuizResults(null)
+    setDashboardQuizSessionKey((k) => k + 1)
+    setDashboardQuizOpen(true)
+  }, [])
+
+  const persistToDashboard = useMemo(() => {
+    if (!sub || !client) return null
+    return {
+      client,
+      ownerSub: sub,
+      existingSubjectId: dashQuizPersistSubjectId,
+    }
+  }, [sub, client, dashQuizPersistSubjectId])
+
+  const handleDashboardQuizClose = useCallback(() => {
+    setDashboardQuizOpen(false)
+    setDashQuizExcludedIds([])
+    setDashQuizPersistSubjectId(null)
+    setDashQuizAnswersDefaults({})
+    setDashboardQuizAnswers({})
+    setDashboardQuizResults(null)
+  }, [])
+
+  const handleDashboardPersisted = useCallback(
+    async (info) => {
+      await load()
+      const curActive = activeSubjectIdRef.current
+      if (info.subjectId && info.subjectId !== curActive) {
+        const active = subjectsRef.current.find((s) => s.id === curActive)
+        setPostQuizSwitch({
+          subjectId: info.subjectId,
+          careDisplayName: info.careDisplayName,
+          activeDisplayName: active?.displayName ?? 'this profile',
+        })
+      }
+    },
+    [load],
+  )
 
   const displayName = useMemo(() => {
     const fromProfile = profile?.displayName?.trim()
@@ -113,6 +200,7 @@ export default function DashboardPage() {
                   subjects={subjects}
                   activeSubjectId={activeSubjectId}
                   onChange={setActiveSubjectId}
+                  onAddLovedOne={openAssessmentChooser}
                 />
               ) : null}
             </div>
@@ -157,6 +245,7 @@ export default function DashboardPage() {
                     latestResults={latestResults}
                     assessmentCount={assessmentsForActiveSubject.length}
                     assessments={assessmentsForActiveSubject}
+                    onStartAssessment={openAssessmentChooser}
                   />
                 }
               />
@@ -167,6 +256,7 @@ export default function DashboardPage() {
                     client={client}
                     assessments={assessmentsForActiveSubject}
                     onRefresh={load}
+                    onOpenAssessmentChooser={openAssessmentChooser}
                   />
                 }
               />
@@ -211,6 +301,81 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+
+      <DashboardQuizChooser
+        open={quizChooserOpen}
+        onClose={() => setQuizChooserOpen(false)}
+        subjects={subjects}
+        activeSubjectId={activeSubjectId}
+        onStartForSubject={startQuizForSubject}
+        onStartNewPerson={startQuizNewPerson}
+        onAddProfileOnly={() => setAddProfileOpen(true)}
+      />
+
+      <AddProfileOnlyDialog
+        open={addProfileOpen}
+        onClose={() => setAddProfileOpen(false)}
+        ownerSub={sub}
+        client={client}
+        onRefresh={load}
+        onCreated={(newId) => setActiveSubjectId(newId)}
+      />
+
+      <BrainHealthIndex
+        key={dashboardQuizSessionKey}
+        open={dashboardQuizOpen}
+        onClose={handleDashboardQuizClose}
+        quizAnswers={dashboardQuizAnswers}
+        setQuizAnswers={setDashboardQuizAnswers}
+        quizResults={dashboardQuizResults}
+        setQuizResults={setDashboardQuizResults}
+        excludedQuestionIds={dashQuizExcludedIds}
+        quizAnswersDefaults={dashQuizAnswersDefaults}
+        persistToDashboard={persistToDashboard}
+        onDashboardPersisted={handleDashboardPersisted}
+      />
+
+      {postQuizSwitch ? (
+        <div
+          className="fixed inset-0 z-[210] flex items-end justify-center bg-forest/40 p-4 backdrop-blur-sm sm:items-center"
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="post-quiz-switch-title"
+            className="w-full max-w-md rounded-2xl border border-border bg-page p-6 shadow-xl"
+          >
+            <h2 id="post-quiz-switch-title" className="font-serif text-xl italic text-forest">
+              Switch dashboard view?
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-forest/90">
+              You saved an assessment for{' '}
+              <span className="font-semibold text-ink">{postQuizSwitch.careDisplayName}</span>. You are still viewing{' '}
+              <span className="font-semibold text-ink">{postQuizSwitch.activeDisplayName}</span>.
+            </p>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveSubjectId(postQuizSwitch.subjectId)
+                  setPostQuizSwitch(null)
+                }}
+                className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
+              >
+                View {postQuizSwitch.careDisplayName}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostQuizSwitch(null)}
+                className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
+              >
+                Stay on {postQuizSwitch.activeDisplayName}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

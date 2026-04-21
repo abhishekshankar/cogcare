@@ -17,7 +17,13 @@ function scoreToFillPercent(score) {
   return Math.min(100, Math.max(0, ((score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)) * 100))
 }
 
-export default function BrainCreditTab({ profile, latestResults, assessmentCount, assessments }) {
+export default function BrainCreditTab({
+  profile,
+  latestResults,
+  assessmentCount,
+  assessments,
+  onStartAssessment,
+}) {
   const score =
     profile?.brainCreditScore ??
     (latestResults
@@ -53,12 +59,22 @@ export default function BrainCreditTab({ profile, latestResults, assessmentCount
             No assessments yet. Complete the Brain Health Index and save your results to see your brain credit
             here.
           </p>
-          <Link
-            to="/"
-            className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-forest px-6 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark"
-          >
-            Go to home — start the assessment
-          </Link>
+          {typeof onStartAssessment === 'function' ? (
+            <button
+              type="button"
+              onClick={onStartAssessment}
+              className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-forest px-6 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark"
+            >
+              Take Brain Health Index
+            </button>
+          ) : (
+            <Link
+              to="/"
+              className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-forest px-6 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark"
+            >
+              Go to home — start the assessment
+            </Link>
+          )}
         </div>
       </div>
     )

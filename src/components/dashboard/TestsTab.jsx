@@ -50,7 +50,7 @@ function exportFilenameStub(completedAt, id) {
   return `cogcare-bhi-${d}-${short}`
 }
 
-export default function TestsTab({ client, assessments, onRefresh }) {
+export default function TestsTab({ client, assessments, onRefresh, onOpenAssessmentChooser }) {
   const [open, setOpen] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [downloadingPdfId, setDownloadingPdfId] = useState(null)
@@ -165,6 +165,15 @@ export default function TestsTab({ client, assessments, onRefresh }) {
           subtitle="Tests you saved by emailing your results from the Brain Health Index appear here after you sign in with the same account."
         />
         <div className="flex flex-wrap items-center gap-2">
+          {typeof onOpenAssessmentChooser === 'function' ? (
+            <button
+              type="button"
+              onClick={onOpenAssessmentChooser}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
+            >
+              Take Brain Health Index
+            </button>
+          ) : null}
           {sorted.length > 0 ? (
             <button
               type="button"
@@ -197,8 +206,8 @@ export default function TestsTab({ client, assessments, onRefresh }) {
       {sorted.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-white/60 px-6 py-12 text-center shadow-sm">
           <p className="text-sm leading-relaxed text-forest/70">
-            No assessments yet. Complete the Brain Health Index on the home page and email your results to the same
-            address as this account — they will show up here after you sign in.
+            No assessments for this person yet. Use Take Brain Health Index above to complete it here — results save to
+            your account. You can also start the quiz from the home page and email results to this address.
           </p>
         </div>
       ) : (

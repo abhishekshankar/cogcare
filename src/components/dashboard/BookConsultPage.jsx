@@ -2,8 +2,22 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import PanelHeader from '../bhi/PanelHeader'
 import { buildCalendlyEmbedUrl, loadCalendlyScript, subscribeCalendlyScheduled } from '../../lib/calendlyEmbed'
+import { FALLBACK_CONSULTANTS } from './consultantsFallback'
 
 const DEFAULT_BOOKING = 'https://calendly.com/cogcare/30min'
+
+/** Non-Calendly URLs (e.g. marketing site) cannot embed; use the default event. */
+function resolveCalendlyBookingUrl(bookingUrl) {
+  const t = bookingUrl?.trim()
+  if (!t) return DEFAULT_BOOKING
+  try {
+    const { hostname } = new URL(t)
+    if (hostname === 'calendly.com' || hostname.endsWith('.calendly.com')) return t
+  } catch {
+    /* ignore */
+  }
+  return DEFAULT_BOOKING
+}
 
 const PENDING_INTENT_KEY = 'cogcare:pendingConsultIntent'
 
@@ -46,18 +60,21 @@ export default function BookConsultPage({
     [subjects, activeSubjectId],
   )
 
+  /** Match ConsultantsTab: empty DB still shows directory cards; booking needs the same fallback or the embed never mounts. */
+  const consultantsForBooking = consultants?.length ? consultants : FALLBACK_CONSULTANTS
+
   const selectedConsultant = useMemo(() => {
-    if (!consultants?.length) return null
+    if (!consultantsForBooking?.length) return null
     if (selectedConsultantId) {
-      const c = consultants.find((x) => x.id === selectedConsultantId)
+      const c = consultantsForBooking.find((x) => x.id === selectedConsultantId)
       if (c) return c
     }
-    return consultants[0]
-  }, [consultants, selectedConsultantId])
+    return consultantsForBooking[0]
+  }, [consultantsForBooking, selectedConsultantId])
 
   const embedUrl = useMemo(() => {
     if (!selectedConsultant) return null
-    const base = selectedConsultant.bookingUrl?.trim() || DEFAULT_BOOKING
+    const base = resolveCalendlyBookingUrl(selectedConsultant.bookingUrl)
     const name = activeSubject?.displayName || 'Consultation'
     return buildCalendlyEmbedUrl(base, {
       email: email || undefined,
@@ -148,7 +165,7 @@ export default function BookConsultPage({
         </div>
       ) : null}
 
-      {consultants?.length > 1 ? (
+      {consultantsForBooking?.length > 1 ? (
         <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-clay">Specialist</p>
           <select
@@ -156,12 +173,21 @@ export default function BookConsultPage({
             value={selectedConsultant?.id || ''}
             onChange={(e) => setSelectedConsultantId(e.target.value)}
           >
-            {consultants.map((c) => (
-              <option key={c.id} value={c.id}>
+            {consultantsForBooking.map((c, i) => (
+              <option key={c.id ?? `fb-${i}`} value={c.id ?? ''}>
                 {c.name}
               </option>
             ))}
           </select>
+        </div>
+      ) : null}
+
+      {!consultants?.length ? (
+        <div
+          className="rounded-xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950/90"
+          role="status"
+        >
+          Consultant directory not configured in the app — showing the default scheduler. Replace placeholder data in the database to list your team here.
         </div>
       ) : null}
 

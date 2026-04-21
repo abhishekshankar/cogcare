@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* CogCare design system — tokens, typography, cg-* utilities */
-@import "../docs/cogcare-design-system/colors_and_type.css";
+@import "../docs/CogCare Design System (1)/colors_and_type.css";
 
 /* Tailwind v4 — semantic colors & fonts (see docs/cogcare-design-system/README.md) */
 @theme {

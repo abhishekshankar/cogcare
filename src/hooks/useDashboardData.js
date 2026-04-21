@@ -166,7 +166,7 @@ export function useDashboardData() {
     [searchParams, setSearchParams],
   )
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (options) => {
     setLoadError(null)
     setLoading(true)
     try {
@@ -199,6 +199,20 @@ export function useDashboardData() {
           appts = await listConsultAppointments()
         }
       }
+
+      // Subject.list can lag right after create; profile-only add must still show in the switcher.
+      const ensureRow = options?.ensureSubjectRow
+      if (ensureRow?.id && !subjList.some((s) => s.id === ensureRow.id)) {
+        for (let attempt = 1; attempt <= 6; attempt++) {
+          await new Promise((r) => setTimeout(r, 120 * attempt))
+          subjList = await listAllSubjects()
+          if (subjList.some((s) => s.id === ensureRow.id)) break
+        }
+        if (!subjList.some((s) => s.id === ensureRow.id)) {
+          subjList = [...subjList, ensureRow]
+        }
+      }
+
       setAssessments(assess)
       setSubjects(subjList.filter((s) => !s.archivedAt))
       const { data: cons } = await client.models.Consultant.list()

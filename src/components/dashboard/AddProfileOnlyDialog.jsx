@@ -10,7 +10,7 @@ const RELATION_OPTIONS = ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other']
  * @param {string} props.ownerSub
  * @param {import('aws-amplify/data').generateClient} props.client
  * @param {(newSubjectId: string) => void} [props.onCreated]
- * @param {() => void} [props.onRefresh]
+ * @param {(opts?: { ensureSubjectRow?: object }) => Promise<void> | void} [props.onRefresh]
  */
 export default function AddProfileOnlyDialog({ open, onClose, ownerSub, client, onCreated, onRefresh }) {
   const [displayName, setDisplayName] = useState('')
@@ -34,6 +34,10 @@ export default function AddProfileOnlyDialog({ open, onClose, ownerSub, client, 
       setError('Age must be between 1 and 120, or leave blank.')
       return
     }
+    if (!ownerSub?.trim()) {
+      setError('Session not ready. Please wait a moment and try again.')
+      return
+    }
     setBusy(true)
     try {
       const createdAt = new Date().toISOString()
@@ -48,7 +52,7 @@ export default function AddProfileOnlyDialog({ open, onClose, ownerSub, client, 
       if (errors?.length || !row?.id) {
         throw new Error(errors?.map((x) => x.message).join('; ') || 'Could not save profile.')
       }
-      await onRefresh?.()
+      await onRefresh?.({ ensureSubjectRow: row })
       onCreated?.(row.id)
       setDisplayName('')
       setAge('')

@@ -1,10 +1,13 @@
+import { useMemo } from 'react'
 import { X, UserPlus, ClipboardList } from 'lucide-react'
+import { resolveSubjectChooserGroups } from '../../lib/subjectChooserDedupe.js'
 
 /**
  * @param {object} props
  * @param {boolean} props.open
  * @param {() => void} props.onClose
  * @param {Array<{ id: string, displayName?: string, isSelf?: boolean }>} props.subjects
+ * @param {Array<{ subjectId?: string|null }>} [props.assessments] — used to pick one row per person when duplicates exist
  * @param {string|null} props.activeSubjectId
  * @param {(subjectId: string) => void} props.onStartForSubject — existing subject; skips profile questions
  * @param {() => void} props.onStartNewPerson — full questionnaire + upsert subject on complete
@@ -14,15 +17,24 @@ export default function DashboardQuizChooser({
   open,
   onClose,
   subjects = [],
+  assessments = [],
   activeSubjectId,
   onStartForSubject,
   onStartNewPerson,
   onAddProfileOnly,
 }) {
+  const { canonicalList, idToCanonical } = useMemo(
+    () => resolveSubjectChooserGroups(subjects, assessments),
+    [subjects, assessments],
+  )
+
   if (!open) return null
 
-  const active = subjects.find((s) => s.id === activeSubjectId)
-  const others = subjects.filter((s) => s.id !== activeSubjectId)
+  const active =
+    activeSubjectId && idToCanonical.has(activeSubjectId)
+      ? idToCanonical.get(activeSubjectId)
+      : canonicalList[0] ?? null
+  const others = active ? canonicalList.filter((s) => s.id !== active.id) : canonicalList
 
   return (
     <div
@@ -116,7 +128,9 @@ export default function DashboardQuizChooser({
 
           {others.length > 0 ? (
             <div className="mt-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-clay">Another saved person</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-clay">
+                {others.length === 1 ? 'Another person on this account' : 'Other people on this account'}
+              </p>
               <ul className="mt-2 flex flex-col gap-2">
                 {others.map((s) => (
                   <li key={s.id}>

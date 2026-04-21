@@ -30,6 +30,7 @@ export default function DashboardPage() {
     sub,
     profile,
     subjects,
+    assessments,
     activeSubjectId,
     setActiveSubjectId,
     assessmentsForActiveSubject,
@@ -371,6 +372,7 @@ export default function DashboardPage() {
         open={quizChooserOpen}
         onClose={() => setQuizChooserOpen(false)}
         subjects={subjects}
+        assessments={assessments}
         activeSubjectId={activeSubjectId}
         onStartForSubject={startQuizForSubject}
         onStartNewPerson={startQuizNewPerson}

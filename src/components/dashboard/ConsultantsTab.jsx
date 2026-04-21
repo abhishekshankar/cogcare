@@ -22,7 +22,12 @@ function formatApptWhen(startTime, endTime) {
   }
 }
 
-export default function ConsultantsTab({ rows, appointments = [] }) {
+export default function ConsultantsTab({
+  rows,
+  appointments = [],
+  activeSubjectName = 'This profile',
+  hasMultipleSubjects = false,
+}) {
   const usingFallback = !rows?.length
   const list = usingFallback ? FALLBACK_CONSULTANTS : rows
 
@@ -39,6 +44,11 @@ export default function ConsultantsTab({ rows, appointments = [] }) {
         title="Consultations"
         subtitle="Book a session below. Visits you complete in the scheduler appear under Your appointments (pending until server webhooks are enabled on a paid Calendly plan)."
       />
+      <p className="rounded-xl border border-border bg-surface/50 px-4 py-3 text-sm leading-relaxed text-forest/85">
+        Showing appointments for{' '}
+        <span className="font-medium text-ink">{activeSubjectName}</span>.
+        {hasMultipleSubjects ? <> Switch profiles in the header to see others.</> : null}
+      </p>
       <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
         <Link
           to="/dashboard/consultations/book"

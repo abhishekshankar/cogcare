@@ -97,7 +97,12 @@ export default function BookConsultPage({
         el.innerHTML = ''
         const Cal = window.Calendly
         if (Cal?.initInlineWidget) {
-          Cal.initInlineWidget({ url: embedUrl, parentElement: el })
+          // resize: — Calendly adjusts iframe height via postMessage; avoids a short/clipped embed.
+          Cal.initInlineWidget({
+            url: embedUrl,
+            parentElement: el,
+            resize: true,
+          })
         } else {
           setEmbedError('Calendly did not load. Check your network or ad blockers.')
         }
@@ -210,7 +215,20 @@ export default function BookConsultPage({
         </p>
       ) : null}
 
-      <div ref={widgetHostRef} className="min-h-[720px] w-full overflow-hidden rounded-2xl border border-border bg-white" />
+      <section
+        aria-label="Scheduling calendar"
+        className="relative z-10 w-full min-w-0 isolate overflow-visible rounded-2xl border border-border bg-white shadow-sm"
+      >
+        {/*
+          Do not use overflow-hidden — Calendly's inline widget grows with resize:true.
+          z-10 + isolate keeps the embed above in-flow cards; route change clears dashboard overlays
+          that would otherwise sit on top (see DashboardPage).
+        */}
+        <div
+          ref={widgetHostRef}
+          className="calendly-inline-host min-h-[min(720px,85dvh)] w-full min-w-[320px] sm:min-h-[720px]"
+        />
+      </section>
 
       <p className="text-xs text-forest/60">
         If you don&apos;t see a pending row after booking, confirm in your Calendly confirmation email — ad blockers or closing the tab early can prevent this page from recording the visit.

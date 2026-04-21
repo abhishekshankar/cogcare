@@ -116,6 +116,23 @@ textarea {
   }
 }
 
+/* Calendly inline embed (dashboard booking): reliable stacking + min iframe height until resize postMessage */
+.calendly-inline-host {
+  position: relative;
+  z-index: 1;
+}
+
+.calendly-inline-host .calendly-inline-widget {
+  min-width: 320px !important;
+  width: 100% !important;
+  min-height: min(650px, 82dvh) !important;
+}
+
+.calendly-inline-host .calendly-inline-widget iframe {
+  width: 100% !important;
+  min-height: min(650px, 82dvh) !important;
+}
+
 /* Legacy utility aliases → design tokens (prefer cg-* / theme utilities in new code) */
 .gradient-primary {
   background: linear-gradient(

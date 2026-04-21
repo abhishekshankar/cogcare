@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback, useEffect, useRef } from 'react'
-import { Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom'
 import { confirmSignIn, signOut } from 'aws-amplify/auth'
-import { Brain, LogOut, Settings2 } from 'lucide-react'
+import { Brain, LogOut, Settings2, UserPlus } from 'lucide-react'
 import CreatePasswordCard from '../components/CreatePasswordCard'
 import { TabBar, TabBarLink } from '../components/bhi/TabBar'
 import BrainCreditTab from '../components/dashboard/BrainCreditTab'
@@ -23,6 +23,7 @@ import { BHI_SUBJECT_QUESTION_IDS } from '../lib/bhiQuizConfig.js'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const {
     client,
     email,
@@ -108,6 +109,19 @@ export default function DashboardPage() {
     setDashboardQuizResults(null)
   }, [])
 
+  /**
+   * Full-screen / fixed overlays (BHI, chooser, dialogs) live outside <main>. If the user changes
+   * tabs without dismissing them, they keep z-stacking above the Calendly embed and block it.
+   */
+  useEffect(() => {
+    queueMicrotask(() => {
+      setQuizChooserOpen(false)
+      setAddProfileOpen(false)
+      setPostQuizSwitch(null)
+      handleDashboardQuizClose()
+    })
+  }, [location.pathname, handleDashboardQuizClose])
+
   const handleDashboardPersisted = useCallback(
     async (info) => {
       await load()
@@ -143,6 +157,13 @@ export default function DashboardPage() {
     return null
   }, [assessmentsForActiveSubject])
 
+  const consultActiveSubjectName = useMemo(() => {
+    const s = subjects?.find((x) => x.id === activeSubjectId)
+    const name = s?.displayName?.trim()
+    if (name) return s?.isSelf ? `${name} (you)` : name
+    return 'This profile'
+  }, [subjects, activeSubjectId])
+
   async function handleSignOut() {
     clearPendingNewPasswordFlag()
     await signOut()
@@ -150,6 +171,9 @@ export default function DashboardPage() {
   }
 
   const showMainSkeleton = loading && !showPwdCard
+
+  const headerActionClassName =
+    'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full border border-border bg-white/90 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest shadow-sm transition-colors hover:bg-surface sm:min-h-0'
 
   return (
     <div className="min-h-screen bg-page text-ink">
@@ -169,18 +193,18 @@ export default function DashboardPage() {
         </div>
       ) : null}
       <header className="border-b border-border bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-start justify-between gap-x-4 gap-y-4 px-4 py-5 sm:items-center sm:px-6">
+          <div className="flex min-w-0 flex-1 flex-wrap items-start gap-3 sm:gap-4">
             <Link
               to="/"
-              className="flex shrink-0 items-center gap-2 font-serif text-lg italic text-forest"
+              className="flex shrink-0 items-center gap-2 self-center font-serif text-lg italic text-forest"
             >
               <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
               Dashboard
             </Link>
-            <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
-            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-              <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
+            <span className="hidden h-4 w-px shrink-0 self-center bg-border sm:block" aria-hidden />
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
                   {avatarUrl ? (
                     <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -190,7 +214,7 @@ export default function DashboardPage() {
                     </div>
                   )}
                 </div>
-                <p className="truncate text-sm font-medium text-forest">
+                <p className="min-w-0 truncate text-sm font-medium text-forest">
                   <span className="text-forest/60">Hi, </span>
                   {displayName}
                 </p>
@@ -200,19 +224,25 @@ export default function DashboardPage() {
                   subjects={subjects}
                   activeSubjectId={activeSubjectId}
                   onChange={setActiveSubjectId}
-                  onAddLovedOne={openAssessmentChooser}
                 />
               ) : null}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
-          >
-            <LogOut className="h-4 w-4" aria-hidden />
-            Sign out
-          </button>
+          <div className="flex w-full shrink-0 flex-col gap-2 sm:ml-auto sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+            <button
+              type="button"
+              onClick={openAssessmentChooser}
+              className={headerActionClassName}
+              aria-label="Add someone you care for, with or without a test"
+            >
+              <UserPlus className="h-4 w-4 shrink-0 text-clay" strokeWidth={1.75} aria-hidden />
+              Add loved one
+            </button>
+            <button type="button" onClick={handleSignOut} className={headerActionClassName}>
+              <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+              Sign out
+            </button>
+          </div>
         </div>
         <TabBar>
           <TabBarLink to="/dashboard" end>
@@ -267,6 +297,8 @@ export default function DashboardPage() {
                   <ConsultantsTab
                     rows={consultants}
                     appointments={appointmentsForActiveSubject}
+                    activeSubjectName={consultActiveSubjectName}
+                    hasMultipleSubjects={(subjects?.length ?? 0) > 1}
                   />
                 }
               />

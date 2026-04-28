@@ -408,7 +408,7 @@ function Newsletter() {
 function Footer() {
   const cols = [
     { title: 'Product', links: ['Brain Health Index', 'Specialist consults', 'For clinicians', 'Dashboard'] },
-    { title: 'Resources', links: ['Caregiver guide', 'Research library', 'Methodology paper', 'Press & media'] },
+    { title: 'Resources', links: [{ label: 'Blog', href: 'https://blog.cogcare.org', external: true }, 'Caregiver guide', 'Research library', 'Methodology paper', 'Press & media'] },
     { title: 'Organization', links: ['About CogCare', 'Our mission', 'Scientific advisors', 'Careers'] },
     { title: 'Support', links: ['Contact us', 'Privacy policy', 'Terms of service', 'Accessibility'] },
   ];
@@ -457,13 +457,26 @@ function Footer() {
                 letterSpacing: '0.22em', color: 'var(--color-clay)',
                 marginBottom: 16
               }}>{col.title}</div>
-              {col.links.map(link => (
-                <a key={link} href="#" style={{
-                  display: 'block', padding: '6px 0',
-                  fontSize: 13, color: 'var(--color-forest)',
-                  textDecoration: 'none', opacity: 0.75
-                }}>{link}</a>
-              ))}
+              {col.links.map(link => {
+                const isObj = typeof link === 'object' && link !== null
+                const label = isObj ? link.label : link
+                const href = isObj ? link.href : '#'
+                const external = isObj && link.external
+                return (
+                  <a
+                    key={label}
+                    href={href}
+                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    style={{
+                      display: 'block', padding: '6px 0',
+                      fontSize: 13, color: 'var(--color-forest)',
+                      textDecoration: 'none', opacity: 0.75
+                    }}
+                  >
+                    {label}
+                  </a>
+                )
+              })}
             </div>
           ))}
         </div>

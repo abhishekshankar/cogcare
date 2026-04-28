@@ -36,7 +36,40 @@
   }
 }
 
+/* Blog: center nav on desktop; compact header row on narrow screens (nav-links hidden) */
+.cogcare-ds-home .blog-nav-mobile-only {
+  display: none !important;
+}
+
+/* Tighten nav menu spacing on medium-large screens so the right CTA cluster
+   ("Get Inside" + "Take Brain Health Index") never overflows */
+@media (max-width: 1100px) {
+  .cogcare-ds-home .nav-links {
+    gap: 18px !important;
+  }
+}
+
+/* Below ~960px the menu would crowd the CTAs — hide the inline links and keep
+   the two CTAs side-by-side. Blog flips to its mobile placement next to them. */
+@media (max-width: 960px) {
+  .cogcare-ds-home .nav-links {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-desktop-only {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-mobile-only {
+    display: inline !important;
+  }
+}
+
 @media (max-width: 768px) {
+  .cogcare-ds-home .blog-nav-desktop-only {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-mobile-only {
+    display: inline !important;
+  }
   .cogcare-ds-home .nav-links {
     display: none !important;
   }
@@ -48,6 +81,17 @@
   }
   .cogcare-ds-home .footer-grid {
     grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* On very narrow phones, hide the secondary "Get Inside" link so the primary
+   CTA stays prominent and the row never overflows. */
+@media (max-width: 520px) {
+  .cogcare-ds-home .nav-cta-getinside {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-mobile-only {
+    display: none !important;
   }
 }
 

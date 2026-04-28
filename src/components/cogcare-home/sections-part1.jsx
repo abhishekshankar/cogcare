@@ -14,6 +14,17 @@ import {
   BtnGhost,
 } from './home-primitives.jsx'
 
+const BLOG_URL = 'https://blog.cogcare.org'
+
+const navLinkStyle = {
+  fontSize: 13,
+  color: 'var(--color-forest)',
+  textDecoration: 'none',
+  fontWeight: 500,
+  opacity: 0.75,
+  transition: 'opacity 0.2s',
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // NAV
 // ═══════════════════════════════════════════════════════════════════════════
@@ -37,9 +48,9 @@ function Nav({ onPrimaryCta, authIdentity }) {
     }}>
       <div style={{
         maxWidth: 1200, margin: '0 auto', padding: '18px 24px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16
       }}>
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Ico.brain size={22} color="var(--color-clay)" />
           <span style={{
             fontFamily: "'Playfair Display', Georgia, serif",
@@ -50,28 +61,46 @@ function Nav({ onPrimaryCta, authIdentity }) {
         </Link>
 
         <div className="nav-links" style={{
-          display: 'flex', gap: 32, alignItems: 'center'
+          display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'nowrap'
         }}>
           {['How it works', 'The Index', 'Science', 'About', 'FAQ'].map(l => (
-            <a key={l} href={`#${l.toLowerCase().replace(/\s+/g, '-')}`} style={{
-              fontSize: 13, color: 'var(--color-forest)', textDecoration: 'none',
-              fontWeight: 500, opacity: 0.75,
-              transition: 'opacity 0.2s'
-            }}
+            <a key={l} href={`#${l.toLowerCase().replace(/\s+/g, '-')}`} style={{ ...navLinkStyle, whiteSpace: 'nowrap' }}
             onMouseEnter={e => e.target.style.opacity = 1}
             onMouseLeave={e => e.target.style.opacity = 0.75}>
               {l}
             </a>
           ))}
+          <a
+            href={BLOG_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="blog-nav-desktop-only"
+            style={{ ...navLinkStyle, whiteSpace: 'nowrap' }}
+            onMouseEnter={e => e.target.style.opacity = 1}
+            onMouseLeave={e => e.target.style.opacity = 0.75}
+          >
+            Blog
+          </a>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexShrink: 0 }}>
+          <a
+            href={BLOG_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="blog-nav-mobile-only"
+            style={{ ...navLinkStyle, whiteSpace: 'nowrap' }}
+            onMouseEnter={e => e.target.style.opacity = 1}
+            onMouseLeave={e => e.target.style.opacity = 0.75}
+          >
+            Blog
+          </a>
           {authIdentity === 'signedIn' ? (
             <Link
               to="/dashboard"
               style={{
                 fontSize: 13, color: 'var(--color-forest)', textDecoration: 'none',
-                fontWeight: 500, opacity: 0.75,
+                fontWeight: 500, opacity: 0.75, whiteSpace: 'nowrap',
               }}
             >
               My dashboard
@@ -81,16 +110,20 @@ function Nav({ onPrimaryCta, authIdentity }) {
           ) : (
             <Link
               to="/login"
+              className="nav-cta-getinside"
               style={{
                 fontSize: 13, color: 'var(--color-forest)', textDecoration: 'none',
-                fontWeight: 500, opacity: 0.75,
+                fontWeight: 500, opacity: 0.75, whiteSpace: 'nowrap',
               }}
             >
               Get Inside
             </Link>
           )}
-          <BtnPrimary onClick={onPrimaryCta} style={{ padding: '10px 18px', fontSize: 10 }}>
-            Take the Index
+          <BtnPrimary
+            onClick={onPrimaryCta}
+            style={{ padding: '10px 16px', fontSize: 10, whiteSpace: 'nowrap', letterSpacing: '0.1em' }}
+          >
+            Take Brain Health Index
           </BtnPrimary>
         </div>
       </div>

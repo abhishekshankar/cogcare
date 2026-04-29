@@ -7,39 +7,40 @@ import { getCompleteAssessmentUrl, primeCompleteAssessmentUrl } from './lib/comp
 import { useAuthIdentity } from './lib/useAuthIdentity'
 import { persistDashboardAssessment } from './lib/persistDashboardAssessment.js'
 
-// ---- Caregiver quiz questions ----
-const CAREGIVER_QUESTIONS = [
-  { id: 'name',       type: 'text',      domain: 'About your loved one', text: "What is your loved one's first name?", placeholder: 'First name' },
-  { id: 'age',        type: 'number',    domain: 'About your loved one', text: 'How old are they?', placeholder: 'Age' },
-  { id: 'relation',   type: 'choice',    domain: 'About your loved one', text: 'What is your relationship to them?', options: ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other'] },
-  { id: 'memory1',    type: 'frequency', domain: 'Memory',    text: 'How often does {name} repeat the same question or story within the same conversation?' },
-  { id: 'memory2',    type: 'frequency', domain: 'Memory',    text: 'Does {name} forget recent events or conversations from the past day or two?' },
-  { id: 'language1',  type: 'frequency', domain: 'Language',  text: 'Does {name} pause mid-sentence searching for words, or use the wrong word without realising it?' },
-  { id: 'language2',  type: 'frequency', domain: 'Language',  text: 'Does {name} have difficulty following a conversation or lose their train of thought?' },
-  { id: 'attention1', type: 'frequency', domain: 'Attention', text: 'Does {name} seem confused in familiar places, like their own home or neighbourhood?' },
-  { id: 'attention2', type: 'frequency', domain: 'Attention', text: 'Does {name} have difficulty following multi-step instructions, like a recipe or directions?' },
-  { id: 'behavior',   type: 'frequency', domain: 'Behaviour', text: "Has {name}'s personality, mood, or social behaviour changed noticeably compared to 1-2 years ago?" },
-  { id: 'judgment',   type: 'frequency', domain: 'Judgement', text: 'Has {name} made unusual financial decisions, had trouble managing bills, or seemed more vulnerable to being taken advantage of?' },
-  { id: 'function',   type: 'choice',    domain: 'Daily Function', text: 'Is {name} still managing daily tasks independently?', options: ['Fully independent', 'Mostly independent, with occasional help', 'Needs help with some tasks', 'Needs help with most tasks', 'Requires full-time assistance'] },
-  { id: 'trajectory', type: 'choice',    domain: 'Trajectory', text: 'Over the past 6 months, have the changes you are seeing gotten:', options: ['Better', 'Stayed the same', 'Slightly worse', 'Noticeably worse', 'Much worse'] },
-]
+// ---- Dr. Nasir Brain Wellness Quiz questions ----
+const NASIR_SCALE = ['Not at all', 'A little', 'Somewhat', 'Often', 'Almost always']
+const ENDURANCE_SCALE = ['Hours', '60 mins', '30 mins', '10 mins', 'Almost immediately']
 
-const FREQUENCY_SCALE = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always']
+const NASIR_QUESTIONS = [
+  { id: 'name',     type: 'text',      domain: 'About your loved one', text: "What is your loved one's first name?", placeholder: 'First name' },
+  { id: 'age',      type: 'number',    domain: 'About your loved one', text: 'How old are they?', placeholder: 'Age' },
+  { id: 'relation', type: 'choice',    domain: 'About your loved one', text: 'What is your relationship to them?', options: ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other'] },
+  { id: 'q1',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} seem foggy, slowed down, or "not as sharp" as usual?' },
+  { id: 'q2',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does low energy make it harder for {name} to think or function?' },
+  { id: 'q3',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} experience head pressure, tightness, or headaches?' },
+  { id: 'q4',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} struggle to stay focused or get easily distracted?' },
+  { id: 'q5',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} seem scattered, overwhelmed, or disorganised?' },
+  { id: 'q6',  type: 'scale', domain: 'Stress, Mood & Autonomic', text: 'How often does {name} seem keyed-up, tense, or on edge?' },
+  { id: 'q7',  type: 'scale', domain: 'Stress, Mood & Autonomic', text: 'How often does {name} experience palpitations, sudden dips in energy, dizziness, heat intolerance, or shakiness?' },
+  { id: 'q8',  type: 'scale', domain: 'Stress, Mood & Autonomic', text: "How often is {name}'s sleep light, unrefreshing, or disrupted?" },
+  { id: 'q9',  type: 'scale', domain: 'Balance & Sensory',        text: 'Does {name} get dizzy, off-balance, or sensitive to busy environments or fast movements?' },
+  { id: 'q10', type: 'scale', domain: 'Balance & Sensory',        text: 'How often does {name} have trouble finding words, remembering names, or recalling information quickly?' },
+  { id: 'q11', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: "Do {name}'s symptoms get worse after mental or physical activity?",               optional: true },
+  { id: 'q12', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Is {name} sensitive to noise, screens, bright lights, or crowded spaces?',         optional: true },
+  { id: 'q13', type: 'endurance', domain: 'Optional -- Fine-Tune the Profile', text: 'How long can {name} stay mentally sharp before performance drops?',                optional: true },
+  { id: 'q14', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Does {name} seem more emotionally reactive or less steady than usual?',             optional: true },
+]
 
 const ANALYZING_STEPS = [
   'Reviewing symptom patterns...',
-  'Mapping to cognitive domains...',
-  'Identifying care pathway...',
+  'Mapping to neurological clusters...',
+  'Identifying your phenotype...',
   'Preparing your report...',
 ]
 
-function domainLevel(scores) {
-  const valid = scores.filter(s => s != null && !isNaN(s))
-  if (!valid.length) return 'low'
-  const avg = valid.reduce((a, b) => a + b, 0) / valid.length
-  if (avg >= 3.5) return 'elevated'
-  if (avg >= 2.0) return 'moderate'
-  return 'low'
+function clusterAvg(answers, ids) {
+  const vals = ids.map(id => answers[id]).filter(v => v != null && !isNaN(v))
+  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0
 }
 
 function computeResults(answers) {
@@ -48,20 +49,29 @@ function computeResults(answers) {
   const relationOptions = ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other']
   const caregiverRelation = answers.relation ? (relationOptions[answers.relation - 1] || '') : ''
 
-  const memory   = domainLevel([answers.memory1, answers.memory2])
-  const language = domainLevel([answers.language1, answers.language2])
-  const attention = domainLevel([answers.attention1, answers.attention2])
-  const behavior  = domainLevel([answers.behavior, answers.judgment])
+  const nif  = clusterAvg(answers, ['q1', 'q2', 'q3', 'q11', 'q12'])
+  const cog  = clusterAvg(answers, ['q4', 'q5', 'q10', 'q13'])
+  const aux  = clusterAvg(answers, ['q6', 'q7', 'q8'])
+  const vest = clusterAvg(answers, ['q9', 'q12'])
 
-  const ds = { elevated: 2, moderate: 1, low: 0 }
-  const domainTotal = ds[memory] + ds[language] + ds[attention] + ds[behavior]
-  const functionScore = answers.function ? Math.floor((answers.function - 1) * 0.75) : 0
-  const trajectoryScore = answers.trajectory ? Math.max(0, answers.trajectory - 2) : 0
-  const total = domainTotal + functionScore + trajectoryScore
+  const allIds = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13','q14']
+  const gsi = clusterAvg(answers, allIds)
+  const highItems = allIds.filter(id => answers[id] != null && answers[id] >= 3).length
 
-  const stageIndex = total <= 1 ? 0 : total <= 3 ? 1 : total <= 6 ? 2 : total <= 9 ? 3 : 4
+  let phenotype
+  if (gsi >= 2.5 && highItems >= 4 && (cog >= 3 || nif >= 3 || vest >= 3)) {
+    phenotype = 'severe'
+  } else if (nif < 2.5 && cog < 2.5 && aux < 2.5 && vest < 2.5) {
+    phenotype = 'longevity'
+  } else {
+    const clusters = { nif, cog, aux, vest }
+    const primary = Object.entries(clusters).reduce((a, b) => b[1] > a[1] ? b : a)[0]
+    phenotype = (primary === 'nif' || primary === 'vest') ? 'neuroinflammatory'
+              : primary === 'cog' ? 'cognitive'
+              : 'autonomic'
+  }
 
-  return { lovedOneName, lovedOneAge, caregiverRelation, stageIndex, memory, language, attention, behavior }
+  return { lovedOneName, lovedOneAge, caregiverRelation, phenotype, nif, cog, aux, vest, gsi }
 }
 
 // ---- Fluent 2 theme — uses :root tokens from docs/cogcare-design-system/colors_and_type.css ----

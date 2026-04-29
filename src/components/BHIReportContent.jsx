@@ -2,42 +2,72 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Brain, Calendar, Map, Shield, Download, Mail, Share2, Check, Info, Loader2 } from 'lucide-react'
 
-const STAGES = [
-  { label: 'Normal Aging',    short: 'Normal',   desc: 'Memory lapses typical of age. No intervention needed.' },
-  { label: 'Early Changes',   short: 'Early',    desc: 'Subtle but consistent changes that warrant professional attention.' },
-  { label: 'Mild Impairment', short: 'Mild MCI', desc: 'Noticeable cognitive changes affecting some daily activities.' },
-  { label: 'Moderate',        short: 'Moderate', desc: 'Significant memory and thinking difficulties requiring support.' },
-  { label: 'Advanced',        short: 'Advanced', desc: 'Substantial care and structured support required.' },
+const GSI_LEVELS = [
+  { short: 'Optimal' },
+  { short: 'Mild' },
+  { short: 'Moderate' },
+  { short: 'Significant' },
+  { short: 'Severe' },
 ]
 
+const PHENOTYPES = {
+  neuroinflammatory: {
+    name: 'Neuroinflammatory Phenotype',
+    desc: "{name}'s responses point to brain fatigue driven by inflammation -- often triggered by illness, stress, or infection. This shows up as persistent fog, low energy, headaches, and sensitivity to light or noise.",
+  },
+  cognitive: {
+    name: 'Cognitive-Phasic Phenotype',
+    desc: "The responses highlight difficulty with focus, organisation, and recalling words or information. This reflects a brain that can still function well but tires quickly under mental load.",
+  },
+  autonomic: {
+    name: 'Anxiety / Autonomic Phenotype',
+    desc: "The pattern suggests {name}'s stress and nervous system are out of balance -- producing tension, poor sleep, and physical symptoms like a racing heart or dizziness.",
+  },
+  longevity: {
+    name: 'Longevity / Performance Phenotype',
+    desc: "No significant impairment detected -- {name}'s brain is functioning well. The opportunity here is optimisation: sharper focus, better energy, and protecting long-term brain health.",
+  },
+  severe: {
+    name: 'Severe Deficit Phenotype',
+    desc: "Multiple areas of brain function are significantly affected, suggesting the brain's systems are under serious strain. This profile benefits most from a structured, comprehensive evaluation.",
+  },
+}
+
 const DOMAIN_COPY = {
-  memory: {
-    elevated: 'Repeating the same questions within short periods, forgetting recent conversations with family.',
-    moderate: 'Occasionally forgetting appointments and recent events, generally recovers with reminders.',
-    low:      'Mild forgetfulness consistent with normal aging -- names, occasional dates.',
+  nif: {
+    elevated: "This area shows significant strain -- {name} likely experiences persistent fog, low energy, and worsening symptoms after activity. This pattern is common after illness, chronic stress, or long-term inflammation.",
+    moderate: "Some brain fatigue is present, with energy and clarity dipping more than expected. Afternoons and busier days tend to be harder.",
+    low:      "Brain energy and clarity appear to be holding up well in this area.",
   },
-  language: {
-    elevated: 'Frequently pausing mid-sentence to search for words, substituting incorrect words without awareness.',
-    moderate: 'Struggling to recall common words in conversation, sometimes losing train of thought.',
-    low:      'No significant language changes reported at this time.',
+  cog: {
+    elevated: "Focus, organisation, and word-finding are significantly affected -- {name} may feel mentally slow, easily distracted, or unable to stay on task for long. This reflects a brain under sustained cognitive strain.",
+    moderate: "Attention and thinking take more effort than usual, and mental stamina may fade as the day goes on. Task-switching and staying organised can feel harder.",
+    low:      "Focus and thinking appear to be working well for day-to-day demands.",
   },
-  attention: {
-    elevated: 'Confusion in familiar environments, difficulty following multi-step tasks or conversations.',
-    moderate: 'Difficulty concentrating on complex tasks, easily distracted in busy environments.',
-    low:      'Attention appears largely intact for routine activities.',
+  aux: {
+    elevated: "The nervous system is in a persistent state of overdrive -- producing poor sleep, physical tension, and symptoms like palpitations or dizziness. Stress and recovery are significantly out of balance.",
+    moderate: "There are signs of nervous system strain, with background tension and disrupted sleep feeding into each other. Rest does not feel as restorative as it should.",
+    low:      "Stress and nervous system regulation appear balanced in this area.",
   },
-  behavior: {
-    elevated: 'Noticeable personality shifts, increased anxiety, or withdrawal from social activities.',
-    moderate: 'Occasional irritability or mood changes, slightly more than baseline for this person.',
-    low:      'Mood and personality appear stable, minor irritability noted.',
+  vest: {
+    elevated: "Dizziness, motion sensitivity, or sensory overload are significantly present -- {name} may feel off-balance or easily overwhelmed in busy environments. This often overlaps with fatigue or stress-related patterns.",
+    moderate: "Mild balance or sensory sensitivity is present, tending to worsen in busy or stimulating settings. This is worth monitoring alongside other symptoms.",
+    low:      "Balance and sensory processing appear stable.",
   },
 }
 
 const DOMAIN_META = {
-  memory:    { emoji: '🧩', label: 'Memory' },
-  language:  { emoji: '💬', label: 'Language' },
-  attention: { emoji: '🔍', label: 'Attention' },
-  behavior:  { emoji: '🌿', label: 'Behavior' },
+  nif:  { emoji: '🔥', label: 'Brain Energy & Clarity' },
+  cog:  { emoji: '🧠', label: 'Focus & Thinking' },
+  aux:  { emoji: '💫', label: 'Stress & Nervous System' },
+  vest: { emoji: '⚖️', label: 'Balance & Senses' },
+}
+
+function clusterLevel(score) {
+  if (score == null || isNaN(score)) return 'low'
+  if (score >= 3.5) return 'elevated'
+  if (score >= 2.0) return 'moderate'
+  return 'low'
 }
 
 const CONCERN_LABEL = { low: 'Low concern', moderate: 'Moderate concern', elevated: 'Elevated concern' }
@@ -48,8 +78,8 @@ const CONCERN_STYLE = {
   elevated: { bg: '#FBF0ED', border: '#DFA89E', color: '#7A2E1F', dot: '#A84232' },
 }
 
-function StageSpectrum({ stageIndex }) {
-  const pct = (stageIndex / (STAGES.length - 1)) * 100
+function StageSpectrum({ gsiIndex }) {
+  const pct = (gsiIndex / (GSI_LEVELS.length - 1)) * 100
   return (
     <div style={{ padding: '4px 0 8px' }}>
       <div style={{
@@ -57,12 +87,12 @@ function StageSpectrum({ stageIndex }) {
         background: 'linear-gradient(to right, #4A9060, #8DC07A, #E8C060, #D4804A, #A84232)',
         boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)',
       }}>
-        {STAGES.map((_, i) => (
+        {GSI_LEVELS.map((_, i) => (
           <div key={i} style={{
             position: 'absolute', top: -3, bottom: -3,
-            left: `${(i / (STAGES.length - 1)) * 100}%`,
+            left: `${(i / (GSI_LEVELS.length - 1)) * 100}%`,
             transform: 'translateX(-50%)',
-            width: i === 0 || i === STAGES.length - 1 ? 0 : 1,
+            width: i === 0 || i === GSI_LEVELS.length - 1 ? 0 : 1,
             background: 'rgba(255,255,255,0.5)',
           }} />
         ))}
@@ -86,17 +116,17 @@ function StageSpectrum({ stageIndex }) {
         </div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-        {STAGES.map((s, i) => (
+        {GSI_LEVELS.map((s, i) => (
           <div key={i} style={{
             flex: 1, textAlign: 'center',
-            fontSize: i === stageIndex ? 10 : 9,
-            fontWeight: i === stageIndex ? 700 : 500,
-            color: i === stageIndex ? 'var(--color-forest)' : 'rgba(61,75,62,0.4)',
+            fontSize: i === gsiIndex ? 10 : 9,
+            fontWeight: i === gsiIndex ? 700 : 500,
+            color: i === gsiIndex ? 'var(--color-forest)' : 'rgba(61,75,62,0.4)',
             lineHeight: 1.3,
             transition: 'all 0.3s',
           }}>
             {s.short}
-            {i === stageIndex && (
+            {i === gsiIndex && (
               <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-forest)', margin: '4px auto 0' }} />
             )}
           </div>
@@ -106,10 +136,10 @@ function StageSpectrum({ stageIndex }) {
   )
 }
 
-function DomainCard({ domain, level, delay }) {
+function DomainCard({ domain, level, delay, name }) {
   const meta = DOMAIN_META[domain]
   const sty = CONCERN_STYLE[level] ?? CONCERN_STYLE.low
-  const copy = DOMAIN_COPY[domain]?.[level] ?? ''
+  const copy = (DOMAIN_COPY[domain]?.[level] ?? '').replace(/\{name\}/g, name || 'your loved one')
   return (
     <div className={`fade-up ${delay}`} style={{
       background: sty.bg, border: `1px solid ${sty.border}`,
@@ -131,8 +161,8 @@ function DomainCard({ domain, level, delay }) {
           {CONCERN_LABEL[level]}
         </span>
       </div>
-      <p style={{ fontSize: 12.5, lineHeight: 1.65, color: sty.color, fontStyle: 'italic', margin: 0, opacity: 0.9 }}>
-        "{copy}"
+      <p style={{ fontSize: 12.5, lineHeight: 1.65, color: sty.color, margin: 0 }}>
+        {copy}
       </p>
     </div>
   )
@@ -207,15 +237,16 @@ export default function BHIReportContent({
 
   if (!quizResults) return null
 
-  const { lovedOneName, lovedOneAge, stageIndex, memory, language, attention, behavior } = quizResults
+  const { lovedOneName, lovedOneAge, phenotype, nif, cog, aux, vest, gsi } = quizResults
   const name = lovedOneName || 'Your loved one'
-  const stage = STAGES[stageIndex ?? 0]
+  const gsiIndex = Math.min(4, Math.round(gsi ?? 0))
+  const pheno = PHENOTYPES[phenotype ?? 'longevity']
 
   const domains = [
-    { key: 'memory',    level: memory },
-    { key: 'language',  level: language },
-    { key: 'attention', level: attention },
-    { key: 'behavior',  level: behavior },
+    { key: 'nif',  level: clusterLevel(nif) },
+    { key: 'cog',  level: clusterLevel(cog) },
+    { key: 'aux',  level: clusterLevel(aux) },
+    { key: 'vest', level: clusterLevel(vest) },
   ]
   const elevatedCount = domains.filter(d => d.level === 'elevated').length
   const moderateCount = domains.filter(d => d.level === 'moderate').length
@@ -261,7 +292,7 @@ export default function BHIReportContent({
         </div>
       </div>
 
-      {/* 2. Cognitive stage */}
+      {/* 2. Brain Health Index result */}
       <div className="fade-up d2" style={{
         background: 'var(--color-white)', border: '1px solid var(--color-border)',
         borderRadius: 24, padding: '22px 24px', marginBottom: 20,
@@ -270,10 +301,10 @@ export default function BHIReportContent({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--color-clay)', marginBottom: 6 }}>
-              Cognitive Stage Assessment
+              Brain Health Index
             </div>
             <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.75rem', color: 'var(--color-ink)', lineHeight: 1.2 }}>
-              {stage.label}
+              {pheno.name}
             </div>
           </div>
           <div style={{
@@ -284,9 +315,11 @@ export default function BHIReportContent({
             For {name}
           </div>
         </div>
-        <StageSpectrum stageIndex={stageIndex ?? 0} />
+        <StageSpectrum gsiIndex={gsiIndex} />
         <div style={{ marginTop: 14, borderRadius: 14, border: '1px solid var(--color-border)', padding: '14px 16px', background: 'var(--color-bg)' }}>
-          <p style={{ fontSize: 13, color: 'var(--color-ink)', lineHeight: 1.5, margin: '0 0 10px' }}>{stage.desc}</p>
+          <p style={{ fontSize: 13, color: 'var(--color-ink)', lineHeight: 1.5, margin: '0 0 10px' }}>
+            {pheno.desc.replace(/\{name\}/g, name)}
+          </p>
           <div style={{ height: 1, borderTop: '1px dashed var(--color-border)', margin: '10px 0' }} />
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
             <Info size={13} style={{ color: 'var(--color-clay)', flexShrink: 0, marginTop: 1 }} />
@@ -297,11 +330,11 @@ export default function BHIReportContent({
         </div>
       </div>
 
-      {/* 3. Symptom domains */}
+      {/* 3. Brain health clusters */}
       <div className="fade-up d3" style={{ marginBottom: 20 }}>
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--color-clay)', marginBottom: 6 }}>
-            Symptom Domains
+            Brain Health Clusters
           </div>
           <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.3rem', color: 'var(--color-ink)', lineHeight: 1.25, marginBottom: 8 }}>
             What the assessment revealed
@@ -309,13 +342,12 @@ export default function BHIReportContent({
           <p style={{ fontSize: 12.5, color: 'var(--color-slate)', lineHeight: 1.6, margin: 0 }}>
             Based on your responses, {name} shows{' '}
             {elevatedCount > 0 && <><strong style={{ color: '#7A2E1F' }}>{elevatedCount} elevated</strong> and </>}
-            <strong style={{ color: '#7A4A10' }}>{moderateCount} moderate</strong> concern area{moderateCount !== 1 ? 's' : ''}.{' '}
-            The quoted behaviors below are drawn directly from what you reported.
+            <strong style={{ color: '#7A4A10' }}>{moderateCount} moderate</strong> area{moderateCount !== 1 ? 's' : ''} across four brain health clusters.
           </p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {domains.map((d, i) => (
-            <DomainCard key={d.key} domain={d.key} level={d.level} delay={`d${i + 4}`} />
+            <DomainCard key={d.key} domain={d.key} level={d.level} delay={`d${i + 4}`} name={name} />
           ))}
         </div>
       </div>

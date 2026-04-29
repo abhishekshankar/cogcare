@@ -95,18 +95,20 @@ const cogcareTheme = {
 
 // ---- BHIQuiz ----
 function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds = [] }) {
-  const questions = CAREGIVER_QUESTIONS.filter((item) => !excludedQuestionIds.includes(item.id))
+  const questions = NASIR_QUESTIONS.filter((item) => !excludedQuestionIds.includes(item.id))
   const [qi, setQi] = useState(0)
   const total = questions.length
   const q = questions[qi]
   const pct = (qi + 1) / total
   const name = (typeof quizAnswers.name === 'string' && quizAnswers.name.trim()) || 'your loved one'
+  const domainText = q.domain.replace(/\{name\}/g, name)
   const questionText = q.text.replace(/\{name\}/g, name)
   const currentValue = quizAnswers[q.id]
 
   const canProceed = (() => {
     if (q.type === 'text') return typeof currentValue === 'string' && currentValue.trim().length > 0
     if (q.type === 'number') return typeof currentValue === 'number' && currentValue > 0 && currentValue < 130
+    if (q.optional) return true
     return currentValue != null
   })()
 
@@ -125,7 +127,21 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
     if (qi > 0) setQi(qi - 1)
   }
 
-  const options = q.type === 'frequency' ? FREQUENCY_SCALE : (q.options || [])
+  const handleSkip = () => {
+    const updated = { ...quizAnswers, [q.id]: null }
+    if (qi < total - 1) {
+      setAnswer(null)
+      setQi(qi + 1)
+    } else {
+      onComplete(computeResults(updated))
+    }
+  }
+
+  const options = (() => {
+    if (q.type === 'scale') return NASIR_SCALE
+    if (q.type === 'endurance') return ENDURANCE_SCALE
+    return q.options || []
+  })()
 
   return (
     <div className="flex h-full flex-col">
@@ -133,7 +149,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
       <div className="shrink-0 border-b border-border/80 bg-page px-4 pb-3 pt-3 sm:px-8 sm:pb-4 sm:pt-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-clay ring-1 ring-border/60">
-            {q.domain}
+            {domainText}
           </span>
           <span className="text-[11px] font-semibold tabular-nums text-forest/80">
             Question <span className="text-forest">{qi + 1}</span>
@@ -149,7 +165,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
       {/* Question + input */}
       <div className="flex flex-1 min-h-0 flex-col px-4 py-4 sm:px-8 sm:py-5">
         <p className="mb-1.5 shrink-0 text-[10px] font-bold uppercase tracking-[0.25em] text-forest/40">
-          {q.domain}
+          {domainText}
         </p>
         <h2 className="mb-4 shrink-0 font-serif text-[1.1rem] leading-snug tracking-tight text-ink sm:text-xl">
           {questionText}
@@ -189,7 +205,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
             <legend className="sr-only">Choose one answer</legend>
             <div className="flex h-full flex-col justify-between gap-2">
               {options.map((label, i) => {
-                const value = i + 1
+                const value = (q.type === 'scale' || q.type === 'endurance') ? i : i + 1
                 const isOn = currentValue === value
                 return (
                   <button
@@ -203,7 +219,7 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
                         : 'border-border bg-white hover:border-clay/45 hover:bg-page active:scale-[0.99]',
                     ].join(' ')}
                   >
-                    {q.type === 'frequency' && (
+                    {(q.type === 'scale' || q.type === 'endurance') && (
                       <span className={['flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums', isOn ? 'bg-forest text-white' : 'bg-surface text-forest group-hover:bg-border/80'].join(' ')} aria-hidden>
                         {value}
                       </span>
@@ -231,6 +247,11 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
           </Button>
         ) : (
           <div className="min-w-[4rem]" aria-hidden />
+        )}
+        {q.optional && (
+          <Button appearance="subtle" onClick={handleSkip} className="text-clay">
+            Skip
+          </Button>
         )}
         <Button
           appearance="primary"

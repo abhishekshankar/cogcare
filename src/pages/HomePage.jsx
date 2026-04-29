@@ -70,7 +70,7 @@ export default function HomePage() {
                 The clinical bottom line
               </p>
               <p className="text-base font-semibold leading-snug">
-                By the time most people <em>notice</em> cognitive decline, it has been quietly progressing for 10–20 years. The window to act is now. Not later.
+                By the time caregivers <em>notice</em> cognitive decline, it has been quietly progressing for 10–20 years. The window to act is now. Not later.
               </p>
             </div>
 

@@ -129,8 +129,8 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
 
   const handleSkip = () => {
     const updated = { ...quizAnswers, [q.id]: null }
+    setAnswer(null)
     if (qi < total - 1) {
-      setAnswer(null)
       setQi(qi + 1)
     } else {
       onComplete(computeResults(updated))
@@ -199,8 +199,8 @@ function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds 
           />
         )}
 
-        {/* Choice or frequency buttons */}
-        {(q.type === 'choice' || q.type === 'frequency') && (
+        {/* Choice / scale / endurance buttons */}
+        {(q.type === 'choice' || q.type === 'scale' || q.type === 'endurance') && (
           <fieldset className="min-h-0 min-w-0 flex-1 border-0 p-0">
             <legend className="sr-only">Choose one answer</legend>
             <div className="flex h-full flex-col justify-between gap-2">

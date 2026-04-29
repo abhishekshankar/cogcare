@@ -139,34 +139,47 @@ Severity mapping (same thresholds as current):
 - `2.0–3.4` → moderate
 - `>= 3.5` → elevated
 
-Each card body shows Dr. Nasir's scientific blurb for that cluster at the severity level
-(condensed from his framework document to 1–2 sentences per severity).
+Each card body shows a plain-language description (1–2 sentences) for that cluster at the
+severity level — written for caregivers, no clinical jargon.
 
-### Cards 4–8 — Unchanged
-Care pathway, consult FAQ, Dr. Nasir CTA card, email/share, caregiver guide opt-in.
+### Cards 4–8 — Unchanged, match main exactly
+Care pathway timeline, consult FAQ, Dr. Nasir CTA card (photo, bio, routing), email/share,
+and caregiver guide opt-in copy are **identical to main**. No edits to these sections.
 
 ---
 
-## Domain Copy (Scientific Blurbs per Cluster × Severity)
+## Phenotype Descriptions (Card 2 — 1–2 sentences, caregiver-friendly)
+
+| Phenotype | Display name | Description |
+|-----------|-------------|-------------|
+| neuroinflammatory | Neuroinflammatory Phenotype | "[name]'s responses point to brain fatigue driven by inflammation — often triggered by illness, stress, or infection. This shows up as persistent fog, low energy, headaches, and sensitivity to light or noise." |
+| cognitive | Cognitive-Phasic Phenotype | "The responses highlight difficulty with focus, organisation, and recalling words or information. This reflects a brain that can still function well but tires quickly under mental load." |
+| autonomic | Anxiety / Autonomic Phenotype | "The pattern suggests [name]'s stress and nervous system are out of balance — producing tension, poor sleep, and physical symptoms like a racing heart or dizziness." |
+| longevity | Longevity / Performance Phenotype | "No significant impairment detected — [name]'s brain is functioning well. The opportunity here is optimisation: sharper focus, better energy, and protecting long-term brain health." |
+| severe | Severe Deficit Phenotype | "Multiple areas of brain function are significantly affected, suggesting the brain's systems are under serious strain. This profile benefits most from a structured, comprehensive evaluation." |
+
+---
+
+## Domain Copy (plain language, 1–2 sentences per cluster × severity)
 
 ### 🔥 Brain Energy & Clarity (NIF)
-- **elevated**: "Signs suggest central neuroinflammation — microglial activation and mitochondrial inefficiency are disrupting cortical processing speed, causing fog, fatigue, and sensory overload."
-- **moderate**: "Mild neuroinflammatory load is likely slowing cognitive processing. Post-exertional worsening and afternoon fatigue are common at this level."
-- **low**: "No significant neuroinflammatory signal detected. Brain energy and clarity appear largely intact."
+- **elevated**: "This area shows significant strain — [name] likely experiences persistent fog, low energy, and worsening symptoms after activity. This pattern is common after illness, chronic stress, or long-term inflammation."
+- **moderate**: "Some brain fatigue is present, with energy and clarity dipping more than expected. Afternoons and busier days tend to be harder."
+- **low**: "Brain energy and clarity appear to be holding up well in this area."
 
 ### 🧠 Focus & Thinking (COG)
-- **elevated**: "Frontoparietal network inefficiency — affecting the DLPFC and dorsal attention network — is producing distractibility, poor organisation, slowed processing, and word-finding difficulties."
-- **moderate**: "Attention and executive circuits are under strain. Cognitive endurance may drop over the course of the day, with task-switching feeling effortful."
-- **low**: "Focus and thinking circuits appear to be functioning well for routine demands."
+- **elevated**: "Focus, organisation, and word-finding are significantly affected — [name] may feel mentally slow, easily distracted, or unable to stay on task for long. This reflects a brain under sustained cognitive strain."
+- **moderate**: "Attention and thinking take more effort than usual, and mental stamina may fade as the day goes on. Task-switching and staying organised can feel harder."
+- **low**: "Focus and thinking appear to be working well for day-to-day demands."
 
 ### 💫 Stress & Nervous System (AUX)
-- **elevated**: "Limbic–autonomic dysregulation — heightened amygdala activity and reduced vagal tone — is driving sympathetic overdrive: poor sleep, tension, palpitations, and sensory hypersensitivity."
-- **moderate**: "The autonomic nervous system is showing signs of imbalance. Sleep fragmentation and background tension are perpetuating a stress–recovery gap."
-- **low**: "Stress and autonomic regulation appear balanced. No significant limbic overactivation detected."
+- **elevated**: "The nervous system is in a persistent state of overdrive — producing poor sleep, physical tension, and symptoms like palpitations or dizziness. Stress and recovery are significantly out of balance."
+- **moderate**: "There are signs of nervous system strain, with background tension and disrupted sleep feeding into each other. Rest does not feel as restorative as it should."
+- **low**: "Stress and nervous system regulation appear balanced in this area."
 
 ### ⚖️ Balance & Senses (VEST)
-- **elevated**: "Vestibular–cortical mismatch and sensory hypersensitivity suggest brainstem or cerebellar involvement, often overlapping with neuroinflammatory or autonomic phenotypes."
-- **moderate**: "Mild dizziness or sensory sensitivity may reflect vestibular–autonomic coupling stress. Often worsens in busy or high-stimulus environments."
+- **elevated**: "Dizziness, motion sensitivity, or sensory overload are significantly present — [name] may feel off-balance or easily overwhelmed in busy environments. This often overlaps with fatigue or stress-related patterns."
+- **moderate**: "Mild balance or sensory sensitivity is present, tending to worsen in busy or stimulating settings. This is worth monitoring alongside other symptoms."
 - **low**: "Balance and sensory processing appear stable."
 
 ---

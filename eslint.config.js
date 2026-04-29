@@ -5,7 +5,17 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores([
+    'dist',
+    'docs/cogcare-design-system/ui_kits/**',
+    '**/* 2.js',
+    '**/* 2.jsx',
+    '**/* 2.ts',
+    '**/* 2.cjs',
+    '**/* 2.md',
+    '**/* 2.json',
+    '**/* 2.yml',
+  ]),
   {
     files: ['vite.config.js', 'vite-plugin-local-email-api.js', 'api/**/*.js', 'playwright.config.js', 'e2e/**/*.js'],
     extends: [js.configs.recommended],

@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 const linkClass = ({ isActive }) =>
   [
     'shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] transition-colors snap-start',
-    isActive ? 'bg-[#3D4B3E] text-white' : 'text-[#3D4B3E]/70 hover:bg-[#F3EFE9]',
+    isActive ? 'bg-forest text-white' : 'text-forest/70 hover:bg-surface',
   ].join(' ')
 
 export function TabBar({ children }) {

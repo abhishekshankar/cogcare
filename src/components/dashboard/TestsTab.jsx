@@ -50,7 +50,7 @@ function exportFilenameStub(completedAt, id) {
   return `cogcare-bhi-${d}-${short}`
 }
 
-export default function TestsTab({ client, assessments, onRefresh }) {
+export default function TestsTab({ client, assessments, onRefresh, onOpenAssessmentChooser }) {
   const [open, setOpen] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [downloadingPdfId, setDownloadingPdfId] = useState(null)
@@ -165,11 +165,20 @@ export default function TestsTab({ client, assessments, onRefresh }) {
           subtitle="Tests you saved by emailing your results from the Brain Health Index appear here after you sign in with the same account."
         />
         <div className="flex flex-wrap items-center gap-2">
+          {typeof onOpenAssessmentChooser === 'function' ? (
+            <button
+              type="button"
+              onClick={onOpenAssessmentChooser}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
+            >
+              Take Brain Health Index
+            </button>
+          ) : null}
           {sorted.length > 0 ? (
             <button
               type="button"
               onClick={handleExportAll}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[#E8DCC4] bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] hover:bg-[#F3EFE9] sm:min-h-0"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
             >
               <Download className="h-4 w-4 shrink-0" aria-hidden />
               Export all
@@ -178,7 +187,7 @@ export default function TestsTab({ client, assessments, onRefresh }) {
           <button
             type="button"
             onClick={onRefresh}
-            className="min-h-[44px] rounded-full border border-[#E8DCC4] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] hover:bg-[#F3EFE9] sm:min-h-0"
+            className="min-h-[44px] rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
           >
             Refresh
           </button>
@@ -195,10 +204,10 @@ export default function TestsTab({ client, assessments, onRefresh }) {
       ) : null}
 
       {sorted.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#E8DCC4] bg-white/60 px-6 py-12 text-center shadow-sm">
-          <p className="text-sm leading-relaxed text-[#3D4B3E]/70">
-            No assessments yet. Complete the Brain Health Index on the home page and email your results to the same
-            address as this account — they will show up here after you sign in.
+        <div className="rounded-2xl border border-dashed border-border bg-white/60 px-6 py-12 text-center shadow-sm">
+          <p className="text-sm leading-relaxed text-forest/70">
+            No assessments for this person yet. Use Take Brain Health Index above to complete it here — results save to
+            your account. You can also start the quiz from the home page and email results to this address.
           </p>
         </div>
       ) : (
@@ -214,7 +223,7 @@ export default function TestsTab({ client, assessments, onRefresh }) {
             const busy = deletingId === a.id
             return (
               <li key={a.id}>
-                <div className="flex gap-1 rounded-2xl border border-[#E8DCC4] bg-white shadow-sm transition hover:border-[#3D4B3E]/30 sm:gap-2">
+                <div className="flex gap-1 rounded-2xl border border-border bg-white shadow-sm transition hover:border-forest/30 sm:gap-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -224,15 +233,15 @@ export default function TestsTab({ client, assessments, onRefresh }) {
                     className="flex min-h-[44px] min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left sm:px-5"
                   >
                     <span className="min-w-0 flex-1">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay">
                         {new Date(a.completedAt).toLocaleString()}
                       </span>
-                      <span className="mt-1 block font-medium text-[#1A1A1A]">{a.type}</span>
-                      <span className="mt-1 block text-sm text-[#3D4B3E]/75">{summary}</span>
+                      <span className="mt-1 block font-medium text-ink">{a.type}</span>
+                      <span className="mt-1 block text-sm text-forest/75">{summary}</span>
                     </span>
-                    <ChevronRight className="h-5 w-5 shrink-0 text-[#A67B5B]/70" aria-hidden />
+                    <ChevronRight className="h-5 w-5 shrink-0 text-clay/70" aria-hidden />
                   </button>
-                  <div className="flex shrink-0 items-center gap-0 border-l border-[#F3EFE9] pr-2 sm:pr-3">
+                  <div className="flex shrink-0 items-center gap-0 border-l border-surface pr-2 sm:pr-3">
                     <button
                       type="button"
                       disabled={busy || downloadingPdfId === a.id}
@@ -240,7 +249,7 @@ export default function TestsTab({ client, assessments, onRefresh }) {
                         e.stopPropagation()
                         void handleDownloadPdf(a)
                       }}
-                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-[#3D4B3E] hover:bg-[#F3EFE9] disabled:opacity-50"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-forest hover:bg-surface disabled:opacity-50"
                       aria-label="Download report as PDF"
                     >
                       {downloadingPdfId === a.id
@@ -274,7 +283,7 @@ export default function TestsTab({ client, assessments, onRefresh }) {
         >
           <button
             type="button"
-            className="absolute inset-0 bg-[#3D4B3E]/30 backdrop-blur-sm"
+            className="absolute inset-0 bg-forest/30 backdrop-blur-sm"
             onClick={() => setOpen(null)}
             aria-label="Close dialog"
           />
@@ -284,23 +293,23 @@ export default function TestsTab({ client, assessments, onRefresh }) {
             aria-modal="true"
             aria-labelledby="dashboard-saved-report-title"
             tabIndex={-1}
-            className="relative z-10 flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-[#E8DCC4] bg-[#FDFBF7] shadow-2xl sm:rounded-3xl"
+            className="relative z-10 flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-border bg-page shadow-2xl sm:rounded-3xl"
           >
             <div className="flex shrink-0 justify-center pt-3 sm:pt-2" aria-hidden>
-              <span className="h-1 w-10 rounded-full bg-[#E8DCC4]" />
+              <span className="h-1 w-10 rounded-full bg-border" />
             </div>
             <div className="max-h-[90dvh] min-h-0 flex-1 overflow-y-auto p-6 pt-4">
               <div className="mb-4 flex justify-between gap-4">
                 <p
                   id="dashboard-saved-report-title"
-                  className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A67B5B]"
+                  className="text-[10px] font-bold uppercase tracking-[0.2em] text-clay"
                 >
                   Saved report
                 </p>
                 <button
                   type="button"
                   onClick={() => setOpen(null)}
-                  className="text-sm font-semibold text-[#A67B5B] hover:underline"
+                  className="text-sm font-semibold text-clay hover:underline"
                 >
                   Close
                 </button>
@@ -308,19 +317,31 @@ export default function TestsTab({ client, assessments, onRefresh }) {
               {(() => {
                 try {
                   const r = JSON.parse(open.resultsJson || '{}')
-                  return <BHIReportContent quizResults={r} showActions={false} />
+                  const consultBookingTo = open?.id
+                    ? `/dashboard/consultations/book?${new URLSearchParams({
+                        ...(open.subjectId ? { subjectId: String(open.subjectId) } : {}),
+                        assessmentId: String(open.id),
+                      }).toString()}`
+                    : '/dashboard/consultations/book'
+                  return (
+                    <BHIReportContent
+                      quizResults={r}
+                      showActions={false}
+                      consultBookingTo={consultBookingTo}
+                    />
+                  )
                 } catch {
                   return <p className="text-sm text-red-700">Could not load results.</p>
                 }
               })()}
             </div>
-            <div className="shrink-0 border-t border-[#E8DCC4] bg-[#FDFBF7] p-4">
+            <div className="shrink-0 border-t border-border bg-page p-4">
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   disabled={!!downloadingPdfId}
                   onClick={() => void handleDownloadPdf(open)}
-                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full border border-[#E8DCC4] bg-white px-4 py-2 text-sm font-semibold text-[#3D4B3E] hover:bg-[#F3EFE9] disabled:opacity-50 sm:min-h-0 sm:flex-initial"
+                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-forest hover:bg-surface disabled:opacity-50 sm:min-h-0 sm:flex-initial"
                 >
                   {downloadingPdfId === open.id
                     ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden />Generating...</>

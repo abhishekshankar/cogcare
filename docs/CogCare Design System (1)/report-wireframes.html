@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CogCare Report -- Wireframes v1+v2</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }
+
+  /* Wireframe primitives */
+  .wf-box { background: #F4F2EE; border: 1.5px solid #C8C2B8; border-radius: 4px; }
+  .wf-box-dark { background: #D9D4CC; border: 1.5px solid #B0A89C; border-radius: 4px; }
+  .wf-box-accent { background: #E8F0EB; border: 1.5px dashed #88A890; border-radius: 4px; }
+  .wf-box-warn { background: #FDF4EC; border: 1.5px dashed #D4A060; border-radius: 4px; }
+  .wf-box-cta { background: #C8D4CA; border: 1.5px solid #6A8870; border-radius: 6px; }
+  .wf-text { background: #E2DED8; border-radius: 2px; height: 8px; }
+  .wf-text-sm { background: #E8E4DE; border-radius: 2px; height: 6px; }
+  .wf-img { background: repeating-linear-gradient(45deg, #D4CFC8, #D4CFC8 2px, #E4DFD8 2px, #E4DFD8 10px); border-radius: 3px; }
+
+  .section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em;
+    color: #8A7A6A; margin-bottom: 6px; display: block;
+  }
+  .flag {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #FEF3E8; border: 1px solid #E8B060; border-radius: 9999px;
+    padding: 2px 8px; font-size: 9px; font-weight: 700; color: #9A5820;
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .note-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #EDF5F0; border: 1px solid #8DC4A0; border-radius: 9999px;
+    padding: 2px 8px; font-size: 9px; font-weight: 600; color: #2A6A42;
+  }
+
+  /* Connector lines */
+  .connector { height: 1px; background: #C0B8AE; margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+// --- Wireframe building blocks ---------------------------------------------
+const WF = {
+  // A labeled content row
+  Row({ label, height = 28, style = {}, cls = 'wf-box', children, flag }) {
+    return (
+      <div style={{ marginBottom: 6, ...style }}>
+        {label && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+            <span className="section-label" style={{ marginBottom: 0 }}>{label}</span>
+            {flag && <span className="flag"> clinician review</span>}
+          </div>
+        )}
+        <div className={cls} style={{ height, padding: children ? 8 : 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          {children}
+        </div>
+      </div>
+    );
+  },
+
+  // A text skeleton line
+  TextLine({ width = '100%', style = {} }) {
+    return <div className="wf-text" style={{ width, marginBottom: 5, ...style }} />;
+  },
+
+  // A grid
+  Grid({ cols, gap = 6, children, style = {} }) {
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap, ...style }}>
+        {children}
+      </div>
+    );
+  },
+
+  // A card
+  Card({ height, cls = 'wf-box', style = {}, children }) {
+    return (
+      <div className={cls} style={{ height, padding: 8, ...style }}>
+        {children}
+      </div>
+    );
+  },
+
+  // Separator with label
+  Sep({ label }) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '8px 0 10px' }}>
+        <div style={{ flex: 1, height: 1, background: '#C8C2B8' }} />
+        {label && <span style={{ fontSize: 9, color: '#A09080', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.15em' }}>{label}</span>}
+        <div style={{ flex: 1, height: 1, background: '#C8C2B8' }} />
+      </div>
+    );
+  },
+
+  // Badge
+  Badge({ text, cls = 'note-tag' }) {
+    return <span className={cls} style={{ alignSelf: 'flex-start' }}>{text}</span>;
+  }
+};
+
+// --- V1 Short Form Wireframe ----------------------------------------------
+function V1Wireframe() {
+  return (
+    <div style={{ width: 420, padding: '20px 18px', background: '#FAFAF8', fontFamily: 'inherit' }}>
+
+      {/* Header */}
+      <WF.Row label="Header -- logo + report label" height={38} cls="wf-box">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <div className="wf-box-dark" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+            <div className="wf-text" style={{ width: 90, height: 10 }} />
+          </div>
+          <div className="wf-text-sm" style={{ width: 80 }} />
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="1 of 8 sections" />
+
+      {/* 1. Opener */}
+      <WF.Row label=" Caregiver validation opener" height={72} cls="wf-box-accent" flag={true}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <div className="wf-box-dark" style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, marginTop: 2 }} />
+          <div style={{ flex: 1 }}>
+            <WF.TextLine width="95%" style={{ height: 9 }} />
+            <WF.TextLine width="80%" style={{ height: 9 }} />
+            <WF.TextLine width="60%" style={{ height: 7, marginTop: 6 }} />
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="2 of 8 sections" />
+
+      {/* 2. Stage */}
+      <WF.Row label=" Stage identification + spectrum visual" height={110} cls="wf-box">
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div>
+              <WF.TextLine width={60} style={{ height: 7 }} />
+              <WF.TextLine width={120} style={{ height: 12, marginTop: 4 }} />
+            </div>
+            <div className="wf-box" style={{ padding: '3px 10px', borderRadius: 9999, height: 22, alignSelf: 'flex-start' }}>
+              <WF.TextLine width={55} style={{ height: 7, marginBottom: 0 }} />
+            </div>
+          </div>
+          {/* Spectrum bar */}
+          <div style={{ height: 10, borderRadius: 9999, background: 'linear-gradient(to right, #B8D4BC, #D4C08C, #C4907A)', marginBottom: 8, position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '50%', left: '25%', transform: 'translate(-50%,-50%)', width: 18, height: 18, borderRadius: '50%', background: 'white', border: '2px solid #6A8870', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {['Normal', 'Early', 'Mild', 'Mod.', 'Adv.'].map((l,i) => (
+              <div key={i} style={{ fontSize: 8, color: i===1 ? '#4A6A50' : '#A09080', fontWeight: i===1 ? 700 : 400, textAlign: 'center', flex: 1 }}>{l}</div>
+            ))}
+          </div>
+          <div className="wf-box-warn" style={{ marginTop: 8, height: 22, padding: '0 8px', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: '50%', border: '1.5px solid #D4A060' }} />
+            <WF.TextLine width="70%" style={{ height: 6, marginBottom: 0 }} />
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="3 of 8 sections" />
+
+      {/* 3. Domain cards */}
+      <div style={{ marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+          <span className="section-label" style={{ marginBottom: 0 }}> Symptom domains -- 4 cards (22 grid)</span>
+        </div>
+        <WF.Grid cols={2} gap={6}>
+          {[
+            { label: 'Memory', level: 'Elevated', cls: 'wf-box-warn' },
+            { label: 'Language', level: 'Moderate', cls: 'wf-box' },
+            { label: 'Attention', level: 'Moderate', cls: 'wf-box' },
+            { label: 'Behavior', level: 'Low', cls: 'wf-box-accent' },
+          ].map(d => (
+            <div key={d.label} className={d.cls} style={{ padding: 8, borderRadius: 4, minHeight: 68 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                  <div className="wf-box-dark" style={{ width: 14, height: 14, borderRadius: 3 }} />
+                  <div className="wf-text" style={{ width: 44, height: 7, marginBottom: 0 }} />
+                </div>
+                <div className="wf-box" style={{ padding: '2px 6px', borderRadius: 9999, height: 16, display: 'flex', alignItems: 'center' }}>
+                  <div className="wf-text-sm" style={{ width: 36, marginBottom: 0 }} />
+                </div>
+              </div>
+              <WF.TextLine width="90%" />
+              <WF.TextLine width="70%" style={{ height: 6 }} />
+            </div>
+          ))}
+        </WF.Grid>
+      </div>
+
+      <WF.Sep label="4 of 8 sections" />
+
+      {/* 4. Pathway */}
+      <WF.Row label=" 3-step care pathway (Today  7-14 days  3-6 months)" height={88} cls="wf-box">
+        <div style={{ position: 'relative' }}>
+          <div style={{ height: 1, background: '#C8C2B8', position: 'absolute', top: 18, left: 28, right: 28 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, position: 'relative' }}>
+            {['Today ', '7-14 days ', '3-6 months '].map((s, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: i === 0 ? '#8AA890' : '#F4F2EE',
+                  border: `1.5px solid ${i === 0 ? '#5A7A62' : '#C8C2B8'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <div className="wf-text-sm" style={{ width: 12, marginBottom: 0 }} />
+                </div>
+                <div className="wf-text-sm" style={{ width: '80%' }} />
+                <div className="wf-text-sm" style={{ width: '60%' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="5 of 8 sections" />
+
+      {/* 5. Consult explainer */}
+      <WF.Row label={' \u201cWhat happens in a consult\u201d \u2014 4-line demystification'} height={76} cls="wf-box">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {[1,2,3,4].map(i => (
+            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#C8C2B8', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 700, color: '#6A6258' }}>{i}</div>
+              <div style={{ flex: 1 }}>
+                <WF.TextLine width={i%2===0?'60%':'75%'} style={{ height: 6 }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="6 of 8 sections" />
+
+      {/* 6. Primary CTA */}
+      <WF.Row label=" Primary CTA (dark card)" height={76} cls="wf-box-cta">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+          <div style={{ width: '85%', height: 36, borderRadius: 9999, background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(100,140,110,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <WF.TextLine width="70%" style={{ marginBottom: 0, height: 8, background: '#8A9A8C' }} />
+          </div>
+          <WF.TextLine width="60%" style={{ height: 7, background: 'rgba(255,255,255,0.4)' }} />
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="7 of 8 sections" />
+
+      {/* 7. Share actions */}
+      <WF.Row label=" Save/share -- 3 equal-weight actions" height={64}>
+        <WF.Grid cols={3} gap={6}>
+          {['Download PDF', 'Email family', 'Send to doctor'].map(l => (
+            <div key={l} className="wf-box" style={{ padding: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minHeight: 56 }}>
+              <div className="wf-box-dark" style={{ width: 20, height: 20, borderRadius: 4 }} />
+              <WF.TextLine width="70%" style={{ height: 6, marginBottom: 0 }} />
+              <WF.TextLine width="50%" style={{ height: 5, marginBottom: 0 }} />
+            </div>
+          ))}
+        </WF.Grid>
+      </WF.Row>
+
+      <WF.Sep label="8 of 8 sections" />
+
+      {/* 8. Soft secondary */}
+      <WF.Row label=" Soft secondary -- caregiver guide + email capture" height={60} cls="wf-box" style={{ borderStyle: 'dashed' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <WF.TextLine width="60%" />
+          <WF.TextLine width="75%" style={{ height: 6 }} />
+          <div style={{ display: 'flex', gap: 6, width: '80%' }}>
+            <div className="wf-box" style={{ flex: 1, height: 26, borderRadius: 8 }} />
+            <div className="wf-box-cta" style={{ width: 44, height: 26, borderRadius: 8 }} />
+          </div>
+        </div>
+      </WF.Row>
+
+      {/* Footer note */}
+      <div style={{ marginTop: 12, padding: 10, background: '#F4F2EE', borderRadius: 8, fontSize: 10, color: '#8A7A6A', lineHeight: 1.5 }}>
+        <strong>Above the fold on desktop:</strong> Sections - visible at 100% zoom on 1280px wide viewport.<br/>
+        <strong>Mobile scroll:</strong> Full report ~2,400px, scannable in 90s at normal reading speed.
+      </div>
+    </div>
+  );
+}
+
+// --- V2 Long Form Wireframe -----------------------------------------------
+function V2Wireframe() {
+  return (
+    <div style={{ width: 600, padding: '20px 22px', background: '#FAFAF8', fontFamily: 'inherit' }}>
+
+      {/* Header */}
+      <WF.Row label="Header -- logo + print button + share" height={44} cls="wf-box">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <div className="wf-box-dark" style={{ width: 20, height: 20, borderRadius: '50%' }} />
+            <div className="wf-text" style={{ width: 110, height: 11 }} />
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <div className="wf-box" style={{ width: 80, height: 28, borderRadius: 9999 }} />
+            <div className="wf-box-cta" style={{ width: 70, height: 28, borderRadius: 9999 }} />
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="Sections - identical to Short Form (see V1)" />
+
+      {/* Sections 1-5 collapsed */}
+      <div className="wf-box-accent" style={{ padding: '10px 14px', borderRadius: 6, marginBottom: 8 }}>
+        <div style={{ fontSize: 10, color: '#3A6A48', fontWeight: 600, marginBottom: 4 }}> -  SAME AS SHORT FORM</div>
+        <div style={{ fontSize: 10, color: '#5A8A68', lineHeight: 1.6 }}>
+          Caregiver opener  Stage spectrum  Domain cards (Memory, Language, Attention, Behavior)  Care pathway  Consult demystification
+        </div>
+      </div>
+
+      {/* Mid-page CTA */}
+      <WF.Row label=" Primary CTA #1 (mid-page)" height={56} cls="wf-box-cta">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: '70%', height: 30, borderRadius: 9999, background: 'rgba(255,255,255,0.6)', border: '1.5px solid rgba(100,140,110,0.5)' }} />
+          <WF.TextLine width="50%" style={{ height: 6, background: 'rgba(255,255,255,0.35)' }} />
+        </div>
+      </WF.Row>
+
+      <WF.Sep label="Long-form only sections begin" />
+
+      {/* NEW: Differential */}
+      <WF.Row label="What this could be -- differential overview" height={116} cls="wf-box" flag={true}>
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <WF.TextLine width={160} style={{ height: 12 }} />
+            <span className="flag"> clinician review</span>
+          </div>
+          <div style={{ fontSize: 9, color: '#9A7050', fontStyle: 'italic', marginBottom: 8 }}>
+            "Several of these are reversible -- only a specialist can determine which applies to [Name]."
+          </div>
+          <WF.Grid cols={3} gap={6}>
+            {['MCI', 'Early Alzheimer\'s', 'Depression-related', 'Sleep disorders', 'Thyroid / B12', 'Med. interactions'].map(c => (
+              <div key={c} className="wf-box" style={{ padding: '5px 8px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <div className="wf-text" style={{ width: '80%', height: 7 }} />
+                <div className="wf-text-sm" style={{ width: '60%' }} />
+              </div>
+            ))}
+          </WF.Grid>
+          <div style={{ marginTop: 6, fontSize: 9, color: '#9A7050', padding: '4px 8px', background: '#FDF4EC', borderRadius: 4, border: '1px dashed #D4A060' }}>
+             All condition names and descriptions need clinical review before launch
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep />
+
+      {/* NEW: Caregiver acknowledgment */}
+      <WF.Row label="For you, right now -- caregiver emotional acknowledgment" height={80} cls="wf-box-accent">
+        <div>
+          <WF.TextLine width="55%" style={{ height: 10, marginBottom: 10 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {['You may feel relief that your concern is validated.', 'It\'s normal to feel overwhelmed. This is a lot to hold.', 'You may feel uncertain about what to do next -- this report addresses that.', 'Your ability to notice and act is already protective.'].map((t, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#8DC4A0', flexShrink: 0 }} />
+                <div className="wf-text-sm" style={{ flex: 1, height: 6, marginTop: 4, marginBottom: 0 }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep />
+
+      {/* NEW: Why acting now matters */}
+      <WF.Row label="Why acting now matters -- 3 concrete risks of waiting" height={80} cls="wf-box" flag={true}>
+        <div>
+          <WF.TextLine width="50%" style={{ height: 10, marginBottom: 10 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {[
+              { label: 'Safety window', flag: true },
+              { label: 'Reversible causes close with time', flag: true },
+              { label: 'Caregiver burnout risk', flag: false },
+            ].map((r, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ width: 14, height: 14, borderRadius: 3, background: '#C4907A', flexShrink: 0 }} />
+                <div className="wf-text-sm" style={{ flex: 1, height: 6, marginBottom: 0 }} />
+                {r.flag && <span className="flag" style={{ fontSize: 8 }}></span>}
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 6, fontSize: 9, color: '#9A7050', padding: '4px 8px', background: '#FDF4EC', borderRadius: 4, border: '1px dashed #D4A060' }}>
+             "Lost treatment window" language must be reviewed -- avoid overstating urgency
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep />
+
+      {/* NEW: Full action plan */}
+      <WF.Row label=" Full tiered action plan -- Today / This Month / Specialist Input" height={112} cls="wf-box">
+        <WF.Grid cols={3} gap={8}>
+          {['Today', 'This Month', 'Specialist Input'].map((tier, i) => (
+            <div key={tier} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <div className={i===0 ? 'wf-box-cta' : i===1 ? 'wf-box-accent' : 'wf-box'} style={{ padding: '4px 8px', borderRadius: 6, marginBottom: 4, textAlign: 'center' }}>
+                <div className="wf-text" style={{ width: '60%', height: 7, margin: '3px auto', background: i===0 ? '#8AA890' : undefined }} />
+              </div>
+              {[1,2,3,4].map(j => (
+                <div key={j} style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#C8C2B8', flexShrink: 0 }} />
+                  <div className="wf-text-sm" style={{ flex: 1, height: 5, marginBottom: 0 }} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </WF.Grid>
+      </WF.Row>
+
+      <WF.Sep />
+
+      {/* NEW: Expanded consult */}
+      <WF.Row label=" Expanded consult section -- visit length, format, what to expect" height={80} cls="wf-box">
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7, flex: 1 }}>
+            {['Visit length: 45 minutes', 'Format: conversation-based', 'What [Name] will experience', 'What you will leave with'].map((item,i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#C8C2B8', flexShrink: 0, fontSize: 7, display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,color:'#6A6258' }}>{i+1}</div>
+                <div className="wf-text-sm" style={{ flex: 1, height: 6, marginTop: 5, marginBottom: 0 }} />
+              </div>
+            ))}
+          </div>
+          <div className="wf-box-accent" style={{ width: 100, borderRadius: 8, display: 'flex', flexDirection: 'column', gap: 4, padding: 8 }}>
+            <div className="wf-text-sm" style={{ width: '80%', height: 5 }} />
+            <div className="wf-text-sm" style={{ width: '60%', height: 5 }} />
+            <div className="wf-text-sm" style={{ width: '70%', height: 5 }} />
+          </div>
+        </div>
+      </WF.Row>
+
+      <WF.Sep />
+
+      {/* NEW: Checklist */}
+      <WF.Row label="Questions to ask the specialist -- printable checklist (own page in PDF)" height={90} cls="wf-box">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <WF.TextLine width={200} style={{ height: 10 }} />
+            <span className="note-tag">PDF: own page for tear-off</span>
+          </div>
+          {[1,2,3,4,5].map(i => (
+            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 7 }}>
+              <div className="wf-box" style={{ width: 14, height: 14, borderRadius: 3, flexShrink: 0 }} />
+              <div className="wf-text" style={{ flex: 1, height: 7, marginBottom: 0 }} />
+            </div>
+          ))}
+        </div>
+      </WF.Row>
+
+      <WF.Sep />
+
+      {/* Trust markers + CTA #2 */}
+      <WF.Row label=" Footer trust markers + Primary CTA #2" height={100} cls="wf-box">
+        <div>
+          {/* Trust row */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+            {['Clinician-backed', 'HIPAA-compliant', '[N] caregivers helped'].map(t => (
+              <div key={t} className="wf-box-accent" style={{ padding: '4px 10px', borderRadius: 9999, display: 'flex', alignItems: 'center', gap: 5 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#8DC4A0' }} />
+                <div className="wf-text-sm" style={{ width: 70, marginBottom: 0 }} />
+              </div>
+            ))}
+          </div>
+          {/* Clinician photos */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 12 }}>
+            {[1,2,3].map(i => (
+              <div key={i} className="wf-img" style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid white' }} />
+            ))}
+            <div className="wf-text-sm" style={{ width: 140, height: 6, marginBottom: 0, marginLeft: 6 }} />
+          </div>
+          {/* CTA #2 */}
+          <div className="wf-box-cta" style={{ padding: '10px 0', borderRadius: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="wf-text" style={{ width: '55%', height: 8, marginBottom: 0, background: '#6A8870' }} />
+          </div>
+          <div style={{ marginTop: 5 }}>
+            <WF.TextLine width="40%" style={{ height: 5, margin: '0 auto' }} />
+          </div>
+        </div>
+      </WF.Row>
+
+      {/* PDF note */}
+      <div style={{ marginTop: 12, padding: 12, background: '#F4F2EE', borderRadius: 8, fontSize: 10, color: '#8A7A6A', lineHeight: 1.6 }}>
+        <strong>PDF structure:</strong> A4 / US Letter compatible. Pages 1-3: report content. Page 4: Questions-to-ask checklist (tear-off).<br/>
+        <strong>CTA count:</strong> Appears at  (mid-page, after stage + domains) and  (foot, after trust markers). Once in V1.
+      </div>
+    </div>
+  );
+}
+
+// --- Clinical Review Panel -------------------------------------------------
+function ReviewPanel() {
+  const items = [
+    { section: 'V1 / V2 -- Opener', copy: '"most caregivers notice signs 1-2 years before a formal diagnosis"', risk: 'Statistic requires citation or softening to "research suggests"', severity: 'medium' },
+    { section: 'V2 -- Differential ', copy: 'All 6 condition names + plain-English descriptions', risk: 'Differential framing (even when qualified) may constitute diagnostic language. Legal review needed.', severity: 'high' },
+    { section: 'V2 -- Why acting now ', copy: '"lost treatment window for reversible causes"', risk: 'Implication of time-sensitive treatment risk needs clinical sign-off on specificity.', severity: 'high' },
+    { section: 'V2 -- Why acting now ', copy: '"Safety concerns" as a risk of waiting', risk: 'Without clinical qualification, this may create undue alarm. Needs framing guidance.', severity: 'medium' },
+    { section: 'V1 / V2 -- Stage spectrum', copy: 'Stage labels: Normal Aging  Early Changes  Mild Impairment  Moderate  Advanced', risk: 'Label alignment with DSM-5/ICD-11 clinical staging should be confirmed.', severity: 'medium' },
+    { section: 'V2 -- Footer trust', copy: '"[N] caregivers helped" count', risk: 'Placeholder -- must be real, auditable number before launch.', severity: 'low' },
+    { section: 'V1 / V2 -- Domain cards', copy: 'Quoted behaviors drawn from quiz answers', risk: 'Low risk; reflective of caregiver input. Confirm language is non-diagnostic.', severity: 'low' },
+    { section: 'Both -- "Not a diagnosis" disclaimer', copy: 'Disclaimer position and legal language', risk: 'HIPAA + FTC health claim rules apply. Legal review of exact disclaimer wording required.', severity: 'high' },
+  ];
+  const colors = { high: { bg: '#FEF0ED', border: '#DFA89E', badge: '#7A2E1F' }, medium: { bg: '#FDF3E8', border: '#F0C07A', badge: '#7A4A10' }, low: { bg: '#EEF5F0', border: '#B8D9C1', badge: '#2A5A3A' } };
+
+  return (
+    <div style={{ width: 500, padding: '20px 18px', background: '#FAFAF8' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#3A2A1A', marginBottom: 4 }}> Clinician Review Required</div>
+      <div style={{ fontSize: 11, color: '#8A7A6A', marginBottom: 14, lineHeight: 1.5 }}>
+        Items below must be reviewed by a licensed clinician and/or legal counsel before any version goes live.
+        <strong style={{ color: '#7A2E1F' }}> High-severity items block launch.</strong>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {items.map((item, i) => {
+          const c = colors[item.severity];
+          return (
+            <div key={i} style={{ background: c.bg, border: `1px solid ${c.border}`, borderRadius: 10, padding: '10px 12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8A7A6A' }}>{item.section}</div>
+                <span style={{
+                  padding: '2px 8px', borderRadius: 9999, fontSize: 8, fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.12em',
+                  background: c.bg, border: `1px solid ${c.border}`, color: c.badge, flexShrink: 0, marginLeft: 8
+                }}>{item.severity}</span>
+              </div>
+              <div style={{ fontSize: 11, fontStyle: 'italic', color: '#3A2A1A', marginBottom: 4 }}>"{item.copy}"</div>
+              <div style={{ fontSize: 11, color: '#5A5040', lineHeight: 1.5 }}> {item.risk}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 14, padding: '10px 12px', background: '#F4F2EE', borderRadius: 8, fontSize: 10, color: '#8A7A6A', lineHeight: 1.6 }}>
+        <strong>Copy test applied:</strong> "Would this feel intrusive if the caregiver's loved one read it over their shoulder?" -- All domain card quotes are framed as caregiver observations, not judgments about the loved one. Stage labels avoid medical-sounding severity language. Differential section uses "this <em>could</em> be" not "this <em>is</em>" framing.
+      </div>
+    </div>
+  );
+}
+
+// --- Style Guide panel ----------------------------------------------------
+function StyleGuide() {
+  return (
+    <div style={{ width: 380, padding: '20px 18px', background: '#FAFAF8' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#3A2A1A', marginBottom: 14 }}>Report Style Guide Tokens</div>
+
+      {/* Colors */}
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8A7A6A', marginBottom: 8 }}>Color System</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 14 }}>
+        {[
+          { name: '--rpt-bg', hex: '#FDFBF7', label: 'Page background' },
+          { name: '--rpt-surface', hex: '#F3EFE9', label: 'Card surface' },
+          { name: '--rpt-border', hex: '#E8DCC4', label: 'Borders / dividers' },
+          { name: '--rpt-forest', hex: '#3D4B3E', label: 'Primary -- headings, CTA' },
+          { name: '--rpt-clay', hex: '#A67B5B', label: 'Accent -- labels, icons' },
+          { name: '--rpt-low', hex: '#4A9060', label: 'Concern: Low' },
+          { name: '--rpt-moderate', hex: '#C4813A', label: 'Concern: Moderate' },
+          { name: '--rpt-elevated', hex: '#A84232', label: 'Concern: Elevated (warm terracotta -- NOT red)' },
+        ].map(c => (
+          <div key={c.name} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ width: 24, height: 24, borderRadius: 5, background: c.hex, border: '1px solid #D8D0C4', flexShrink: 0 }} />
+            <div>
+              <div style={{ fontSize: 9, fontFamily: 'monospace', color: '#3A2A1A', fontWeight: 700 }}>{c.name}</div>
+              <div style={{ fontSize: 8, color: '#8A7A6A' }}>{c.label}</div>
+            </div>
+            <div style={{ marginLeft: 'auto', fontSize: 9, fontFamily: 'monospace', color: '#A09080' }}>{c.hex}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Type */}
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8A7A6A', marginBottom: 8 }}>Typography</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
+        {[
+          { role: 'Display / Openers', spec: 'Playfair Display, italic, 18-22px', note: 'Emotional headers' },
+          { role: 'Section headings', spec: 'Playfair Display, 15-18px', note: 'Card titles' },
+          { role: 'Body', spec: 'DM Sans, 16px, lh 1.65', note: 'All body copy -- min 16px' },
+          { role: 'Body small', spec: 'DM Sans, 14px, lh 1.65', note: 'Supplementary text' },
+          { role: 'Labels / caps', spec: 'DM Sans, 700, 9-11px, 0.15-0.25em', note: 'Section labels, badges' },
+          { role: 'PDF minimum', spec: '11pt body / 9pt labels', note: 'Print-safe minimum' },
+        ].map(t => (
+          <div key={t.role} style={{ padding: '6px 8px', background: '#F4F2EE', borderRadius: 6 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#3A2A1A', marginBottom: 2 }}>{t.role}</div>
+            <div style={{ fontSize: 9, fontFamily: 'monospace', color: '#6A5A4A', marginBottom: 1 }}>{t.spec}</div>
+            <div style={{ fontSize: 8, color: '#9A8A7A' }}>{t.note}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Radius */}
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8A7A6A', marginBottom: 8 }}>Corner Radii (Report)</div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+        {[{ r: 10, name: 'Inline badge' }, { r: 14, name: 'Info row' }, { r: 18, name: 'Domain card' }, { r: 24, name: 'Section card' }, { r: 9999, name: 'CTA / pill', w: 48 }].map(s => (
+          <div key={s.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: s.w || 36, height: 28, background: '#D4CFC8', borderRadius: s.r, border: '1.5px solid #C0B8AE' }} />
+            <div style={{ fontSize: 8, color: '#8A7A6A', textAlign: 'center', lineHeight: 1.4 }}>{s.name}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Concern levels */}
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8A7A6A', marginBottom: 8 }}>Concern Level Tokens</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+        {[
+          { label: 'Low', bg: '#EEF5F0', border: '#B8D9C1', text: '#2A5A3A', dot: '#4A9060' },
+          { label: 'Moderate', bg: '#FDF3E8', border: '#F0C07A', text: '#7A4A10', dot: '#C4813A' },
+          { label: 'Elevated', bg: '#FBF0ED', border: '#DFA89E', text: '#7A2E1F', dot: '#A84232' },
+        ].map(c => (
+          <div key={c.label} style={{ background: c.bg, border: `1px solid ${c.border}`, borderRadius: 8, padding: '6px 10px', display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.dot }} />
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: c.text }}>{c.label} concern</div>
+            <div style={{ marginLeft: 'auto', fontSize: 8, fontFamily: 'monospace', color: c.text, opacity: 0.7 }}>{c.bg}</div>
+          </div>
+        ))}
+        <div style={{ fontSize: 9, color: '#9A8A7A', fontStyle: 'italic', marginTop: 2 }}>
+          Note: No pure red (#FF0000-range) used. Elevated uses warm terracotta (#A84232) per brief.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Root -----------------------------------------------------------------
+function App() {
+  return (
+    <DesignCanvas>
+      {/* Row 1: Wireframes */}
+      <DCSection title="CogCare Post-Quiz Report -- Wireframes" subtitle="Pan/pinch to navigate. Flag-marked sections require clinician review before copy is finalised.">
+        <DCArtboard label="Version 1 -- Short Form (in-page, scannable 90s)" width={420} style={{ overflow: 'auto' }}>
+          <V1Wireframe />
+        </DCArtboard>
+        <DCArtboard label="Version 2 -- Long Form (standalone page + PDF export)" width={600} style={{ overflow: 'auto' }}>
+          <V2Wireframe />
+        </DCArtboard>
+        <DCArtboard label=" Clinician Review Flags" width={500} style={{ overflow: 'auto' }}>
+          <ReviewPanel />
+        </DCArtboard>
+      </DCSection>
+
+      {/* Row 2: Style guide */}
+      <DCSection title="Report Style Guide" subtitle="Color tokens, typography scale, concern levels -- for consistent future variants.">
+        <DCArtboard label="Style Guide -- Tokens" width={380} style={{ overflow: 'auto' }}>
+          <StyleGuide />
+        </DCArtboard>
+        <DCPostIt top={20} left={420} rotate={2} width={210}>
+          V1 already built <br/>
+          Post-quiz-report.html<br/><br/>
+          V2 + PDF awaiting<br/>wireframe approval 
+        </DCPostIt>
+        <DCPostIt top={20} left={660} rotate={-1.5} width={200}>
+          PDF: 4 pages<br/>
+          Pages 1-3: report<br/>
+          Page 4: Q checklist<br/>
+          (tear-off, standalone)
+        </DCPostIt>
+        <DCPostIt top={20} left={890} rotate={1.5} width={200}>
+          CTA appears TWICE<br/>in V2 ( mid-page<br/>+  footer)<br/>Once in V1 ()
+        </DCPostIt>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>

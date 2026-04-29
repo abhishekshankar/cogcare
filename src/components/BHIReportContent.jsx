@@ -239,8 +239,8 @@ export default function BHIReportContent({
 
   const { lovedOneName, lovedOneAge, phenotype, nif, cog, aux, vest, gsi } = quizResults
   const name = lovedOneName || 'Your loved one'
-  const gsiIndex = Math.min(4, Math.round(gsi ?? 0))
-  const pheno = PHENOTYPES[phenotype ?? 'longevity']
+  const gsiIndex = Math.max(0, Math.min(4, Math.round(gsi ?? 0)))
+  const pheno = PHENOTYPES[phenotype ?? 'longevity'] ?? PHENOTYPES.longevity
 
   const domains = [
     { key: 'nif',  level: clusterLevel(nif) },

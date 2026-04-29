@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
-import { Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom'
 import { confirmSignIn, signOut } from 'aws-amplify/auth'
-import { Brain, LogOut, Settings2 } from 'lucide-react'
+import { Brain, LogOut, Settings2, UserPlus } from 'lucide-react'
 import CreatePasswordCard from '../components/CreatePasswordCard'
 import { TabBar, TabBarLink } from '../components/bhi/TabBar'
 import BrainCreditTab from '../components/dashboard/BrainCreditTab'
@@ -9,19 +9,33 @@ import TestsTab from '../components/dashboard/TestsTab'
 import MoreTestsTab from '../components/dashboard/MoreTestsTab'
 import ConsultantsTab from '../components/dashboard/ConsultantsTab'
 import SettingsTab from '../components/dashboard/SettingsTab'
+import BookConsultPage from '../components/dashboard/BookConsultPage'
+import SubjectSwitcher from '../components/dashboard/SubjectSwitcher'
 import DashboardErrorBanner from '../components/dashboard/DashboardErrorBanner'
 import DashboardMainSkeleton from '../components/dashboard/DashboardMainSkeleton'
+import DashboardQuizChooser from '../components/dashboard/DashboardQuizChooser'
+import AddProfileOnlyDialog from '../components/dashboard/AddProfileOnlyDialog'
+import BrainHealthIndex from '../BrainHealthIndex'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { clearPendingNewPasswordFlag, hasPendingNewPasswordFlag } from '../lib/authFlags'
+import { buildInitialAnswersFromSubject } from '../lib/persistDashboardAssessment.js'
+import { BHI_SUBJECT_QUESTION_IDS } from '../lib/bhiQuizConfig.js'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const {
     client,
     email,
+    sub,
     profile,
+    subjects,
     assessments,
+    activeSubjectId,
+    setActiveSubjectId,
+    assessmentsForActiveSubject,
     consultants,
+    appointmentsForActiveSubject,
     loading,
     loadError,
     load,
@@ -29,6 +43,101 @@ export default function DashboardPage() {
   } = useDashboardData()
 
   const [showPwdCard, setShowPwdCard] = useState(() => hasPendingNewPasswordFlag())
+
+  const [quizChooserOpen, setQuizChooserOpen] = useState(false)
+  const [addProfileOpen, setAddProfileOpen] = useState(false)
+  const [dashboardQuizOpen, setDashboardQuizOpen] = useState(false)
+  const [dashboardQuizSessionKey, setDashboardQuizSessionKey] = useState(0)
+  const [dashQuizExcludedIds, setDashQuizExcludedIds] = useState([])
+  const [dashQuizPersistSubjectId, setDashQuizPersistSubjectId] = useState(null)
+  const [dashQuizAnswersDefaults, setDashQuizAnswersDefaults] = useState({})
+  const [dashboardQuizAnswers, setDashboardQuizAnswers] = useState({})
+  const [dashboardQuizResults, setDashboardQuizResults] = useState(null)
+  const [postQuizSwitch, setPostQuizSwitch] = useState(null)
+
+  const activeSubjectIdRef = useRef(activeSubjectId)
+  const subjectsRef = useRef(subjects)
+  useEffect(() => {
+    activeSubjectIdRef.current = activeSubjectId
+  }, [activeSubjectId])
+  useEffect(() => {
+    subjectsRef.current = subjects
+  }, [subjects])
+
+  const openAssessmentChooser = useCallback(() => setQuizChooserOpen(true), [])
+
+  const startQuizForSubject = useCallback(
+    (subjectId) => {
+      const s = subjects.find((x) => x.id === subjectId)
+      if (!s) return
+      const initial = buildInitialAnswersFromSubject(s)
+      setDashQuizAnswersDefaults(initial)
+      setDashboardQuizAnswers(initial)
+      setDashQuizExcludedIds(BHI_SUBJECT_QUESTION_IDS)
+      setDashQuizPersistSubjectId(subjectId)
+      setDashboardQuizResults(null)
+      setDashboardQuizSessionKey((k) => k + 1)
+      setDashboardQuizOpen(true)
+    },
+    [subjects],
+  )
+
+  const startQuizNewPerson = useCallback(() => {
+    setDashQuizAnswersDefaults({})
+    setDashboardQuizAnswers({})
+    setDashQuizExcludedIds([])
+    setDashQuizPersistSubjectId(null)
+    setDashboardQuizResults(null)
+    setDashboardQuizSessionKey((k) => k + 1)
+    setDashboardQuizOpen(true)
+  }, [])
+
+  const persistToDashboard = useMemo(() => {
+    if (!sub || !client) return null
+    return {
+      client,
+      ownerSub: sub,
+      existingSubjectId: dashQuizPersistSubjectId,
+    }
+  }, [sub, client, dashQuizPersistSubjectId])
+
+  const handleDashboardQuizClose = useCallback(() => {
+    setDashboardQuizOpen(false)
+    setDashQuizExcludedIds([])
+    setDashQuizPersistSubjectId(null)
+    setDashQuizAnswersDefaults({})
+    setDashboardQuizAnswers({})
+    setDashboardQuizResults(null)
+  }, [])
+
+  /**
+   * Full-screen / fixed overlays (BHI, chooser, dialogs) live outside <main>. If the user changes
+   * tabs without dismissing them, they keep z-stacking above the Calendly embed and block it.
+   */
+  useEffect(() => {
+    queueMicrotask(() => {
+      setQuizChooserOpen(false)
+      setAddProfileOpen(false)
+      setPostQuizSwitch(null)
+      handleDashboardQuizClose()
+    })
+  }, [location.pathname, handleDashboardQuizClose])
+
+  const handleDashboardPersisted = useCallback(
+    async (info) => {
+      await load()
+      const curActive = activeSubjectIdRef.current
+      if (info.subjectId && info.subjectId !== curActive) {
+        const active = subjectsRef.current.find((s) => s.id === curActive)
+        setPostQuizSwitch({
+          subjectId: info.subjectId,
+          careDisplayName: info.careDisplayName,
+          activeDisplayName: active?.displayName ?? 'this profile',
+        })
+      }
+    },
+    [load],
+  )
 
   const displayName = useMemo(() => {
     const fromProfile = profile?.displayName?.trim()
@@ -39,7 +148,7 @@ export default function DashboardPage() {
 
   const latestResults = useMemo(() => {
     try {
-      const sorted = [...assessments].sort(
+      const sorted = [...assessmentsForActiveSubject].sort(
         (a, b) => new Date(b.completedAt || 0) - new Date(a.completedAt || 0),
       )
       if (sorted[0]?.resultsJson) return JSON.parse(sorted[0].resultsJson)
@@ -47,7 +156,14 @@ export default function DashboardPage() {
       /* ignore */
     }
     return null
-  }, [assessments])
+  }, [assessmentsForActiveSubject])
+
+  const consultActiveSubjectName = useMemo(() => {
+    const s = subjects?.find((x) => x.id === activeSubjectId)
+    const name = s?.displayName?.trim()
+    if (name) return s?.isSelf ? `${name} (you)` : name
+    return 'This profile'
+  }, [subjects, activeSubjectId])
 
   async function handleSignOut() {
     clearPendingNewPasswordFlag()
@@ -57,10 +173,13 @@ export default function DashboardPage() {
 
   const showMainSkeleton = loading && !showPwdCard
 
+  const headerActionClassName =
+    'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-white/90 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest shadow-sm transition-colors hover:bg-surface sm:min-h-0 sm:gap-2 sm:px-4'
+
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A]">
+    <div className="min-h-screen bg-page text-ink">
       {showPwdCard ? (
-        <div className="border-b border-[#E8DCC4] bg-[#F3EFE9]/95 px-4 py-6 sm:px-6">
+        <div className="border-b border-border bg-surface/95 px-4 py-6 sm:px-6">
           <div className="mx-auto max-w-5xl">
             <CreatePasswordCard
               subtitle="Choose a permanent password to finish signing in."
@@ -74,41 +193,90 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : null}
-      <header className="border-b border-[#E8DCC4] bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
+      <header className="border-b border-border bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl min-w-0 flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5">
+          {/* Mobile: brand + actions on one row so the “who” block can use full width below */}
+          <div className="flex items-center justify-between gap-2 sm:hidden">
             <Link
               to="/"
-              className="flex shrink-0 items-center gap-2 font-serif text-lg italic text-[#3D4B3E]"
+              className="flex min-w-0 shrink items-center gap-2 font-serif text-lg italic text-forest"
             >
-              <Brain className="h-5 w-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+              <Brain className="h-5 w-5 shrink-0 text-clay" strokeWidth={1.5} aria-hidden />
+              <span className="truncate">Dashboard</span>
+            </Link>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={openAssessmentChooser}
+                className={headerActionClassName}
+                aria-label="Add someone you care for, with or without a test"
+              >
+                <UserPlus className="h-4 w-4 shrink-0 text-clay" strokeWidth={1.75} aria-hidden />
+                <span className="max-w-[5.5rem] truncate sm:max-w-none">Add</span>
+              </button>
+              <button type="button" onClick={handleSignOut} className={headerActionClassName}>
+                <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="max-w-[4.5rem] truncate sm:max-w-none">Sign out</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-surface/35 px-3 py-3 sm:flex-1 sm:flex-row sm:items-center sm:gap-3 sm:overflow-x-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 md:gap-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <Link
+              to="/"
+              className="hidden shrink-0 items-center gap-2 font-serif text-lg italic text-forest sm:flex"
+            >
+              <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
               Dashboard
             </Link>
-            <span className="hidden h-4 w-px shrink-0 bg-[#E8DCC4] sm:block" aria-hidden />
-            <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
-              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-[#E8DCC4] bg-[#F3EFE9]">
+            <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border bg-white shadow-sm sm:h-9 sm:w-9">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-[#3D4B3E]/35">
+                  <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold uppercase text-forest/35">
                     {displayName.slice(0, 1)}
                   </div>
                 )}
               </div>
-              <p className="truncate text-sm font-medium text-[#3D4B3E]">
-                <span className="text-[#3D4B3E]/60">Hi, </span>
-                {displayName}
-              </p>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-clay sm:hidden">
+                  Signed in as
+                </p>
+                <p className="truncate text-sm font-medium text-forest sm:max-w-[14rem] md:max-w-none">
+                  <span className="text-forest/60 sm:inline">Hi, </span>
+                  {displayName}
+                </p>
+              </div>
             </div>
+            {subjects?.length ? (
+              <>
+                <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
+                <SubjectSwitcher
+                  subjects={subjects}
+                  activeSubjectId={activeSubjectId}
+                  onChange={setActiveSubjectId}
+                />
+              </>
+            ) : null}
           </div>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border border-[#E8DCC4] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#3D4B3E] hover:bg-[#F3EFE9] sm:min-h-0"
-          >
-            <LogOut className="h-4 w-4" aria-hidden />
-            Sign out
-          </button>
+
+          <div className="hidden shrink-0 items-center gap-2 sm:flex">
+            <button
+              type="button"
+              onClick={openAssessmentChooser}
+              className={headerActionClassName}
+              aria-label="Add someone you care for, with or without a test"
+            >
+              <UserPlus className="h-4 w-4 shrink-0 text-clay" strokeWidth={1.75} aria-hidden />
+              Add loved one
+            </button>
+            <button type="button" onClick={handleSignOut} className={headerActionClassName}>
+              <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+              Sign out
+            </button>
+          </div>
         </div>
         <TabBar>
           <TabBarLink to="/dashboard" end>
@@ -139,26 +307,142 @@ export default function DashboardPage() {
                   <BrainCreditTab
                     profile={profile}
                     latestResults={latestResults}
-                    assessmentCount={assessments.length}
-                    assessments={assessments}
+                    assessmentCount={assessmentsForActiveSubject.length}
+                    assessments={assessmentsForActiveSubject}
+                    onStartAssessment={openAssessmentChooser}
                   />
                 }
               />
               <Route
                 path="tests"
-                element={<TestsTab client={client} assessments={assessments} onRefresh={load} />}
+                element={
+                  <TestsTab
+                    client={client}
+                    assessments={assessmentsForActiveSubject}
+                    onRefresh={load}
+                    onOpenAssessmentChooser={openAssessmentChooser}
+                  />
+                }
               />
               <Route path="more-tests" element={<MoreTestsTab />} />
-              <Route path="consultants" element={<ConsultantsTab rows={consultants} />} />
+              <Route
+                path="consultants"
+                element={
+                  <ConsultantsTab
+                    rows={consultants}
+                    appointments={appointmentsForActiveSubject}
+                    activeSubjectName={consultActiveSubjectName}
+                    hasMultipleSubjects={(subjects?.length ?? 0) > 1}
+                  />
+                }
+              />
+              <Route
+                path="consultations/book"
+                element={
+                  <BookConsultPage
+                    client={client}
+                    email={email}
+                    ownerSub={sub}
+                    consultants={consultants}
+                    subjects={subjects}
+                    activeSubjectId={activeSubjectId}
+                    setActiveSubjectId={setActiveSubjectId}
+                    onRefresh={load}
+                  />
+                }
+              />
               <Route
                 path="settings"
-                element={<SettingsTab email={email} profile={profile} onProfileSaved={load} />}
+                element={
+                  <SettingsTab
+                    email={email}
+                    profile={profile}
+                    subjects={subjects}
+                    onProfileSaved={load}
+                  />
+                }
               />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           )}
         </div>
       </main>
+
+      <DashboardQuizChooser
+        open={quizChooserOpen}
+        onClose={() => setQuizChooserOpen(false)}
+        subjects={subjects}
+        assessments={assessments}
+        activeSubjectId={activeSubjectId}
+        onStartForSubject={startQuizForSubject}
+        onStartNewPerson={startQuizNewPerson}
+        onAddProfileOnly={() => setAddProfileOpen(true)}
+      />
+
+      <AddProfileOnlyDialog
+        open={addProfileOpen}
+        onClose={() => setAddProfileOpen(false)}
+        ownerSub={sub}
+        client={client}
+        onRefresh={load}
+        onCreated={(newId) => setActiveSubjectId(newId)}
+      />
+
+      <BrainHealthIndex
+        key={dashboardQuizSessionKey}
+        open={dashboardQuizOpen}
+        onClose={handleDashboardQuizClose}
+        quizAnswers={dashboardQuizAnswers}
+        setQuizAnswers={setDashboardQuizAnswers}
+        quizResults={dashboardQuizResults}
+        setQuizResults={setDashboardQuizResults}
+        excludedQuestionIds={dashQuizExcludedIds}
+        quizAnswersDefaults={dashQuizAnswersDefaults}
+        persistToDashboard={persistToDashboard}
+        onDashboardPersisted={handleDashboardPersisted}
+      />
+
+      {postQuizSwitch ? (
+        <div
+          className="fixed inset-0 z-[210] flex items-end justify-center bg-forest/40 p-4 backdrop-blur-sm sm:items-center"
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="post-quiz-switch-title"
+            className="w-full max-w-md rounded-2xl border border-border bg-page p-6 shadow-xl"
+          >
+            <h2 id="post-quiz-switch-title" className="font-serif text-xl italic text-forest">
+              Switch dashboard view?
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-forest/90">
+              You saved an assessment for{' '}
+              <span className="font-semibold text-ink">{postQuizSwitch.careDisplayName}</span>. You are still viewing{' '}
+              <span className="font-semibold text-ink">{postQuizSwitch.activeDisplayName}</span>.
+            </p>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveSubjectId(postQuizSwitch.subjectId)
+                  setPostQuizSwitch(null)
+                }}
+                className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
+              >
+                View {postQuizSwitch.careDisplayName}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostQuizSwitch(null)}
+                className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
+              >
+                Stay on {postQuizSwitch.activeDisplayName}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

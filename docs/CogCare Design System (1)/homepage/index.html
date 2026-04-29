@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogCare — Brain health, before it gets urgent.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="sections.jsx"></script>
+<script type="text/babel" src="sections2.jsx"></script>
+<style>
+  :root {
+    --color-forest: #3D4B3E;
+    --color-forest-deep: #2D382D;
+    --color-clay: #A67B5B;
+    --color-sand: #E8DCC4;
+    --color-cream: #FDFBF7;
+    --color-cream-2: #F3EFE9;
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #64748B;
+    --color-text-tertiary: #9B9B9B;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--color-cream);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  button, input { font-family: inherit; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--color-cream); }
+  ::-webkit-scrollbar-thumb { background: var(--color-sand); border-radius: 4px; }
+
+  .btn-primary:hover { background: var(--color-forest-deep) !important; transform: translateY(-1px); box-shadow: 0 12px 28px -6px rgba(26,60,52,0.25); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .nav-links { display: none !important; }
+    .hero-grid { grid-template-columns: 1fr !important; }
+    .steps-grid { grid-column: span 1 !important; }
+    .footer-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 480px) {
+    .footer-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function TweaksPanel({ tweaks, setTweak }) {
+  return (
+    <div style={{
+      position: 'fixed', bottom: 20, right: 20, zIndex: 9999,
+      background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
+      border: '1px solid var(--color-sand)', borderRadius: 20,
+      padding: 22, width: 260,
+      boxShadow: '0 16px 40px rgba(26,60,52,0.13)',
+      maxHeight: '80vh', overflowY: 'auto'
+    }}>
+      <div style={{
+        fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+        letterSpacing: '0.22em', color: 'var(--color-clay)', marginBottom: 16
+      }}>Tweaks</div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <label style={{ fontSize: 11, color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+          Hero tone
+          <select value={tweaks.tone} onChange={e => setTweak('tone', e.target.value)}
+            style={{ marginTop: 6, width: '100%', padding: '8px 12px', border: '1px solid var(--color-sand)', borderRadius: 10, background: 'white', fontSize: 12, outline: 'none' }}>
+            <option value="warm">Warm & validating</option>
+            <option value="clinical">Clinical & trustworthy</option>
+            <option value="urgent">Urgent & action-forward</option>
+          </select>
+        </label>
+
+        <label style={{ fontSize: 11, color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+          Audience framing
+          <select value={tweaks.audience} onChange={e => setTweak('audience', e.target.value)}
+            style={{ marginTop: 6, width: '100%', padding: '8px 12px', border: '1px solid var(--color-sand)', borderRadius: 10, background: 'white', fontSize: 12, outline: 'none' }}>
+            <option value="caregiver">Caregiver (loved one)</option>
+            <option value="self">Self-assessment</option>
+          </select>
+        </label>
+
+        <label style={{ fontSize: 11, color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+          Primary color
+          <div style={{ display: 'flex', gap: 8, marginTop: 6, alignItems: 'center' }}>
+            <input type="color" value={tweaks.primary} onChange={e => setTweak('primary', e.target.value)}
+              style={{ width: 36, height: 30, border: 'none', borderRadius: 6, cursor: 'pointer' }} />
+            <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--color-text-secondary)' }}>{tweaks.primary}</span>
+          </div>
+        </label>
+
+        <label style={{ fontSize: 11, color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+          Accent color
+          <div style={{ display: 'flex', gap: 8, marginTop: 6, alignItems: 'center' }}>
+            <input type="color" value={tweaks.accent} onChange={e => setTweak('accent', e.target.value)}
+              style={{ width: 36, height: 30, border: 'none', borderRadius: 6, cursor: 'pointer' }} />
+            <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--color-text-secondary)' }}>{tweaks.accent}</span>
+          </div>
+        </label>
+
+        <div style={{ paddingTop: 10, borderTop: '1px solid var(--color-sand)' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--color-clay)', marginBottom: 10 }}>Sections</div>
+          {[
+            ['showHow', 'How it works'],
+            ['showIndex', 'The Index'],
+            ['showWhy', 'Why early'],
+            ['showSpecialists', 'Specialists'],
+            ['showTestimonials', 'Testimonials'],
+            ['showScience', 'Science'],
+            ['showMission', 'Mission'],
+            ['showFaq', 'FAQ'],
+            ['showNewsletter', 'Newsletter'],
+          ].map(([k, label]) => (
+            <label key={k} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 11, padding: '4px 0', cursor: 'pointer', color: 'var(--color-text-secondary)' }}>
+              <input type="checkbox" checked={tweaks[k]} onChange={e => setTweak(k, e.target.checked)} />
+              {label}
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [tweaks, setTweaks] = useState(/*EDITMODE-BEGIN*/{
+    "tone": "warm",
+    "audience": "caregiver",
+    "primary": "#3D4B3E",
+    "accent": "#A67B5B",
+    "showHow": true,
+    "showIndex": true,
+    "showWhy": true,
+    "showSpecialists": true,
+    "showTestimonials": true,
+    "showScience": true,
+    "showMission": true,
+    "showFaq": true,
+    "showNewsletter": true
+  }/*EDITMODE-END*/);
+
+  const [tweaksVisible, setTweaksVisible] = useState(false);
+
+  useEffect(() => {
+    const h = e => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    };
+    window.addEventListener('message', h);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', h);
+  }, []);
+
+  const setTweak = (k, v) => {
+    const next = { ...tweaks, [k]: v };
+    setTweaks(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*');
+  };
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--color-forest', tweaks.primary);
+    document.documentElement.style.setProperty('--color-clay', tweaks.accent);
+  }, [tweaks.primary, tweaks.accent]);
+
+  const onCTA = () => {
+    document.querySelector('#the-index')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  return (
+    <>
+      <Nav onCTA={onCTA} />
+      <Hero tone={tweaks.tone} audience={tweaks.audience} onCTA={onCTA} />
+      {tweaks.showHow && <HowItWorks />}
+      {tweaks.showIndex && <TheIndex onCTA={onCTA} />}
+      {tweaks.showWhy && <WhyEarly />}
+      {tweaks.showSpecialists && <Specialists />}
+      {tweaks.showTestimonials && <Testimonials />}
+      {tweaks.showScience && <Science />}
+      {tweaks.showMission && <Mission />}
+      {tweaks.showFaq && <FAQ />}
+      {tweaks.showNewsletter && <Newsletter />}
+      <Footer />
+
+      {tweaksVisible && <TweaksPanel tweaks={tweaks} setTweak={setTweak} />}
+    </>
+  );
+}
+
+// Wait for component files to load before mounting
+function waitAndMount() {
+  if (window.Nav && window.Hero && window.HowItWorks && window.TheIndex && window.WhyEarly && window.Specialists && window.Testimonials && window.Science && window.Mission && window.FAQ && window.Newsletter && window.Footer) {
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  } else {
+    setTimeout(waitAndMount, 50);
+  }
+}
+waitAndMount();
+</script>
+</body>
+</html>

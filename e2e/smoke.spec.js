@@ -6,16 +6,13 @@ test.describe('BHI + auth smoke', () => {
     await expect(page.getByRole('heading', { name: /Dementia is/i })).toBeVisible()
 
     await page.getByRole('button', { name: 'Begin Assessment' }).click()
+    await expect(page.getByRole('heading', { name: /what we're actually measuring/i })).toBeVisible()
+    await page.getByRole('button', { name: 'Start My Assessment' }).click()
+
     await expect(page.getByText('Brain Health Index').first()).toBeVisible()
     await expect(page.getByText('Question').first()).toBeVisible()
     await expect(
-      page.getByText('Does the person have difficulty staying focused on a task for more than 15 minutes?'),
-    ).toBeVisible()
-
-    await page.getByRole('button', { name: 'Not at all' }).click()
-    await page.getByRole('button', { name: 'Next' }).click()
-    await expect(
-      page.getByText('Does the person feel mentally exhausted or'),
+      page.getByText(/What is your loved one.*first name/i),
     ).toBeVisible()
   })
 

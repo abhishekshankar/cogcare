@@ -73,21 +73,21 @@ export default function MagicLinkPage() {
 
   if (configError) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] px-4 py-12 text-[#1A1A1A]">
+      <div className="min-h-screen bg-page px-4 py-12 text-ink">
         <div className="mx-auto max-w-md">
           <Link
             to="/"
-            className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-[#3D4B3E]"
+            className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-forest"
           >
-            <Brain className="h-5 w-5 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+            <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
             CogCare
           </Link>
-          <div className="rounded-3xl border border-[#E8DCC4] bg-white p-8 shadow-sm">
-            <h1 className="font-serif text-xl italic text-[#3D4B3E]">Invalid link</h1>
-            <p className="mt-3 text-sm leading-relaxed text-[#3D4B3E]/85">{configError}</p>
+          <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
+            <h1 className="font-serif text-xl italic text-forest">Invalid link</h1>
+            <p className="mt-3 text-sm leading-relaxed text-forest/85">{configError}</p>
             <Link
               to="/"
-              className="mt-6 inline-flex rounded-xl bg-[#3D4B3E] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
+              className="mt-6 inline-flex rounded-xl bg-forest px-5 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
             >
               Back to home & quiz
             </Link>
@@ -98,13 +98,13 @@ export default function MagicLinkPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#FDFBF7] px-4 text-[#3D4B3E]">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-page px-4 text-forest">
       <div className="flex items-center gap-2 font-serif text-lg italic">
-        <Brain className="h-6 w-6 text-[#A67B5B]" strokeWidth={1.5} aria-hidden />
+        <Brain className="h-6 w-6 text-clay" strokeWidth={1.5} aria-hidden />
         CogCare
       </div>
       <p className="mt-6 text-sm font-medium">Signing you in…</p>
-      <p className="mt-2 max-w-sm text-center text-xs text-[#3D4B3E]/70">
+      <p className="mt-2 max-w-sm text-center text-xs text-forest/70">
         One moment while we open your dashboard.
       </p>
     </div>

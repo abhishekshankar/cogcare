@@ -1,0 +1,245 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import PanelHeader from '../bhi/PanelHeader'
+import { buildCalendlyEmbedUrl, loadCalendlyScript, subscribeCalendlyScheduled } from '../../lib/calendlyEmbed'
+import { FALLBACK_CONSULTANTS } from './consultantsFallback'
+
+const DEFAULT_BOOKING = 'https://calendly.com/cogcare/30min'
+
+/** Non-Calendly URLs (e.g. marketing site) cannot embed; use the default event. */
+function resolveCalendlyBookingUrl(bookingUrl) {
+  const t = bookingUrl?.trim()
+  if (!t) return DEFAULT_BOOKING
+  try {
+    const { hostname } = new URL(t)
+    if (hostname === 'calendly.com' || hostname.endsWith('.calendly.com')) return t
+  } catch {
+    /* ignore */
+  }
+  return DEFAULT_BOOKING
+}
+
+const PENDING_INTENT_KEY = 'cogcare:pendingConsultIntent'
+
+export default function BookConsultPage({
+  client,
+  email,
+  ownerSub,
+  consultants,
+  subjects,
+  activeSubjectId,
+  setActiveSubjectId,
+  onRefresh,
+}) {
+  const [searchParams] = useSearchParams()
+  const widgetHostRef = useRef(null)
+  const [selectedConsultantId, setSelectedConsultantId] = useState(() => searchParams.get('consultantId') || '')
+  const [embedError, setEmbedError] = useState(null)
+  const [bookedMsg, setBookedMsg] = useState(false)
+
+  const subjectIdFromUrl = searchParams.get('subjectId')
+  const assessmentIdFromUrl = searchParams.get('assessmentId')
+
+  useEffect(() => {
+    if (subjectIdFromUrl && subjects?.some((s) => s.id === subjectIdFromUrl)) {
+      setActiveSubjectId(subjectIdFromUrl)
+    }
+  }, [subjectIdFromUrl, subjects, setActiveSubjectId])
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(PENDING_INTENT_KEY)
+      if (raw) sessionStorage.removeItem(PENDING_INTENT_KEY)
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  const activeSubject = useMemo(
+    () => subjects?.find((s) => s.id === activeSubjectId) ?? null,
+    [subjects, activeSubjectId],
+  )
+
+  /** Match ConsultantsTab: empty DB still shows directory cards; booking needs the same fallback or the embed never mounts. */
+  const consultantsForBooking = consultants?.length ? consultants : FALLBACK_CONSULTANTS
+
+  const selectedConsultant = useMemo(() => {
+    if (!consultantsForBooking?.length) return null
+    if (selectedConsultantId) {
+      const c = consultantsForBooking.find((x) => x.id === selectedConsultantId)
+      if (c) return c
+    }
+    return consultantsForBooking[0]
+  }, [consultantsForBooking, selectedConsultantId])
+
+  const embedUrl = useMemo(() => {
+    if (!selectedConsultant) return null
+    const base = resolveCalendlyBookingUrl(selectedConsultant.bookingUrl)
+    const name = activeSubject?.displayName || 'Consultation'
+    return buildCalendlyEmbedUrl(base, {
+      email: email || undefined,
+      name,
+      subjectId: activeSubjectId || undefined,
+      assessmentId: assessmentIdFromUrl || undefined,
+      ownerSub: ownerSub || undefined,
+    })
+  }, [selectedConsultant, email, activeSubject, activeSubjectId, assessmentIdFromUrl, ownerSub])
+
+  useEffect(() => {
+    let cancelled = false
+    async function run() {
+      if (!embedUrl || !widgetHostRef.current) return
+      setEmbedError(null)
+      try {
+        await loadCalendlyScript()
+        if (cancelled || !widgetHostRef.current) return
+        const el = widgetHostRef.current
+        el.innerHTML = ''
+        const Cal = window.Calendly
+        if (Cal?.initInlineWidget) {
+          // resize: — Calendly adjusts iframe height via postMessage; avoids a short/clipped embed.
+          Cal.initInlineWidget({
+            url: embedUrl,
+            parentElement: el,
+            resize: true,
+          })
+        } else {
+          setEmbedError('Calendly did not load. Check your network or ad blockers.')
+        }
+      } catch (e) {
+        if (!cancelled) setEmbedError(e instanceof Error ? e.message : 'Could not load scheduler')
+      }
+    }
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [embedUrl])
+
+  useEffect(() => {
+    if (!client?.models?.ConsultAppointment?.create || !activeSubjectId || !ownerSub) return () => {}
+    return subscribeCalendlyScheduled(async () => {
+      try {
+        const { errors } = await client.models.ConsultAppointment.create({
+          owner: ownerSub,
+          subjectId: activeSubjectId,
+          assessmentId: assessmentIdFromUrl || undefined,
+          consultantId: selectedConsultant?.id || undefined,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+        })
+        if (errors?.length) throw new Error(errors.map((e) => e.message).join('; '))
+        setBookedMsg(true)
+        await onRefresh?.()
+      } catch (e) {
+        if (import.meta.env.DEV) console.error('[calendly scheduled]', e)
+      }
+    })
+  }, [
+    client,
+    activeSubjectId,
+    ownerSub,
+    assessmentIdFromUrl,
+    selectedConsultant?.id,
+    onRefresh,
+  ])
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader
+        sectionLabel="Care"
+        title="Book a consultation"
+        subtitle="Choose who this visit is for, then pick a specialist and time. When you finish scheduling below, we save a pending visit here; your Calendly confirmation email has the exact time and calendar links."
+      />
+
+      {subjects?.length > 1 ? (
+        <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-clay">Who is this for?</p>
+          <select
+            className="mt-2 w-full max-w-md rounded-xl border border-border bg-page px-3 py-2 text-sm text-forest"
+            value={activeSubjectId || ''}
+            onChange={(e) => setActiveSubjectId(e.target.value)}
+          >
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.displayName}
+                {s.isSelf ? ' (you)' : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
+
+      {consultantsForBooking?.length > 1 ? (
+        <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-clay">Specialist</p>
+          <select
+            className="mt-2 w-full max-w-md rounded-xl border border-border bg-page px-3 py-2 text-sm text-forest"
+            value={selectedConsultant?.id || ''}
+            onChange={(e) => setSelectedConsultantId(e.target.value)}
+          >
+            {consultantsForBooking.map((c, i) => (
+              <option key={c.id ?? `fb-${i}`} value={c.id ?? ''}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
+
+      {!consultants?.length ? (
+        <div
+          className="rounded-xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950/90"
+          role="status"
+        >
+          Consultant directory not configured in the app — showing the default scheduler. Replace placeholder data in the database to list your team here.
+        </div>
+      ) : null}
+
+      {bookedMsg ? (
+        <div
+          className="rounded-2xl border border-[#B8D9C1] bg-[#EEF5F0] px-4 py-3 text-sm text-forest"
+          role="status"
+        >
+          Thanks — we saved this visit as pending under{' '}
+          <Link to="/dashboard/consultants" className="font-semibold underline underline-offset-2">
+            Consultations
+          </Link>
+          . Check your Calendly email for the confirmed time and reschedule link.
+        </div>
+      ) : null}
+
+      {embedError ? (
+        <p className="text-sm text-red-800" role="alert">
+          {embedError}
+        </p>
+      ) : null}
+
+      <section
+        aria-label="Scheduling calendar"
+        className="relative z-10 w-full min-w-0 isolate overflow-visible rounded-2xl border border-border bg-white shadow-sm"
+      >
+        {/*
+          Do not use overflow-hidden — Calendly's inline widget grows with resize:true.
+          z-10 + isolate keeps the embed above in-flow cards; route change clears dashboard overlays
+          that would otherwise sit on top (see DashboardPage).
+        */}
+        <div
+          ref={widgetHostRef}
+          className="calendly-inline-host min-h-[min(720px,85dvh)] w-full min-w-[320px] sm:min-h-[720px]"
+        />
+      </section>
+
+      <p className="text-xs text-forest/60">
+        If you don&apos;t see a pending row after booking, confirm in your Calendly confirmation email — ad blockers or closing the tab early can prevent this page from recording the visit.
+      </p>
+      {import.meta.env.DEV ? (
+        <p className="text-xs text-forest/50">
+          Dev: with Calendly Standard+, register <code className="rounded bg-surface px-1">calendly-webhook</code> via API and set{' '}
+          <code className="rounded bg-surface px-1">CALENDLY_WEBHOOK_SIGNING_KEY</code>. See{' '}
+          <code className="rounded bg-surface px-1">docs/integrations/calendly-free-tier.md</code>.
+        </p>
+      ) : null}
+    </div>
+  )
+}

@@ -12,23 +12,24 @@ const NASIR_SCALE = ['Not at all', 'A little', 'Somewhat', 'Often', 'Almost alwa
 const ENDURANCE_SCALE = ['Hours', '60 mins', '30 mins', '10 mins', 'Almost immediately']
 
 const NASIR_QUESTIONS = [
-  { id: 'name',     type: 'text',      domain: 'About your loved one', text: "What is your loved one's first name?", placeholder: 'First name' },
-  { id: 'age',      type: 'number',    domain: 'About your loved one', text: 'How old are they?', placeholder: 'Age' },
-  { id: 'relation', type: 'choice',    domain: 'About your loved one', text: 'What is your relationship to them?', options: ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other'] },
-  { id: 'q1',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} seem foggy, slowed down, or "not as sharp" as usual?' },
-  { id: 'q2',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does low energy make it harder for {name} to think or function?' },
-  { id: 'q3',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} experience head pressure, tightness, or headaches?' },
-  { id: 'q4',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} struggle to stay focused or get easily distracted?' },
-  { id: 'q5',  type: 'scale', domain: "How {name}'s Brain Feels", text: 'How often does {name} seem scattered, overwhelmed, or disorganised?' },
-  { id: 'q6',  type: 'scale', domain: 'Stress, Mood & Autonomic', text: 'How often does {name} seem keyed-up, tense, or on edge?' },
-  { id: 'q7',  type: 'scale', domain: 'Stress, Mood & Autonomic', text: 'How often does {name} experience palpitations, sudden dips in energy, dizziness, heat intolerance, or shakiness?' },
-  { id: 'q8',  type: 'scale', domain: 'Stress, Mood & Autonomic', text: "How often is {name}'s sleep light, unrefreshing, or disrupted?" },
-  { id: 'q9',  type: 'scale', domain: 'Balance & Sensory',        text: 'Does {name} get dizzy, off-balance, or sensitive to busy environments or fast movements?' },
-  { id: 'q10', type: 'scale', domain: 'Balance & Sensory',        text: 'How often does {name} have trouble finding words, remembering names, or recalling information quickly?' },
-  { id: 'q11', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: "Do {name}'s symptoms get worse after mental or physical activity?",               optional: true },
-  { id: 'q12', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Is {name} sensitive to noise, screens, bright lights, or crowded spaces?',         optional: true },
-  { id: 'q13', type: 'endurance', domain: 'Optional -- Fine-Tune the Profile', text: 'How long can {name} stay mentally sharp before performance drops?',                optional: true },
-  { id: 'q14', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Does {name} seem more emotionally reactive or less steady than usual?',             optional: true },
+  { id: 'persona',  type: 'choice',    domain: 'Getting started',       text: 'Who are you taking this quiz for?', options: ['Myself', 'A loved one'] },
+  { id: 'name',     type: 'text',      domain: 'About your loved one',  text: "What is your loved one's first name?", textSelf: 'What is your first name?', domainSelf: 'About you', placeholder: 'First name' },
+  { id: 'age',      type: 'number',    domain: 'About your loved one',  text: 'How old are they?',                   textSelf: 'How old are you?',           domainSelf: 'About you', placeholder: 'Age' },
+  { id: 'relation', type: 'choice',    domain: 'About your loved one',  text: 'What is your relationship to them?', options: ['Parent', 'Grandparent', 'Spouse', 'Sibling', 'Other'], skipForSelf: true },
+  { id: 'q1',  type: 'scale', domain: "How {name}'s Brain Feels", domainSelf: 'How Your Brain Feels', text: 'How often does {name} seem foggy, slowed down, or "not as sharp" as usual?',                              textSelf: 'How often do you feel foggy, slowed down, or "not as sharp" as usual?' },
+  { id: 'q2',  type: 'scale', domain: "How {name}'s Brain Feels", domainSelf: 'How Your Brain Feels', text: 'How often does low energy make it harder for {name} to think or function?',                              textSelf: 'How often does low energy make it harder for you to think or function?' },
+  { id: 'q3',  type: 'scale', domain: "How {name}'s Brain Feels", domainSelf: 'How Your Brain Feels', text: 'How often does {name} experience head pressure, tightness, or headaches?',                               textSelf: 'How often do you experience head pressure, tightness, or headaches?' },
+  { id: 'q4',  type: 'scale', domain: "How {name}'s Brain Feels", domainSelf: 'How Your Brain Feels', text: 'How often does {name} struggle to stay focused or get easily distracted?',                               textSelf: 'How often do you struggle to stay focused or get easily distracted?' },
+  { id: 'q5',  type: 'scale', domain: "How {name}'s Brain Feels", domainSelf: 'How Your Brain Feels', text: 'How often does {name} seem scattered, overwhelmed, or disorganised?',                                    textSelf: 'How often do you feel scattered, overwhelmed, or disorganised?' },
+  { id: 'q6',  type: 'scale', domain: 'Stress, Mood & Autonomic',                                     text: 'How often does {name} seem keyed-up, tense, or on edge?',                                                textSelf: 'How often do you feel keyed-up, tense, or on edge?' },
+  { id: 'q7',  type: 'scale', domain: 'Stress, Mood & Autonomic',                                     text: 'How often does {name} experience palpitations, sudden dips in energy, dizziness, heat intolerance, or shakiness?', textSelf: 'How often do you experience palpitations, sudden dips in energy, dizziness, heat intolerance, or shakiness?' },
+  { id: 'q8',  type: 'scale', domain: 'Stress, Mood & Autonomic',                                     text: "How often is {name}'s sleep light, unrefreshing, or disrupted?",                                         textSelf: 'How often is your sleep light, unrefreshing, or disrupted?' },
+  { id: 'q9',  type: 'scale', domain: 'Balance & Sensory',                                             text: 'Does {name} get dizzy, off-balance, or sensitive to busy environments or fast movements?',               textSelf: 'Do you get dizzy, off-balance, or sensitive to busy environments or fast movements?' },
+  { id: 'q10', type: 'scale', domain: 'Balance & Sensory',                                             text: 'How often does {name} have trouble finding words, remembering names, or recalling information quickly?',  textSelf: 'How often do you have trouble finding words, remembering names, or recalling information quickly?' },
+  { id: 'q11', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: "Do {name}'s symptoms get worse after mental or physical activity?",               textSelf: 'Do your symptoms get worse after mental or physical activity?',                          optional: true },
+  { id: 'q12', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Is {name} sensitive to noise, screens, bright lights, or crowded spaces?',         textSelf: 'Are you sensitive to noise, screens, bright lights, or crowded spaces?',                  optional: true },
+  { id: 'q13', type: 'endurance', domain: 'Optional -- Fine-Tune the Profile', text: 'How long can {name} stay mentally sharp before performance drops?',                textSelf: 'How long can you stay mentally sharp before your performance drops?',                    optional: true },
+  { id: 'q14', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Does {name} seem more emotionally reactive or less steady than usual?',             textSelf: 'Do you seem more emotionally reactive or less steady than usual?',                      optional: true },
 ]
 
 const ANALYZING_STEPS = [
@@ -95,14 +96,15 @@ const cogcareTheme = {
 
 // ---- BHIQuiz ----
 function BHIQuiz({ quizAnswers, setQuizAnswers, onComplete, excludedQuestionIds = [] }) {
-  const questions = NASIR_QUESTIONS.filter((item) => !excludedQuestionIds.includes(item.id))
+  const isSelf = quizAnswers.persona === 1
+  const questions = NASIR_QUESTIONS.filter((item) => !excludedQuestionIds.includes(item.id) && !(isSelf && item.skipForSelf))
   const [qi, setQi] = useState(0)
   const total = questions.length
   const q = questions[qi]
   const pct = (qi + 1) / total
-  const name = (typeof quizAnswers.name === 'string' && quizAnswers.name.trim()) || 'your loved one'
-  const domainText = q.domain.replace(/\{name\}/g, name)
-  const questionText = q.text.replace(/\{name\}/g, name)
+  const name = (typeof quizAnswers.name === 'string' && quizAnswers.name.trim()) || (isSelf ? 'you' : 'your loved one')
+  const domainText = (isSelf && q.domainSelf) ? q.domainSelf : q.domain.replace(/\{name\}/g, name)
+  const questionText = (isSelf && q.textSelf) ? q.textSelf : q.text.replace(/\{name\}/g, name)
   const currentValue = quizAnswers[q.id]
 
   const canProceed = (() => {

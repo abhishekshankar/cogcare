@@ -29,7 +29,7 @@ const NASIR_QUESTIONS = [
   { id: 'q11', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: "Do {name}'s symptoms get worse after mental or physical activity?",               textSelf: 'Do your symptoms get worse after mental or physical activity?',                          optional: true },
   { id: 'q12', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Is {name} sensitive to noise, screens, bright lights, or crowded spaces?',         textSelf: 'Are you sensitive to noise, screens, bright lights, or crowded spaces?',                  optional: true },
   { id: 'q13', type: 'endurance', domain: 'Optional -- Fine-Tune the Profile', text: 'How long can {name} stay mentally sharp before performance drops?',                textSelf: 'How long can you stay mentally sharp before your performance drops?',                    optional: true },
-  { id: 'q14', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Does {name} seem more emotionally reactive or less steady than usual?',             textSelf: 'Do you seem more emotionally reactive or less steady than usual?',                      optional: true },
+  { id: 'q14', type: 'scale',     domain: 'Optional -- Fine-Tune the Profile', text: 'Does {name} seem more emotionally reactive or less steady than usual?',             textSelf: 'Do you seem more emotionally reactive or less steady than usual?' },
 ]
 
 const ANALYZING_STEPS = [
@@ -52,7 +52,7 @@ function computeResults(answers) {
 
   const nif  = clusterAvg(answers, ['q1', 'q2', 'q3', 'q11', 'q12'])
   const cog  = clusterAvg(answers, ['q4', 'q5', 'q10', 'q13'])
-  const aux  = clusterAvg(answers, ['q6', 'q7', 'q8'])
+  const aux  = clusterAvg(answers, ['q6', 'q7', 'q8', 'q14'])
   const vest = clusterAvg(answers, ['q9', 'q12'])
 
   const allIds = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13','q14']

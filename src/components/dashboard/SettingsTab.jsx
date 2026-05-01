@@ -187,31 +187,6 @@ export default function SettingsTab({ email, profile, subjects = [], onProfileSa
         {pwMsg ? <p className="mt-3 text-sm text-forest">{pwMsg}</p> : null}
       </section>
 
-      <section className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">People you care for</p>
-        <p className="mt-2 text-sm text-forest/75">
-          Each Brain Health Index is saved per person. Use the selector in the header to switch, or use Add loved one /
-          Take Brain Health Index on the dashboard to add someone or run the quiz here.
-        </p>
-        {subjects?.length ? (
-          <ul className="mt-4 space-y-2 text-sm text-forest/90">
-            {subjects.map((s) => (
-              <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-surface pb-2 last:border-0">
-                <span className="font-medium text-ink">{s.displayName}</span>
-                <span className="text-xs text-forest/60">
-                  {s.isSelf ? 'You' : s.relation || 'Loved one'}
-                  {typeof s.age === 'number' ? ` · age ${s.age}` : ''}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-3 text-sm text-forest/60">
-            No profiles yet — use Take Brain Health Index under My tests or add a profile from the header.
-          </p>
-        )}
-      </section>
-
       <section className="rounded-2xl border border-dashed border-border bg-surface/40 p-6">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest/50">Notifications</p>
         <p className="mt-2 text-sm text-forest/70">Email reminders — coming soon.</p>

@@ -59,22 +59,12 @@ export default function BrainCreditTab({
             No assessments yet. Complete the Brain Health Index and save your results to see your brain credit
             here.
           </p>
-          {typeof onStartAssessment === 'function' ? (
-            <button
-              type="button"
-              onClick={onStartAssessment}
-              className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-forest px-6 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark"
-            >
-              Take Brain Health Index
-            </button>
-          ) : (
-            <Link
-              to="/"
-              className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-forest px-6 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark"
-            >
-              Go to home — start the assessment
-            </Link>
-          )}
+          <Link
+            to="/"
+            className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-forest px-6 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark"
+          >
+            Go to home — start the assessment
+          </Link>
         </div>
       </div>
     )

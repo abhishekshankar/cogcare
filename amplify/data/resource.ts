@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend'
 import { completeAssessment } from '../functions/completeAssessment/resource'
+import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
 import { verifyAuthChallengeResponse } from '../auth/verify-auth-challenge-response/resource'
 import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
 
@@ -88,31 +89,28 @@ const schema = a.schema({
     .authorization((allow) => [allow.authenticated().to(['read'])]),
 
   /**
-   * Booked or pending consults; `owner` is Cognito sub. Webhook Lambda uses IAM to upsert rows.
+   * Consultation bookings mirrored from Calendly (`invitee.created` / `invitee.canceled` webhooks).
+   * PK = invitee URI so updates/cancels upsert the same row.
+   * Lambda IAM access for calendlyWebhook is only on the schema (`.authorization` below);
+   * per-model `allow` does not support `.resource()` — that caused AssemblyError at deploy.
    */
   ConsultAppointment: a
     .model({
       owner: a.string(),
-      subjectId: a.string().required(),
-      assessmentId: a.string(),
-      consultantId: a.string(),
+      calendlyInviteeUri: a.string().required(),
+      calendlyScheduledEventUri: a.string(),
+      inviteeEmail: a.string(),
+      inviteeName: a.string(),
       eventName: a.string(),
       startTime: a.datetime(),
       endTime: a.datetime(),
-      /** pending | scheduled | canceled | completed */
       status: a.string().required(),
-      calendlyInviteeUri: a.string(),
-      calendlyEventUri: a.string(),
-      cancelUrl: a.string(),
-      rescheduleUrl: a.string(),
-      createdAt: a.datetime(),
     })
-    .authorization((allow) => [
-      allow.ownerDefinedIn('owner'),
-      allow.authenticated('identityPool').to(['create', 'read', 'update', 'delete']),
-    ]),
+    .identifier(['calendlyInviteeUri'])
+    .authorization((allow) => [allow.ownerDefinedIn('owner')]),
 }).authorization((allow) => [
   allow.resource(completeAssessment).to(['mutate', 'query']),
+  allow.resource(calendlyWebhook).to(['mutate', 'query']),
   allow.resource(verifyAuthChallengeResponse).to(['mutate', 'query']),
   allow.resource(calendlyWebhook).to(['mutate', 'query']),
 ])

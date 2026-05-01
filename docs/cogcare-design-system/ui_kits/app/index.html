@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogCare — UI Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="components.jsx"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body, #root { height: 100%; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #FDFBF7;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+  }
+  input, button, select { font-family: inherit; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #E8DCC4; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+// ── Sample Data ──────────────────────────────────────────────────────────────
+const SAMPLE_ASSESSMENTS = [
+  {
+    id: 'a1', type: 'Brain Health Index v1',
+    completedAt: '2026-04-15T10:23:00Z',
+    resultsJson: JSON.stringify({ urgency: 'Low', normalAgingPct: 82, score: 740 })
+  },
+  {
+    id: 'a2', type: 'Brain Health Index v1',
+    completedAt: '2026-02-10T14:05:00Z',
+    resultsJson: JSON.stringify({ urgency: 'Moderate', normalAgingPct: 74, score: 695 })
+  },
+  {
+    id: 'a3', type: 'Brain Health Index v1',
+    completedAt: '2025-11-22T09:40:00Z',
+    resultsJson: JSON.stringify({ urgency: 'Low', normalAgingPct: 79, score: 715 })
+  },
+];
+
+const SAMPLE_CONSULTANTS = [
+  { id: 'c1', name: 'Dr. Priya Sharma', specialty: 'Cognitive Neurology', institution: 'UCLA Medical', available: true },
+  { id: 'c2', name: 'Dr. Marcus Webb', specialty: 'Geriatric Psychiatry', institution: 'Mayo Clinic', available: false },
+  { id: 'c3', name: 'Dr. Elena Ruiz', specialty: 'Preventive Neurology', institution: 'Penn Medicine', available: true },
+];
+
+// ── Login Page ───────────────────────────────────────────────────────────────
+function LoginPage({ onLogin }) {
+  const [tab, setTab] = useState('signin');
+  const [email, setEmail] = useState('');
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+
+  const inputStyle = {
+    width: '100%', padding: '12px 16px',
+    background: '#FDFBF7', border: '1px solid #E8DCC4', borderRadius: 12,
+    fontSize: 14, color: '#1A1A1A', outline: 'none',
+    transition: 'border-color 0.2s, box-shadow 0.2s',
+    fontFamily: "'DM Sans', sans-serif"
+  };
+  const labelStyle = {
+    fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+    letterSpacing: '0.2em', color: '#A67B5B', display: 'block', marginBottom: 6
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh', background: '#FDFBF7',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16
+    }}>
+      <div style={{ width: '100%', maxWidth: 400 }}>
+        {/* Wordmark */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32 }}>
+          <IconBrain size={22} />
+          <span style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 22, color: '#3D4B3E', letterSpacing: '-0.02em'
+          }}>
+            Cog<em style={{ fontStyle: 'italic' }}>Care</em>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, color: '#A67B5B', opacity: 0.8, marginLeft: 2 }}>.org</span>
+          </span>
+        </div>
+
+        <div style={{
+          background: 'white', border: '1px solid #E8DCC4',
+          borderRadius: 28, padding: 28,
+          boxShadow: '0 10px 30px -5px rgba(26,60,52,0.08)'
+        }}>
+          {/* Tab switcher */}
+          <div style={{
+            display: 'flex', background: '#FDFBF7', border: '1px solid #E8DCC4',
+            borderRadius: 9999, padding: 4, gap: 4, marginBottom: 24
+          }}>
+            {['signin', 'signup'].map(t => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                flex: 1, padding: '10px 0',
+                background: tab === t ? 'white' : 'transparent',
+                border: 'none', borderRadius: 9999, cursor: 'pointer',
+                fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.12em',
+                color: tab === t ? '#3D4B3E' : 'rgba(61,75,62,0.5)',
+                boxShadow: tab === t ? '0 1px 3px rgba(26,60,52,0.08)' : 'none',
+                transition: 'all 0.2s'
+              }}>
+                {t === 'signin' ? 'Sign in' : 'New here'}
+              </button>
+            ))}
+          </div>
+
+          <div style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: '1.5rem', fontStyle: 'italic', color: '#3D4B3E', marginBottom: 20
+          }}>
+            {tab === 'signin' ? 'Welcome back.' : 'Create account'}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={labelStyle}>Email</label>
+              <input type="email" placeholder="you@example.com" value={email}
+                onChange={e => setEmail(e.target.value)} style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Password</label>
+              <input type="password" placeholder="••••••••" value={pw}
+                onChange={e => setPw(e.target.value)} style={inputStyle} />
+            </div>
+            {tab === 'signup' && (
+              <div>
+                <label style={labelStyle}>Confirm password</label>
+                <input type="password" placeholder="••••••••" value={pw2}
+                  onChange={e => setPw2(e.target.value)} style={inputStyle} />
+              </div>
+            )}
+            {tab === 'signin' && (
+              <button style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                textAlign: 'left', fontSize: 13, color: '#A67B5B',
+                fontFamily: "'DM Sans', sans-serif"
+              }}>Forgot password?</button>
+            )}
+            <button onClick={onLogin} style={{
+              width: '100%', padding: '14px 0',
+              background: '#3D4B3E', color: 'white', border: 'none', borderRadius: 9999,
+              fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer',
+              marginTop: 4, transition: 'background 0.2s'
+            }}>
+              {tab === 'signin' ? 'Sign in' : 'Create account'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Dashboard Header ─────────────────────────────────────────────────────────
+function DashboardHeader({ onSignOut }) {
+  return (
+    <header style={{
+      borderBottom: '1px solid #E8DCC4',
+      background: 'rgba(255,255,255,0.92)',
+      backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+      position: 'sticky', top: 0, zIndex: 50
+    }}>
+      <div style={{
+        maxWidth: 1024, margin: '0 auto', padding: '16px 24px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <IconBrain size={20} />
+            <span style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: 17, fontStyle: 'italic', color: '#3D4B3E'
+            }}>Dashboard</span>
+          </div>
+          <div style={{ width: 1, height: 16, background: '#E8DCC4' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%',
+              border: '1px solid #E8DCC4', background: '#F3EFE9',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 10, fontWeight: 700, color: 'rgba(61,75,62,0.4)', textTransform: 'uppercase',
+              overflow: 'hidden'
+            }}>
+              <img src="../../assets/nasir-photo.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 500, color: '#3D4B3E' }}>
+              <span style={{ color: 'rgba(61,75,62,0.6)' }}>Hi, </span>Nasir
+            </p>
+          </div>
+        </div>
+        <button onClick={onSignOut} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 16px', background: 'transparent', color: '#3D4B3E',
+          borderRadius: 9999, border: '1px solid #E8DCC4', cursor: 'pointer',
+          fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.12em'
+        }}>
+          <IconLogOut size={14} /> Sign out
+        </button>
+      </div>
+    </header>
+  );
+}
+
+// ── Tab Bar ──────────────────────────────────────────────────────────────────
+const TABS = [
+  { id: 'credit', label: 'Brain Credit' },
+  { id: 'tests', label: 'My Tests' },
+  { id: 'more', label: 'More Tests' },
+  { id: 'consultants', label: 'Consultations' },
+  { id: 'settings', label: 'Settings', icon: true },
+];
+
+function TabBar({ active, onChange }) {
+  return (
+    <div style={{
+      borderBottom: '1px solid #E8DCC4', background: 'white',
+      overflowX: 'auto', display: 'flex'
+    }}>
+      <div style={{ maxWidth: 1024, margin: '0 auto', display: 'flex', padding: '0 24px', width: '100%' }}>
+        {TABS.map(tab => (
+          <button key={tab.id} onClick={() => onChange(tab.id)} style={{
+            padding: '14px 16px', background: 'none', border: 'none',
+            borderBottom: active === tab.id ? '2px solid #3D4B3E' : '2px solid transparent',
+            cursor: 'pointer', whiteSpace: 'nowrap',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.12em',
+            color: active === tab.id ? '#3D4B3E' : 'rgba(61,75,62,0.45)',
+            transition: 'color 0.2s, border-color 0.2s'
+          }}>
+            {tab.icon && <IconSettings size={13} color="currentColor" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Brain Credit Tab ─────────────────────────────────────────────────────────
+function BrainCreditTab({ assessments }) {
+  const latest = assessments[0];
+  const results = latest ? JSON.parse(latest.resultsJson) : null;
+  const score = results?.score ?? null;
+  const normalPct = results?.normalAgingPct ?? null;
+
+  const history = assessments.map(a => {
+    const r = JSON.parse(a.resultsJson);
+    return { date: a.completedAt, score: r.score };
+  });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <PanelHeader
+        sectionLabel="Overview"
+        title="Brain credit"
+        subtitle='A single score derived from your latest Brain Health Index. Higher reflects a stronger "normal aging" pattern — not a diagnosis.'
+      />
+
+      {/* Info banner */}
+      <div style={{
+        background: 'rgba(243,239,233,0.6)', border: '1px solid #E8DCC4',
+        borderRadius: 14, padding: '12px 16px', fontSize: 13, color: 'rgba(61,75,62,0.85)',
+        lineHeight: 1.6
+      }}>
+        <span style={{ fontWeight: 600, textDecoration: 'underline', textDecorationColor: 'rgba(166,123,91,0.4)', textUnderlineOffset: 2 }}>My tests</span>
+        {' '}lists every Brain Health Index you saved by emailing your results.
+      </div>
+
+      {/* Score Card — glass treatment */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(61,75,62,0.04) 0%, rgba(255,255,255,0.95) 100%)',
+        border: '1px solid #E8DCC4', borderRadius: 28, padding: '28px 28px 24px',
+        boxShadow: '0 10px 30px -5px rgba(26,60,52,0.08)'
+      }}>
+        <SectionLabel style={{ marginBottom: 12 }}>Your score</SectionLabel>
+        <div style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: '5rem', fontWeight: 400, color: '#3D4B3E', lineHeight: 1,
+          marginBottom: 20, display: 'flex', alignItems: 'baseline', gap: 6
+        }}>
+          {score ?? '—'}
+          {score && <span style={{ fontSize: '1.25rem', fontStyle: 'italic', opacity: 0.6 }}>pts</span>}
+        </div>
+        <ScoreBar score={score ?? 300} />
+        <p style={{ marginTop: 10, fontSize: 11, color: 'rgba(61,75,62,0.5)' }}>Range 300–850 (v1 formula)</p>
+        {latest?.completedAt && (
+          <p style={{ fontSize: 11, color: 'rgba(61,75,62,0.45)', marginTop: 4 }}>
+            Last updated: {new Date(latest.completedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
+        )}
+      </div>
+
+      {/* Breakdown card */}
+      <Card>
+        <SectionLabel style={{ marginBottom: 14 }}>How this score is built (v1)</SectionLabel>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', padding: '10px 0',
+            borderBottom: '1px solid #F3EFE9'
+          }}>
+            <span style={{ fontSize: 13, color: 'rgba(61,75,62,0.7)' }}>Normal Aging (model output)</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A', fontFamily: 'monospace' }}>
+              {normalPct != null ? `${Math.round(normalPct)}%` : '—'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
+            <span style={{ fontSize: 13, color: 'rgba(61,75,62,0.7)' }}>Engagement bonus (3 assessments)</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A', fontFamily: 'monospace' }}>+25 pts</span>
+          </div>
+        </div>
+      </Card>
+
+      {/* History */}
+      <Card>
+        <SectionLabel style={{ marginBottom: 6 }}>Score history</SectionLabel>
+        <p style={{ fontSize: 11, color: 'rgba(61,75,62,0.55)', marginBottom: 14 }}>Score recalculated for each saved test.</p>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left', padding: '0 0 8px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#A67B5B', borderBottom: '1px solid #E8DCC4' }}>Date</th>
+              <th style={{ textAlign: 'left', padding: '0 0 8px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#A67B5B', borderBottom: '1px solid #E8DCC4' }}>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.map((row, i) => (
+              <tr key={i} style={{ borderBottom: i < history.length - 1 ? '1px solid #F3EFE9' : 'none' }}>
+                <td style={{ padding: '10px 0', color: 'rgba(61,75,62,0.8)' }}>
+                  {new Date(row.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </td>
+                <td style={{ padding: '10px 0', fontWeight: 600, color: '#1A1A1A', fontFamily: 'monospace' }}>{row.score}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+// ── Tests Tab ────────────────────────────────────────────────────────────────
+function TestsTab({ assessments }) {
+  const [open, setOpen] = useState(null);
+  const sorted = [...assessments].sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12 }}>
+        <PanelHeader
+          sectionLabel="History"
+          title="My tests"
+          subtitle="Tests saved by emailing your results appear here after you sign in with the same account."
+        />
+        <BtnGhost style={{ flexShrink: 0 }}>
+          <IconDownload size={14} /> Export all
+        </BtnGhost>
+      </div>
+
+      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {sorted.map(a => {
+          let r = {}; try { r = JSON.parse(a.resultsJson); } catch {}
+          return (
+            <li key={a.id}>
+              <div style={{
+                display: 'flex', background: 'white', border: '1px solid #E8DCC4',
+                borderRadius: 18, overflow: 'hidden',
+                boxShadow: '0 2px 8px rgba(26,60,52,0.04)',
+                transition: 'box-shadow 0.2s, border-color 0.2s'
+              }}>
+                <button onClick={() => setOpen(a)} style={{
+                  flex: 1, textAlign: 'left', padding: '14px 16px',
+                  background: 'none', border: 'none', cursor: 'pointer'
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#A67B5B', marginBottom: 4 }}>
+                    {new Date(a.completedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A', marginBottom: 2 }}>{a.type}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(61,75,62,0.7)' }}>
+                    Urgency: {r.urgency} · Score: {r.score}
+                  </div>
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', borderLeft: '1px solid #F3EFE9', padding: '0 4px' }}>
+                  <button style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 10, color: '#3D4B3E' }}>
+                    <IconDownload size={16} />
+                  </button>
+                  <button style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 10, color: '#991B1B' }}>
+                    <IconTrash size={16} />
+                  </button>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Detail panel */}
+      {open && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
+          <div onClick={() => setOpen(null)} style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(61,75,62,0.25)', backdropFilter: 'blur(6px)', cursor: 'pointer'
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, maxWidth: 480,
+            margin: '0 auto',
+            background: '#FDFBF7', borderRadius: '28px 28px 0 0',
+            border: '1px solid #E8DCC4',
+            boxShadow: '0 -20px 40px rgba(26,60,52,0.1)',
+            maxHeight: '80vh', overflow: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+              <div style={{ width: 40, height: 4, borderRadius: 2, background: '#E8DCC4' }} />
+            </div>
+            <div style={{ padding: '16px 24px 32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#A67B5B' }}>Saved Report</span>
+                <button onClick={() => setOpen(null)} style={{ background: 'none', border: 'none', fontSize: 13, fontWeight: 600, color: '#A67B5B', cursor: 'pointer' }}>Close</button>
+              </div>
+              {(() => { let r = {}; try { r = JSON.parse(open.resultsJson); } catch {}
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.4rem', fontStyle: 'italic', color: '#3D4B3E' }}>Brain Health Index Report</div>
+                    <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6 }}>Completed {new Date(open.completedAt).toLocaleDateString('en-US', { dateStyle: 'long' })}</p>
+                    <div style={{ background: 'rgba(243,239,233,0.5)', border: '1px solid #E8DCC4', borderRadius: 16, padding: 16, display: 'flex', gap: 24 }}>
+                      <div><div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(61,75,62,0.5)', marginBottom: 4 }}>Brain Credit</div>
+                        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '2rem', color: '#3D4B3E' }}>{r.score}</div></div>
+                      <div><div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(61,75,62,0.5)', marginBottom: 4 }}>Urgency</div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: r.urgency === 'Low' ? '#166534' : '#9A3412' }}>{r.urgency}</div></div>
+                      <div><div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(61,75,62,0.5)', marginBottom: 4 }}>Normal Aging</div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: '#3D4B3E' }}>{r.normalAgingPct}%</div></div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                      <BtnGhost style={{ flex: 1 }}><IconDownload size={14} /> Export JSON</BtnGhost>
+                      <button style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', background: 'white', border: '1px solid #fecaca', color: '#991B1B', borderRadius: 9999, fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer' }}>
+                        <IconTrash size={14} color="#991B1B" /> Delete
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── More Tests Tab ───────────────────────────────────────────────────────────
+function MoreTestsTab() {
+  const upcoming = [
+    { name: 'Cognitive Vitality Index', desc: 'Extended assessment covering memory, processing speed, and executive function.', status: 'coming-soon' },
+    { name: 'Sleep & Brain Health', desc: 'Correlate sleep patterns with cognitive performance indicators.', status: 'coming-soon' },
+    { name: 'Cardiovascular Brain Risk', desc: 'Assess heart health factors that directly impact brain longevity.', status: 'coming-soon' },
+  ];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <PanelHeader sectionLabel="Assessments" title="More tests" subtitle="Additional brain health assessments coming soon." />
+      {upcoming.map(t => (
+        <Card key={t.name} dashed style={{ opacity: 0.8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#3D4B3E', marginBottom: 6 }}>{t.name}</div>
+              <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6, margin: 0 }}>{t.desc}</p>
+            </div>
+            <span style={{
+              flexShrink: 0, padding: '4px 12px', background: '#F3EFE9', color: 'rgba(61,75,62,0.5)',
+              border: '1px dashed #E8DCC4', borderRadius: 9999, fontSize: 9, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.15em', whiteSpace: 'nowrap'
+            }}>Coming Soon</span>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ── Consultants Tab ──────────────────────────────────────────────────────────
+function ConsultantsTab({ consultants }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <PanelHeader sectionLabel="Experts" title="Consultations" subtitle="Book a 1-on-1 session with a CogCare-affiliated specialist." />
+      {consultants.map(c => (
+        <Card key={c.id}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: '50%', background: '#F3EFE9',
+              border: '1px solid #E8DCC4', flexShrink: 0, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: 16, fontFamily: "'Playfair Display', Georgia, serif",
+              color: '#3D4B3E', fontStyle: 'italic'
+            }}>
+              {c.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#1A1A1A', marginBottom: 2 }}>{c.name}</div>
+              <div style={{ fontSize: 12, color: '#A67B5B', fontWeight: 500, marginBottom: 2 }}>{c.specialty}</div>
+              <div style={{ fontSize: 11, color: 'rgba(61,75,62,0.5)' }}>{c.institution}</div>
+            </div>
+            <BtnPrimary style={{ flexShrink: 0, ...(c.available ? {} : { background: '#9BB09C', cursor: 'default' }) }}>
+              {c.available ? 'Book session' : 'Unavailable'}
+            </BtnPrimary>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ── Settings Tab ─────────────────────────────────────────────────────────────
+function SettingsTab() {
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const inputStyle = {
+    width: '100%', padding: '12px 16px',
+    background: '#FDFBF7', border: '1px solid #E8DCC4', borderRadius: 12,
+    fontSize: 14, outline: 'none', fontFamily: "'DM Sans', sans-serif"
+  };
+  const labelStyle = {
+    display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+    letterSpacing: '0.2em', color: 'rgba(61,75,62,0.5)', marginBottom: 6
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <PanelHeader sectionLabel="Account" title="Settings" />
+
+      <Card>
+        <label style={labelStyle}>Email</label>
+        <p style={{ fontSize: 14, fontWeight: 500, color: '#1A1A1A' }}>nasir@example.com</p>
+      </Card>
+
+      <Card>
+        <label style={labelStyle}>Profile photo</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 10 }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%',
+            border: '1px solid #E8DCC4', overflow: 'hidden'
+          }}>
+            <img src="../../assets/nasir-photo.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <BtnPrimary style={{ padding: '8px 16px' }}>Upload</BtnPrimary>
+            <BtnGhost>Remove</BtnGhost>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <label style={labelStyle}>Change password</label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10, maxWidth: 360 }}>
+          <input type="password" placeholder="Current password" style={inputStyle} value={currentPw} onChange={e => setCurrentPw(e.target.value)} />
+          <input type="password" placeholder="New password" style={inputStyle} value={newPw} onChange={e => setNewPw(e.target.value)} />
+          <input type="password" placeholder="Confirm new password" style={inputStyle} />
+          <BtnPrimary style={{ alignSelf: 'flex-start', padding: '10px 20px' }}>Update password</BtnPrimary>
+        </div>
+      </Card>
+
+      <Card dashed style={{ background: 'rgba(243,239,233,0.4)' }}>
+        <label style={labelStyle}>Notifications</label>
+        <p style={{ fontSize: 13, color: 'rgba(61,75,62,0.7)', marginTop: 6 }}>Email reminders — coming soon.</p>
+      </Card>
+    </div>
+  );
+}
+
+// ── Dashboard Shell ──────────────────────────────────────────────────────────
+function Dashboard({ onSignOut }) {
+  const [tab, setTab] = useState(() => localStorage.getItem('cogcare_tab') || 'credit');
+  useEffect(() => { localStorage.setItem('cogcare_tab', tab); }, [tab]);
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
+      <DashboardHeader onSignOut={onSignOut} />
+      <TabBar active={tab} onChange={setTab} />
+      <main style={{ maxWidth: 1024, margin: '0 auto', padding: '32px 24px' }}>
+        {tab === 'credit' && <BrainCreditTab assessments={SAMPLE_ASSESSMENTS} />}
+        {tab === 'tests' && <TestsTab assessments={SAMPLE_ASSESSMENTS} />}
+        {tab === 'more' && <MoreTestsTab />}
+        {tab === 'consultants' && <ConsultantsTab consultants={SAMPLE_CONSULTANTS} />}
+        {tab === 'settings' && <SettingsTab />}
+      </main>
+    </div>
+  );
+}
+
+// ── Root App ─────────────────────────────────────────────────────────────────
+function App() {
+  const [loggedIn, setLoggedIn] = useState(() => localStorage.getItem('cogcare_auth') === '1');
+  const login = () => { localStorage.setItem('cogcare_auth', '1'); setLoggedIn(true); };
+  const logout = () => { localStorage.removeItem('cogcare_auth'); setLoggedIn(false); };
+
+  // Tweaks
+  const [tweaksVisible, setTweaksVisible] = useState(false);
+  const [tweaks, setTweaks] = useState(/*EDITMODE-BEGIN*/{
+    "primaryColor": "#3D4B3E",
+    "accentColor": "#A67B5B",
+    "borderRadius": 20,
+    "glassStrength": 0.75,
+    "showGlass": true
+  }/*EDITMODE-END*/);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const applyTweak = (key, val) => {
+    const next = { ...tweaks, [key]: val };
+    setTweaks(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+  };
+
+  // Inject tweaks as CSS vars
+  useEffect(() => {
+    document.documentElement.style.setProperty('--color-forest', tweaks.primaryColor);
+    document.documentElement.style.setProperty('--color-clay', tweaks.accentColor);
+  }, [tweaks]);
+
+  return (
+    <>
+      <style>{`
+        :root {
+          --color-forest: ${tweaks.primaryColor};
+          --color-clay: ${tweaks.accentColor};
+        }
+      `}</style>
+      {loggedIn ? <Dashboard onSignOut={logout} /> : <LoginPage onLogin={login} />}
+
+      {/* Tweaks panel */}
+      {tweaksVisible && (
+        <div style={{
+          position: 'fixed', bottom: 20, right: 20, zIndex: 9999,
+          background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)',
+          border: '1px solid #E8DCC4', borderRadius: 20, padding: 20, width: 240,
+          boxShadow: '0 16px 40px rgba(26,60,52,0.12)'
+        }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#A67B5B', marginBottom: 14 }}>Tweaks</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <label style={{ fontSize: 11, color: 'rgba(61,75,62,0.7)', fontWeight: 600 }}>
+              Primary Green
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <input type="color" value={tweaks.primaryColor} onChange={e => applyTweak('primaryColor', e.target.value)}
+                  style={{ width: 32, height: 28, border: 'none', borderRadius: 6, cursor: 'pointer' }} />
+                <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#64748B' }}>{tweaks.primaryColor}</span>
+              </div>
+            </label>
+            <label style={{ fontSize: 11, color: 'rgba(61,75,62,0.7)', fontWeight: 600 }}>
+              Accent Clay
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <input type="color" value={tweaks.accentColor} onChange={e => applyTweak('accentColor', e.target.value)}
+                  style={{ width: 32, height: 28, border: 'none', borderRadius: 6, cursor: 'pointer' }} />
+                <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#64748B' }}>{tweaks.accentColor}</span>
+              </div>
+            </label>
+            <label style={{ fontSize: 11, color: 'rgba(61,75,62,0.7)', fontWeight: 600 }}>
+              Card Radius: {tweaks.borderRadius}px
+              <input type="range" min={8} max={40} value={tweaks.borderRadius}
+                onChange={e => applyTweak('borderRadius', Number(e.target.value))}
+                style={{ width: '100%', marginTop: 6, accentColor: tweaks.primaryColor }} />
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 11, color: 'rgba(61,75,62,0.7)', fontWeight: 600, cursor: 'pointer' }}>
+              <input type="checkbox" checked={tweaks.showGlass} onChange={e => applyTweak('showGlass', e.target.checked)} />
+              Glass score card
+            </label>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>

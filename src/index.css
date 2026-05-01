@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* CogCare design system — tokens, typography, cg-* utilities */
-@import "../docs/CogCare Design System (1)/colors_and_type.css";
+@import "../docs/cogcare-design-system/colors_and_type.css";
 
 /* Tailwind v4 — semantic colors & fonts (see docs/cogcare-design-system/README.md) */
 @theme {
@@ -114,23 +114,6 @@ textarea {
   textarea {
     font-size: 16px !important;
   }
-}
-
-/* Calendly inline embed (dashboard booking): reliable stacking + min iframe height until resize postMessage */
-.calendly-inline-host {
-  position: relative;
-  z-index: 1;
-}
-
-.calendly-inline-host .calendly-inline-widget {
-  min-width: 320px !important;
-  width: 100% !important;
-  min-height: min(650px, 82dvh) !important;
-}
-
-.calendly-inline-host .calendly-inline-widget iframe {
-  width: 100% !important;
-  min-height: min(650px, 82dvh) !important;
 }
 
 /* Legacy utility aliases → design tokens (prefer cg-* / theme utilities in new code) */

@@ -38,6 +38,18 @@ backend.completeAssessment.addEnvironment(
   process.env.APP_BASE_URL ?? 'http://localhost:5173',
 )
 
+backend.calendlyWebhook.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['cognito-idp:AdminGetUser'],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  }),
+)
+
+backend.calendlyWebhook.addEnvironment(
+  'USER_POOL_ID',
+  backend.auth.resources.userPool.userPoolId,
+)
+
 // CloudFormation AllowMethods only allows GET|PUT|HEAD|POST|PATCH|DELETE|* — not OPTIONS.
 // Use * so browsers’ CORS preflight (OPTIONS) is allowed; listing OPTIONS fails validation.
 const fnUrl = backend.completeAssessment.resources.lambda.addFunctionUrl({
@@ -54,7 +66,7 @@ const calendlyFnUrl = backend.calendlyWebhook.resources.lambda.addFunctionUrl({
   cors: {
     allowedOrigins: ['*'],
     allowedMethods: [HttpMethod.ALL],
-    allowedHeaders: ['*'],
+    allowedHeaders: ['content-type', 'calendly-webhook-signature'],
   },
 })
 

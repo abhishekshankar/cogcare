@@ -2,6 +2,10 @@
 
 Marketing site and **Brain Health Index** quiz with optional **AWS Amplify Gen 2** backend: Cognito auth, AppSync data, S3 avatars, and a **`completeAssessment`** Lambda (Brevo emails + onboarding).
 
+## Design system
+
+Brand guidelines, tokens, static previews, and UI kit live in **[docs/cogcare-design-system/README.md](docs/cogcare-design-system/README.md)**.
+
 ## Amplify & env
 
 See **[docs/cogcare-amplify.md](docs/cogcare-amplify.md)** for:

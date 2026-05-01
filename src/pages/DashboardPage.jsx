@@ -35,7 +35,7 @@ export default function DashboardPage() {
     setActiveSubjectId,
     assessmentsForActiveSubject,
     consultants,
-    appointmentsForActiveSubject,
+    consultAppointments,
     loading,
     loadError,
     load,
@@ -194,44 +194,18 @@ export default function DashboardPage() {
         </div>
       ) : null}
       <header className="border-b border-border bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl min-w-0 flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5">
-          {/* Mobile: brand + actions on one row so the “who” block can use full width below */}
-          <div className="flex items-center justify-between gap-2 sm:hidden">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
             <Link
               to="/"
-              className="flex min-w-0 shrink items-center gap-2 font-serif text-lg italic text-forest"
-            >
-              <Brain className="h-5 w-5 shrink-0 text-clay" strokeWidth={1.5} aria-hidden />
-              <span className="truncate">Dashboard</span>
-            </Link>
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={openAssessmentChooser}
-                className={headerActionClassName}
-                aria-label="Add someone you care for, with or without a test"
-              >
-                <UserPlus className="h-4 w-4 shrink-0 text-clay" strokeWidth={1.75} aria-hidden />
-                <span className="max-w-[5.5rem] truncate sm:max-w-none">Add</span>
-              </button>
-              <button type="button" onClick={handleSignOut} className={headerActionClassName}>
-                <LogOut className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="max-w-[4.5rem] truncate sm:max-w-none">Sign out</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-surface/35 px-3 py-3 sm:flex-1 sm:flex-row sm:items-center sm:gap-3 sm:overflow-x-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 md:gap-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <Link
-              to="/"
-              className="hidden shrink-0 items-center gap-2 font-serif text-lg italic text-forest sm:flex"
+              className="flex shrink-0 items-center gap-2 font-serif text-lg italic text-forest"
             >
               <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
               Dashboard
             </Link>
             <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border bg-white shadow-sm sm:h-9 sm:w-9">
+            <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
+              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-surface">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -240,15 +214,10 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-clay sm:hidden">
-                  Signed in as
-                </p>
-                <p className="truncate text-sm font-medium text-forest sm:max-w-[14rem] md:max-w-none">
-                  <span className="text-forest/60 sm:inline">Hi, </span>
-                  {displayName}
-                </p>
-              </div>
+              <p className="truncate text-sm font-medium text-forest">
+                <span className="text-forest/60">Hi, </span>
+                {displayName}
+              </p>
             </div>
             {subjects?.length ? (
               <>
@@ -277,6 +246,14 @@ export default function DashboardPage() {
               Sign out
             </button>
           </div>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-forest hover:bg-surface sm:min-h-0"
+          >
+            <LogOut className="h-4 w-4" aria-hidden />
+            Sign out
+          </button>
         </div>
         <TabBar>
           <TabBarLink to="/dashboard" end>
@@ -327,29 +304,7 @@ export default function DashboardPage() {
               <Route path="more-tests" element={<MoreTestsTab />} />
               <Route
                 path="consultants"
-                element={
-                  <ConsultantsTab
-                    rows={consultants}
-                    appointments={appointmentsForActiveSubject}
-                    activeSubjectName={consultActiveSubjectName}
-                    hasMultipleSubjects={(subjects?.length ?? 0) > 1}
-                  />
-                }
-              />
-              <Route
-                path="consultations/book"
-                element={
-                  <BookConsultPage
-                    client={client}
-                    email={email}
-                    ownerSub={sub}
-                    consultants={consultants}
-                    subjects={subjects}
-                    activeSubjectId={activeSubjectId}
-                    setActiveSubjectId={setActiveSubjectId}
-                    onRefresh={load}
-                  />
-                }
+                element={<ConsultantsTab rows={consultants} appointments={consultAppointments} />}
               />
               <Route
                 path="settings"

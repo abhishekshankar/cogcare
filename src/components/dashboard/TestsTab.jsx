@@ -206,8 +206,8 @@ export default function TestsTab({ client, assessments, onRefresh, onOpenAssessm
       {sorted.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-white/60 px-6 py-12 text-center shadow-sm">
           <p className="text-sm leading-relaxed text-forest/70">
-            No assessments for this person yet. Use Take Brain Health Index above to complete it here — results save to
-            your account. You can also start the quiz from the home page and email results to this address.
+            No assessments yet. Complete the Brain Health Index on the home page and email your results to the same
+            address as this account — they will show up here after you sign in.
           </p>
         </div>
       ) : (

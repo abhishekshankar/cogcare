@@ -27,14 +27,12 @@ async function listAllAssessments() {
   return all
 }
 
-async function listConsultAppointmentsForOwner(ownerSub) {
-  if (!ownerSub) return []
+async function listAllSubjects() {
   const all = []
   let nextToken = undefined
   for (;;) {
-    const res = await client.models.ConsultAppointment.list({
-      filter: { owner: { eq: ownerSub } },
-      limit: 100,
+    const res = await client.models.Subject.list({
+      limit: 200,
       ...(nextToken ? { nextToken } : {}),
     })
     const batch = res.data ?? []
@@ -43,6 +41,83 @@ async function listConsultAppointmentsForOwner(ownerSub) {
     if (!nextToken) break
   }
   return all
+}
+
+async function listConsultAppointments() {
+  const all = []
+  let nextToken = undefined
+  for (;;) {
+    const res = await client.models.ConsultAppointment.list({
+      limit: 200,
+      ...(nextToken ? { nextToken } : {}),
+    })
+    const batch = res.data ?? []
+    all.push(...batch)
+    nextToken = res.nextToken
+    if (!nextToken) break
+  }
+  return all
+}
+
+/**
+ * Backfill legacy assessments missing subjectId (idempotent per browser).
+ */
+async function backfillAssessmentSubjects(assessments, ownerSub) {
+  if (typeof localStorage === 'undefined') return assessments
+  if (localStorage.getItem(BACKFILL_KEY) === '1') return assessments
+  let changed = false
+  const out = [...assessments]
+  for (let i = 0; i < out.length; i++) {
+    const a = out[i]
+    if (a.subjectId) continue
+    try {
+      const r = JSON.parse(a.resultsJson || '{}')
+      const name =
+        typeof r.lovedOneName === 'string' && r.lovedOneName.trim()
+          ? r.lovedOneName.trim()
+          : ''
+      const age = typeof r.lovedOneAge === 'number' ? r.lovedOneAge : null
+      const relation = typeof r.caregiverRelation === 'string' ? r.caregiverRelation : ''
+
+      const { data: subs } = await client.models.Subject.list({ limit: 200 })
+      let sid = null
+      if (!name || isGenericLovedOneDisplayName(name)) {
+        sid = await ensureSelfSubject(client, ownerSub)
+      } else {
+        const key = name.toLowerCase()
+        sid = subs?.find(
+          (s) =>
+            !s.isSelf &&
+            (s.displayName?.trim().toLowerCase() ?? '') === key &&
+            (s.age ?? null) === (age ?? null),
+        )?.id
+
+        if (!sid) {
+          const { data: created, errors } = await client.models.Subject.create({
+            owner: ownerSub,
+            displayName: name,
+            age: age ?? undefined,
+            relation: relation || undefined,
+            isSelf: false,
+            createdAt: new Date().toISOString(),
+          })
+          if (errors?.length || !created?.id) continue
+          sid = created.id
+        }
+      }
+      if (sid && a.id) {
+        const { errors: upErr } = await client.models.Assessment.update({ id: a.id, subjectId: sid })
+        if (!upErr?.length) {
+          out[i] = { ...a, subjectId: sid }
+          changed = true
+        }
+      }
+    } catch {
+      /* ignore row */
+    }
+  }
+  if (changed) localStorage.setItem(BACKFILL_KEY, '1')
+  return out
 }
 
 /**
@@ -102,7 +177,6 @@ export function useDashboardData() {
       const ownerSub = attrs.sub || ''
       setSub(ownerSub)
       setEmail(attrs.email || attrs.preferred_username || '')
-      const ownerSub = attrs.sub || ''
       const { data: profiles } = await client.models.UserProfile.list({ limit: 1 })
       setProfile(profiles?.[0] ?? null)
       let assess = await listAllAssessments()
@@ -143,8 +217,7 @@ export function useDashboardData() {
       setSubjects(subjList.filter((s) => !s.archivedAt))
       const { data: cons } = await client.models.Consultant.list()
       setConsultants(cons ?? [])
-      const appts = await listConsultAppointmentsForOwner(ownerSub)
-      setConsultAppointments(appts)
+      setConsultAppointments(appts ?? [])
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : 'Could not load your data. Please try again.'
@@ -201,6 +274,7 @@ export function useDashboardData() {
     assessmentsForActiveSubject,
     consultants,
     consultAppointments,
+    appointmentsForActiveSubject,
     loading,
     loadError,
     load,

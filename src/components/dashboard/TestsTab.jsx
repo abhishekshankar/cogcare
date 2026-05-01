@@ -50,7 +50,7 @@ function exportFilenameStub(completedAt, id) {
   return `cogcare-bhi-${d}-${short}`
 }
 
-export default function TestsTab({ client, assessments, onRefresh }) {
+export default function TestsTab({ client, assessments, onRefresh, onOpenAssessmentChooser }) {
   const [open, setOpen] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [downloadingPdfId, setDownloadingPdfId] = useState(null)
@@ -165,6 +165,15 @@ export default function TestsTab({ client, assessments, onRefresh }) {
           subtitle="Tests you saved by emailing your results from the Brain Health Index appear here after you sign in with the same account."
         />
         <div className="flex flex-wrap items-center gap-2">
+          {typeof onOpenAssessmentChooser === 'function' ? (
+            <button
+              type="button"
+              onClick={onOpenAssessmentChooser}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
+            >
+              Take Brain Health Index
+            </button>
+          ) : null}
           {sorted.length > 0 ? (
             <button
               type="button"
@@ -308,7 +317,19 @@ export default function TestsTab({ client, assessments, onRefresh }) {
               {(() => {
                 try {
                   const r = JSON.parse(open.resultsJson || '{}')
-                  return <BHIReportContent quizResults={r} showActions={false} />
+                  const consultBookingTo = open?.id
+                    ? `/dashboard/consultations/book?${new URLSearchParams({
+                        ...(open.subjectId ? { subjectId: String(open.subjectId) } : {}),
+                        assessmentId: String(open.id),
+                      }).toString()}`
+                    : '/dashboard/consultations/book'
+                  return (
+                    <BHIReportContent
+                      quizResults={r}
+                      showActions={false}
+                      consultBookingTo={consultBookingTo}
+                    />
+                  )
                 } catch {
                   return <p className="text-sm text-red-700">Could not load results.</p>
                 }

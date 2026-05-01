@@ -17,7 +17,13 @@ function scoreToFillPercent(score) {
   return Math.min(100, Math.max(0, ((score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)) * 100))
 }
 
-export default function BrainCreditTab({ profile, latestResults, assessmentCount, assessments }) {
+export default function BrainCreditTab({
+  profile,
+  latestResults,
+  assessmentCount,
+  assessments,
+  onStartAssessment,
+}) {
   const score =
     profile?.brainCreditScore ??
     (latestResults

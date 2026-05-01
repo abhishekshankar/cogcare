@@ -1,91 +1,47 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import BrainHealthIndex from '../BrainHealthIndex'
 import { useAuthIdentity } from '../lib/useAuthIdentity'
-import {
-  X,
-  ArrowRight,
-  Brain,
-  ArrowUpRight,
-  Sparkles,
-} from 'lucide-react'
-
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '')
+import CogcareHome from '../components/cogcare-home/CogcareHome.jsx'
+import { X, ArrowRight, Brain } from 'lucide-react'
 
 export default function HomePage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const authIdentity = useAuthIdentity()
-  const [selectedCard, setSelectedCard] = useState(null)
-  const [isScrolled, setIsScrolled] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
   const [showIntro, setShowIntro] = useState(false)
   const [quizAnswers, setQuizAnswers] = useState({})
   const [quizResults, setQuizResults] = useState(null)
   const handleCloseQuiz = useCallback(() => setShowQuiz(false), [])
-  const closeBtnRef = useRef(null)
+  const closeIntroRef = useRef(null)
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    if (searchParams.get('startQuiz') !== 'newSubject') return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- open quiz modal when landing with ?startQuiz=newSubject from dashboard
+    setShowQuiz(true)
+    const next = new URLSearchParams(searchParams)
+    next.delete('startQuiz')
+    setSearchParams(next, { replace: true })
+  }, [searchParams, setSearchParams])
 
   useEffect(() => {
-    if (!selectedCard) return
+    if (!showIntro) return
     const onKey = (e) => {
-      if (e.key === 'Escape') setSelectedCard(null)
+      if (e.key === 'Escape') setShowIntro(false)
     }
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    closeBtnRef.current?.focus()
+    closeIntroRef.current?.focus()
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
     }
-  }, [selectedCard])
+  }, [showIntro])
 
-  const cards = [
-    {
-      id: 1,
-      title: 'Across Every Community',
-      category: 'Equity',
-      image:
-        'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=800',
-      content: `Dementia does not see borders, but it does affect communities differently. Research shows that older Black Americans are about twice as likely to have Alzheimer's or other dementias as older whites. Hispanic and Latino Americans are about one and a half times as likely. These differences aren't just about biology; they are often tied to things like access to healthcare, quality of education, and heart health.
-
-When we say "Dementia Does Not Differentiate," we mean that everyone deserves the same chance at a healthy brain. By focusing on health equity, we can make sure that life-saving information and care reach every neighborhood. Whether it is through community workshops or culturally relevant health tips, our goal is to empower every person, regardless of their race, gender, or income, to take charge of their cognitive future. Hope belongs to everyone.`,
-    },
-    {
-      id: 2,
-      title: 'Modifiable Risk, Shared Hope',
-      category: 'Prevention',
-      image:
-        'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800',
-      content: `Did you know that nearly 40% of dementia cases worldwide might be prevented or delayed? This is one of the most hopeful discoveries in modern medicine. Science tells us that dementia is modifiable. This means our daily habits can actually lower our risk or slow down cognitive decline. 
-
-To keep your brain strong, focus on these key areas: Keep your blood pressure in check, stay physically active every day, and protect your hearing with earplugs or hearing aids if needed. It is also vital to stay socially connected with friends and family, eat nutritious foods, and avoid smoking. Even small changes, like taking a daily walk or learning a new hobby, can build "cognitive reserve." Your brain is resilient, and it is never too late, or too early, to start protecting it.`,
-    },
-    {
-      id: 3,
-      title: 'Respectful Language Matters',
-      category: 'Advocacy',
-      image:
-        'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800',
-      content: `The words we use to talk about dementia have a powerful impact. For a long time, people used words like "demented" or "victim," which can make someone feel powerless or ashamed. Today, we choose "person-first" language. We say "a person living with dementia" because a diagnosis is only one part of who they are. They are still a parent, a friend, an artist, and a human being with a story.
-
-Using respectful language helps break down the stigma that keeps people from seeking help. Instead of saying someone is "suffering from" the condition, we talk about their journey and their needs. We avoid terms that suggest someone is disappearing. By speaking with dignity, we create a community where people living with dementia feel seen, heard, and valued.`,
-    },
-    {
-      id: 4,
-      title: 'Support for Caregivers',
-      category: 'Care',
-      image:
-        'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=800',
-      content: `If you are caring for someone living with dementia, you are doing one of the most important jobs in the world. But you don't have to do it alone. Caregiving can be rewarding, but it can also be physically and emotionally tiring. Providing "Shared Hope" means supporting the supporters. 
-
-We offer a library of education designed for your specific needs. This includes tips on how to communicate when words become difficult, how to manage daily safety at home, and how to find local support groups. Remember that "self-care" isn't selfish. It is necessary. When you take a moment to rest or talk to a counselor, you are becoming a more resilient caregiver. From online training modules to 24/7 helplines, we are here to provide the tools you need.`,
-    },
-  ]
+  const startAssessment = useCallback(() => {
+    setShowIntro(true)
+  }, [])
 
   return (
     <div className="min-h-screen bg-page text-ink font-sans selection:bg-border">
@@ -444,32 +400,32 @@ We offer a library of education designed for your specific needs. This includes 
 
       {showIntro && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#3D4B3E]/30 backdrop-blur-md p-4 sm:items-center"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-forest/30 backdrop-blur-md p-4 sm:items-center"
           role="dialog"
           aria-modal="true"
           aria-labelledby="intro-title"
         >
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#FDFBF7] shadow-2xl p-8 sm:p-10">
+          <div className="relative w-full max-w-lg rounded-3xl bg-page shadow-2xl p-8 sm:p-10">
             <button
+              ref={closeIntroRef}
               type="button"
               onClick={() => setShowIntro(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 transition-colors"
+              className="absolute top-5 right-5 text-ink-faint hover:text-ink transition-colors"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Bottom line up front */}
-            <div className="rounded-2xl bg-[#3D4B3E] text-white px-6 py-5 mb-7">
+            <div className="rounded-2xl bg-forest text-white px-6 py-5 mb-7">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">
                 The clinical bottom line
               </p>
               <p className="text-base font-semibold leading-snug">
-                By the time most people <em>notice</em> cognitive decline, it has been quietly progressing for 10–20 years. The window to act is now. Not later.
+                By the time caregivers <em>notice</em> cognitive decline, it has been quietly progressing for 10–20 years. The window to act is now. Not later.
               </p>
             </div>
 
-            <h2 id="intro-title" className="text-xl font-bold text-[#3D4B3E] mb-4 leading-snug">
+            <h2 id="intro-title" className="text-xl font-bold text-forest mb-4 leading-snug">
               What we're actually measuring
             </h2>
 
@@ -480,30 +436,31 @@ We offer a library of education designed for your specific needs. This includes 
                 { label: 'Processing speed', sub: 'reaction & fluency' },
                 { label: 'Executive function', sub: 'planning & control' },
               ].map(({ label, sub }) => (
-                <div key={label} className="rounded-xl border border-[#3D4B3E]/10 bg-white px-4 py-3">
-                  <p className="text-xs font-bold text-[#3D4B3E]">{label}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{sub}</p>
+                <div key={label} className="rounded-xl border border-forest/10 bg-white px-4 py-3">
+                  <p className="text-xs font-bold text-forest">{label}</p>
+                  <p className="text-[10px] text-ink-faint mt-0.5">{sub}</p>
                 </div>
               ))}
             </div>
 
             <button
               type="button"
-              onClick={() => { setShowIntro(false); setShowQuiz(true) }}
-              className="w-full bg-[#3D4B3E] text-white px-8 py-4 rounded-full font-bold uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-3 hover:shadow-2xl hover:-translate-y-1 transition-all mb-6"
+              onClick={() => {
+                setShowIntro(false)
+                setShowQuiz(true)
+              }}
+              className="w-full bg-forest text-white px-8 py-4 rounded-full font-bold uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-3 hover:shadow-2xl hover:-translate-y-1 transition-all mb-6"
             >
               Start My Assessment
               <ArrowRight className="w-4 h-4" aria-hidden />
             </button>
 
-            {/* What you get */}
-            <div className="rounded-2xl bg-[#3D4B3E]/5 border border-[#3D4B3E]/10 px-5 py-4 mb-5 text-sm text-slate-600 flex gap-3 items-start">
-              <Brain className="w-5 h-5 text-[#3D4B3E] mt-0.5 shrink-0" />
+            <div className="rounded-2xl bg-forest/5 border border-forest/10 px-5 py-4 mb-5 text-sm text-ink-muted flex gap-3 items-start">
+              <Brain className="w-5 h-5 text-forest mt-0.5 shrink-0" aria-hidden />
               <p>
-                You'll receive a <strong className="text-[#3D4B3E]">personalised Brain Health report</strong> for your loved one, saved to your account and emailable to their doctor, so your observations are always on record.
+                You'll receive a <strong className="text-forest">personalised Brain Health report</strong> for your loved one, saved to your account and emailable to their doctor, so your observations are always on record.
               </p>
             </div>
-
           </div>
         </div>
       )}

@@ -6,7 +6,7 @@ import PanelHeader from '../bhi/PanelHeader'
 
 const client = generateClient()
 
-export default function SettingsTab({ email, profile, onProfileSaved }) {
+export default function SettingsTab({ email, profile, subjects = [], onProfileSaved }) {
   const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')

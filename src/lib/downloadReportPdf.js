@@ -4,7 +4,14 @@ import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import BHIReportContent from '../components/BHIReportContent'
 
+function pageBackgroundColor() {
+  if (typeof document === 'undefined') return '#FDFBF7'
+  const v = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim()
+  return v || '#FDFBF7'
+}
+
 export async function downloadReportPdf(quizResults, filename) {
+  const bg = pageBackgroundColor()
   const container = document.createElement('div')
   container.className = 'pdf-capture'
   Object.assign(container.style, {
@@ -12,7 +19,7 @@ export async function downloadReportPdf(quizResults, filename) {
     left: '-9999px',
     top: '0',
     width: '700px',
-    background: '#FDFBF7',
+    background: bg,
     padding: '40px',
     boxSizing: 'border-box',
     fontFamily: '"DM Sans", system-ui, sans-serif',
@@ -30,7 +37,7 @@ export async function downloadReportPdf(quizResults, filename) {
     const canvas = await html2canvas(container, {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#FDFBF7',
+      backgroundColor: bg,
       logging: false,
     })
 
@@ -40,7 +47,6 @@ export async function downloadReportPdf(quizResults, filename) {
     const margin = 12
     const contentW = pageW - margin * 2
     const contentH = (canvas.height / canvas.width) * contentW
-    const imgData = canvas.toDataURL('image/jpeg', 0.92)
 
     let remaining = contentH
     let srcY = 0

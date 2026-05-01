@@ -1,0 +1,102 @@
+/* Scoped tokens + layout rules from docs/CogCare Design System (1)/homepage/index.html */
+
+.cogcare-ds-home {
+  --color-forest: #3d4b3e;
+  --color-forest-deep: #2d382d;
+  --color-clay: #a67b5b;
+  --color-sand: #e8dcc4;
+  --color-cream: #fdfbf7;
+  --color-cream-2: #f3efe9;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #9b9b9b;
+
+  min-height: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.cogcare-ds-home .btn-primary:hover {
+  background: var(--color-forest-deep) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -6px rgba(26, 60, 52, 0.25);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Blog: center nav on desktop; compact header row on narrow screens (nav-links hidden) */
+.cogcare-ds-home .blog-nav-mobile-only {
+  display: none !important;
+}
+
+/* Tighten nav menu spacing on medium-large screens so the right CTA cluster
+   ("Get Inside" + "Take Brain Health Index") never overflows */
+@media (max-width: 1100px) {
+  .cogcare-ds-home .nav-links {
+    gap: 18px !important;
+  }
+}
+
+/* Below ~960px the menu would crowd the CTAs — hide the inline links and keep
+   the two CTAs side-by-side. Blog flips to its mobile placement next to them. */
+@media (max-width: 960px) {
+  .cogcare-ds-home .nav-links {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-desktop-only {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-mobile-only {
+    display: inline !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .cogcare-ds-home .blog-nav-desktop-only {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-mobile-only {
+    display: inline !important;
+  }
+  .cogcare-ds-home .nav-links {
+    display: none !important;
+  }
+  .cogcare-ds-home .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .cogcare-ds-home .steps-grid {
+    grid-column: span 1 !important;
+  }
+  .cogcare-ds-home .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* On very narrow phones, hide the secondary "Get Inside" link so the primary
+   CTA stays prominent and the row never overflows. */
+@media (max-width: 520px) {
+  .cogcare-ds-home .nav-cta-getinside {
+    display: none !important;
+  }
+  .cogcare-ds-home .blog-nav-mobile-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cogcare-ds-home .footer-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

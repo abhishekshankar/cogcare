@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend'
 import { completeAssessment } from '../functions/completeAssessment/resource'
 import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
 import { verifyAuthChallengeResponse } from '../auth/verify-auth-challenge-response/resource'
+import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
 
 const schema = a.schema({
   /**
@@ -16,6 +17,23 @@ const schema = a.schema({
       displayName: a.string(),
       avatarKey: a.string(),
       brainCreditScore: a.integer(),
+      createdAt: a.datetime(),
+      /** Cognito `sub` of the implicit "Myself" subject row for this account. */
+      defaultSubjectId: a.string(),
+    })
+    .authorization((allow) => [allow.ownerDefinedIn('owner')]),
+
+  /**
+   * A person the account owner tracks (self or a loved one). Assessments and consults reference `subjectId`.
+   */
+  Subject: a
+    .model({
+      owner: a.string(),
+      displayName: a.string().required(),
+      age: a.integer(),
+      relation: a.string(),
+      isSelf: a.boolean().required(),
+      archivedAt: a.datetime(),
       createdAt: a.datetime(),
     })
     .authorization((allow) => [allow.ownerDefinedIn('owner')]),
@@ -44,9 +62,6 @@ const schema = a.schema({
     })
     .identifier(['slotKey'])
     .authorization((allow) => [
-      // Per-model `allow` has no `.resource()` (Amplify strips it — see ModelType.authorization).
-      // Schema-level `allow.resource(completeAssessment)` still wires Lambda IAM access.
-      // GraphQL auth for this model: IAM / Identity Pool (matches Lambda data client).
       allow.authenticated('identityPool').to(['create', 'read', 'update', 'delete']),
     ]),
 
@@ -57,6 +72,7 @@ const schema = a.schema({
       answersJson: a.string().required(),
       resultsJson: a.string().required(),
       completedAt: a.datetime().required(),
+      subjectId: a.string(),
     })
     .authorization((allow) => [allow.ownerDefinedIn('owner')]),
 
@@ -96,6 +112,7 @@ const schema = a.schema({
   allow.resource(completeAssessment).to(['mutate', 'query']),
   allow.resource(calendlyWebhook).to(['mutate', 'query']),
   allow.resource(verifyAuthChallengeResponse).to(['mutate', 'query']),
+  allow.resource(calendlyWebhook).to(['mutate', 'query']),
 ])
 
 export type Schema = ClientSchema<typeof schema>

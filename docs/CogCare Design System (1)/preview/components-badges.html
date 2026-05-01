@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 20px 24px; background: var(--color-bg); font-family: var(--font-sans); }
+  .group-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--color-clay); margin-bottom: 10px; margin-top: 16px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+  .badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 9999px; font-family: var(--font-sans); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; }
+</style>
+</head>
+<body>
+<div class="group-label">Category Badges (on photo cards)</div>
+<div class="row">
+  <span class="badge" style="background:#3D4B3E;color:white">Prevention</span>
+  <span class="badge" style="background:#3D4B3E;color:white">Equity</span>
+  <span class="badge" style="background:#3D4B3E;color:white">Advocacy</span>
+  <span class="badge" style="background:#3D4B3E;color:white">Care</span>
+</div>
+
+<div class="group-label">Surface Badges / Pills</div>
+<div class="row">
+  <span class="badge" style="background:#F3EFE9;color:#A67B5B">Evidence-Based Cognitive Wellness ✦</span>
+  <span class="badge" style="background:#F3EFE9;color:#A67B5B">501(c)(3) Nonprofit</span>
+  <span class="badge" style="background:#F3EFE9;color:#3D4B3E">Brain Health Index</span>
+</div>
+
+<div class="group-label">Status Indicators</div>
+<div class="row">
+  <span class="badge" style="background:#F0FDF4;color:#166534;border:1px solid #BBF7D0">Normal Aging</span>
+  <span class="badge" style="background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">Elevated Risk</span>
+  <span class="badge" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA">High Risk</span>
+  <span class="badge" style="background:#F3EFE9;color:rgba(61,75,62,0.6);border:1px dashed #E8DCC4">Coming Soon</span>
+</div>
+
+<div class="group-label">Score Progress Bar</div>
+<div style="max-width:300px">
+  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+    <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:rgba(61,75,62,0.5)">Brain Credit</span>
+    <span style="font-family:var(--font-serif);font-size:14px;color:#3D4B3E;font-weight:600">740</span>
+  </div>
+  <div style="height:10px;border-radius:9999px;background:#F3EFE9;overflow:hidden">
+    <div style="width:81%;height:100%;border-radius:9999px;background:#3D4B3E;opacity:0.85;transition:width 500ms ease"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:rgba(61,75,62,0.5);font-weight:500;font-family:monospace">
+    <span>300</span><span>850</span>
+  </div>
+</div>
+
+<div class="group-label">Avatar</div>
+<div class="row">
+  <div style="width:36px;height:36px;border-radius:9999px;border:1px solid #E8DCC4;background:#F3EFE9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(61,75,62,0.35);text-transform:uppercase">N</div>
+  <div style="width:56px;height:56px;border-radius:9999px;border:1px solid #E8DCC4;background:#F3EFE9;overflow:hidden">
+    <img src="../assets/nasir-photo.jpg" style="width:100%;height:100%;object-fit:cover">
+  </div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div style="font-size:12px;font-weight:500;color:#3D4B3E"><span style="color:rgba(61,75,62,0.6)">Hi, </span>Nasir</div>
+    <div style="font-size:9px;color:rgba(61,75,62,0.5)">Member</div>
+  </div>
+</div>
+</body>
+</html>

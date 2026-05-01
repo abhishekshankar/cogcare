@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import PanelHeader from '../bhi/PanelHeader'
 import { FALLBACK_CONSULTANTS } from './consultantsFallback'
 
@@ -95,7 +96,7 @@ export default function ConsultantsTab({ rows, appointments = [] }) {
                 className="mt-4 inline-flex min-h-[44px] items-center rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:min-h-0"
               >
                 Request consultation
-              </a>
+              </Link>
             </div>
           </div>
         ))}

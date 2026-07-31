@@ -1,8 +1,10 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend'
 import { completeAssessment } from '../functions/completeAssessment/resource'
 import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
+import { acceptNetworkInvitation } from '../functions/acceptNetworkInvitation/resource'
+import { updateNetworkMemberProfile } from '../functions/updateNetworkMemberProfile/resource'
+import { getNetworkPublicData } from '../functions/getNetworkPublicData/resource'
 import { verifyAuthChallengeResponse } from '../auth/verify-auth-challenge-response/resource'
-import { calendlyWebhook } from '../functions/calendlyWebhook/resource'
 
 const schema = a.schema({
   /**
@@ -79,14 +81,70 @@ const schema = a.schema({
   Consultant: a
     .model({
       name: a.string().required(),
+      slug: a.string(),
       title: a.string(),
+      credentials: a.string(),
       bio: a.string(),
       photoUrl: a.string(),
       bookingUrl: a.string(),
       contactEmail: a.string(),
+      affiliation: a.string(),
+      licensedStates: a.string().array(),
+      locationCity: a.string(),
+      locationState: a.string(),
+      isActive: a.boolean(),
+      inactiveReason: a.string(),
       sortOrder: a.integer(),
+      /** Cognition Network founding cohort label, e.g. "founding". */
+      networkCohort: a.string(),
+      networkRoleCategory: a.string(),
+      /** JSON string array of brand ids: cogcare, cogtraining, nso */
+      networkBrandsJson: a.string(),
+      /** Set when the member explicitly consents to public display of their name/profile. */
+      publicNameConsentAt: a.datetime(),
+      organization: a.string(),
+      professionalUrl: a.string(),
+      participationMode: a.string(),
+      /** JSON string array of venture brand ids */
+      ventureAssociationsJson: a.string(),
+      interests: a.string(),
+      /** public | directory | private */
+      profileVisibility: a.string(),
+      communicationPreference: a.string(),
+      onboardingNote: a.string(),
+      disclosureAcknowledgedAt: a.datetime(),
     })
-    .authorization((allow) => [allow.authenticated().to(['read'])]),
+    .authorization((allow) => [
+      allow.authenticated().to(['read']),
+      allow.groups(['admin']).to(['create', 'read', 'update', 'delete']),
+    ]),
+
+  /**
+   * Invitation-only onboarding for The Cogcare Cognition Network.
+   * PK = sha256(rawToken). Public read via API key for invite landing pages.
+   */
+  NetworkInvitation: a
+    .model({
+      tokenHash: a.string().required(),
+      email: a.string().required(),
+      inviteeName: a.string(),
+      cohort: a.string().required(),
+      roleCategory: a.string(),
+      /** JSON string array of brand ids */
+      brandsJson: a.string(),
+      status: a.string().required(),
+      invitedByEmail: a.string(),
+      personalNote: a.string(),
+      expiresAt: a.datetime(),
+      acceptedAt: a.datetime(),
+      consultantId: a.string(),
+      consultantSlug: a.string(),
+      createdAt: a.datetime(),
+    })
+    .identifier(['tokenHash'])
+    .authorization((allow) => [
+      allow.groups(['admin']).to(['create', 'read', 'update', 'delete']),
+    ]),
 
   /**
    * Consultation bookings mirrored from Calendly (`invitee.created` / `invitee.canceled` webhooks).
@@ -111,8 +169,10 @@ const schema = a.schema({
 }).authorization((allow) => [
   allow.resource(completeAssessment).to(['mutate', 'query']),
   allow.resource(calendlyWebhook).to(['mutate', 'query']),
+  allow.resource(acceptNetworkInvitation).to(['mutate', 'query']),
+  allow.resource(updateNetworkMemberProfile).to(['mutate', 'query']),
+  allow.resource(getNetworkPublicData).to(['query']),
   allow.resource(verifyAuthChallengeResponse).to(['mutate', 'query']),
-  allow.resource(calendlyWebhook).to(['mutate', 'query']),
 ])
 
 export type Schema = ClientSchema<typeof schema>

@@ -1,5 +1,5 @@
 /**
- * Dev-only: serves POST /api/send-quiz-email using api/send-quiz-email.js (same module as optional Lambda/serverless packaging).
+ * Dev-only: serves POST /api/send-quiz-email and POST /api/network-feedback.
  * Merges BREVO_* / SES_* from Vite env files into process.env before each request (same envDir as Vite).
  */
 import path from 'node:path'
@@ -60,7 +60,15 @@ export function localEmailApiPlugin() {
 
       server.middlewares.use(async (req, res, next) => {
         const pathname = (req.url || '').split('?')[0]
-        if (pathname !== '/api/send-quiz-email') {
+        const handlerByPath = {
+          '/api/send-quiz-email': 'send-quiz-email.js',
+          '/api/network-feedback': 'submit-network-feedback.js',
+          '/api/network-member-profile': 'network-member-profile.js',
+          '/api/network-member-opportunity-response': 'network-member-opportunity-response.js',
+          '/api/network-member-contributions': 'network-member-contributions.js',
+        }
+        const handlerFile = handlerByPath[pathname]
+        if (!handlerFile) {
           return next()
         }
 
@@ -80,21 +88,22 @@ export function localEmailApiPlugin() {
 
         const mockReq = {
           method: req.method,
+          url: req.url,
           body,
         }
 
         const handlerRes = createHandlerResponse(res)
 
         try {
-          const modUrl = pathToFileURL(path.join(__dirname, 'api', 'send-quiz-email.js')).href
+          const modUrl = pathToFileURL(path.join(__dirname, 'api', handlerFile)).href
           const { default: handler } = await import(modUrl)
           await handler(mockReq, handlerRes)
         } catch (err) {
-          console.error('[local-email-api]', err)
+          console.error('[local-api]', err)
           if (!res.headersSent) {
             res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ error: 'Email API failed', detail: String(err?.message || err) }))
+            res.end(JSON.stringify({ error: 'Local API failed', detail: String(err?.message || err) }))
           }
         }
       })

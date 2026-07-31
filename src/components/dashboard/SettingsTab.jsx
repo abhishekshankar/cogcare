@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { generateClient } from 'aws-amplify/data'
 import { updatePassword, fetchAuthSession } from 'aws-amplify/auth'
 import { uploadData, getUrl, remove } from 'aws-amplify/storage'
 import PanelHeader from '../bhi/PanelHeader'
-
-const client = generateClient()
+import { getDataClient } from '../../lib/dataClient.js'
 
 export default function SettingsTab({ email, profile, subjects = [], onProfileSaved }) {
   const [currentPw, setCurrentPw] = useState('')
@@ -56,6 +54,7 @@ export default function SettingsTab({ email, profile, subjects = [], onProfileSa
     setFileBusy(true)
     setAvatarMsg('')
     try {
+      const client = getDataClient()
       const session = await fetchAuthSession()
       const id = session.identityId
       if (!id) throw new Error('Missing identity')
@@ -94,6 +93,7 @@ export default function SettingsTab({ email, profile, subjects = [], onProfileSa
     setFileBusy(true)
     setAvatarMsg('')
     try {
+      const client = getDataClient()
       await remove({ path: profile.avatarKey })
       const { data: existing } = await client.models.UserProfile.list({ limit: 1 })
       const row = existing?.[0]

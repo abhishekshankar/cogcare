@@ -24,8 +24,31 @@ try {
 const fromEnv = (process.env.VITE_COMPLETE_ASSESSMENT_URL || '').trim()
 const url = fromEnv || String(fromGen).trim()
 
+let acceptFromGen = ''
+try {
+  if (fs.existsSync(srcOut)) {
+    const j = JSON.parse(fs.readFileSync(srcOut, 'utf8'))
+    acceptFromGen = (j.custom && j.custom.acceptNetworkInvitationFunctionUrl) || ''
+  }
+} catch {
+  /* ignore */
+}
+
+const acceptFromEnv = (process.env.VITE_ACCEPT_NETWORK_INVITATION_URL || '').trim()
+const acceptUrl = acceptFromEnv || String(acceptFromGen).trim()
+
 fs.mkdirSync(path.dirname(publicPath), { recursive: true })
-fs.writeFileSync(publicPath, JSON.stringify({ completeAssessmentFunctionUrl: url }, null, 0))
+fs.writeFileSync(
+  publicPath,
+  JSON.stringify(
+    {
+      completeAssessmentFunctionUrl: url,
+      acceptNetworkInvitationFunctionUrl: acceptUrl,
+    },
+    null,
+    0,
+  ),
+)
 console.log(
   '[write-runtime-email-config] wrote',
   path.relative(root, publicPath),

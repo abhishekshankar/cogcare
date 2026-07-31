@@ -8,6 +8,7 @@ export default defineConfig([
   globalIgnores([
     'dist',
     'docs/cogcare-design-system/ui_kits/**',
+    'docs/CogCare Design System (1)/**',
     '**/* 2.js',
     '**/* 2.jsx',
     '**/* 2.ts',
@@ -17,7 +18,7 @@ export default defineConfig([
     '**/* 2.yml',
   ]),
   {
-    files: ['vite.config.js', 'vite-plugin-local-email-api.js', 'api/**/*.js', 'playwright.config.js', 'e2e/**/*.js'],
+    files: ['vite.config.js', 'vite-plugin-local-email-api.js', 'vite-plugin-e2e-network-mocks.js', 'api/**/*.js', 'playwright.config.js', 'e2e/**/*.js', 'tests/**/*.js'],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: globals.node,
@@ -25,7 +26,7 @@ export default defineConfig([
   },
   {
     files: ['**/*.{js,jsx}'],
-    ignores: ['vite.config.js', 'playwright.config.js', 'e2e/**'],
+    ignores: ['vite.config.js', 'playwright.config.js', 'e2e/**', 'tests/**'],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,

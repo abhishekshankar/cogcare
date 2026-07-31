@@ -3,18 +3,21 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { getCurrentUser } from 'aws-amplify/auth'
 import { isAmplifyConfigured } from '../lib/amplifyConfigure'
 import { hasPendingNewPasswordFlag } from '../lib/authFlags'
+import { isE2eDashboardAuthBypass } from '../lib/e2eNetworkMocks.js'
 
 export default function ProtectedRoute({ children }) {
   const location = useLocation()
   const [state, setState] = useState(() => {
     if (!isAmplifyConfigured()) return 'unauthenticated'
     if (hasPendingNewPasswordFlag()) return 'pending_password'
+    if (isE2eDashboardAuthBypass()) return 'authenticated'
     return 'checking'
   })
 
   useEffect(() => {
     if (!isAmplifyConfigured()) return
     if (hasPendingNewPasswordFlag()) return
+    if (isE2eDashboardAuthBypass()) return
     getCurrentUser()
       .then(() => setState('authenticated'))
       .catch(() => setState('unauthenticated'))

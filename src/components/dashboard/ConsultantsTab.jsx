@@ -22,12 +22,7 @@ function formatApptWhen(startTime, endTime) {
   }
 }
 
-export default function ConsultantsTab({
-  rows,
-  appointments = [],
-  activeSubjectName = 'This profile',
-  hasMultipleSubjects = false,
-}) {
+export default function ConsultantsTab({ rows, appointments = [] }) {
   const usingFallback = !rows?.length
   const list = usingFallback ? FALLBACK_CONSULTANTS : rows
 
@@ -42,21 +37,8 @@ export default function ConsultantsTab({
       <PanelHeader
         sectionLabel="Support"
         title="Consultations"
-        subtitle="Book a session below. Visits you complete in the scheduler appear under Your appointments (pending until server webhooks are enabled on a paid Calendly plan)."
+        subtitle="Book a session below. Confirmed bookings from Calendly appear under Your appointments when the webhook is configured."
       />
-      <p className="rounded-xl border border-border bg-surface/50 px-4 py-3 text-sm leading-relaxed text-forest/85">
-        Showing appointments for{' '}
-        <span className="font-medium text-ink">{activeSubjectName}</span>.
-        {hasMultipleSubjects ? <> Switch profiles in the header to see others.</> : null}
-      </p>
-      <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-        <Link
-          to="/dashboard/consultations/book"
-          className="inline-flex min-h-[44px] items-center rounded-full bg-forest px-5 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:bg-forest-dark sm:min-h-0"
-        >
-          Book a consultation (inline scheduler)
-        </Link>
-      </div>
       {sortedAppts.length ? (
         <div className="rounded-2xl border border-[#E8DCC4] bg-white p-5 shadow-sm">
           <p className="font-serif text-base text-[#3D4B3E]">Your appointments</p>
@@ -76,20 +58,10 @@ export default function ConsultantsTab({
                   className={`inline-flex w-fit rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                     a.status === 'canceled'
                       ? 'bg-stone-200/90 text-stone-700'
-                      : a.status === 'pending'
-                        ? 'bg-amber-100/90 text-amber-900'
-                        : a.status === 'completed'
-                          ? 'bg-[#B8D9C1]/40 text-[#2D3D2E]'
-                          : 'bg-[#3D4B3E]/10 text-[#3D4B3E]'
+                      : 'bg-[#3D4B3E]/10 text-[#3D4B3E]'
                   }`}
                 >
-                  {a.status === 'canceled'
-                    ? 'Canceled'
-                    : a.status === 'pending'
-                      ? 'Pending'
-                      : a.status === 'completed'
-                        ? 'Completed'
-                        : 'Scheduled'}
+                  {a.status === 'canceled' ? 'Canceled' : 'Scheduled'}
                 </span>
               </li>
             ))}
@@ -119,16 +91,12 @@ export default function ConsultantsTab({
                 <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.12em] text-clay">{c.title}</p>
               ) : null}
               {c.bio ? <p className="mt-3 text-sm leading-relaxed text-forest/85">{c.bio}</p> : null}
-              <Link
-                to={
-                  c.id
-                    ? `/dashboard/consultations/book?consultantId=${encodeURIComponent(c.id)}`
-                    : '/dashboard/consultations/book'
-                }
+              <a
+                href={c.bookingUrl || `mailto:${c.contactEmail || ''}`}
                 className="mt-4 inline-flex min-h-[44px] items-center rounded-full bg-forest px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:min-h-0"
               >
                 Request consultation
-              </Link>
+              </a>
             </div>
           </div>
         ))}

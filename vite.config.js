@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { localEmailApiPlugin } from './vite-plugin-local-email-api.js'
+import { e2eNetworkMocksPlugin } from './vite-plugin-e2e-network-mocks.js'
 
 // https://vite.dev/config/
 // Default "/" so `npm run dev` and hosts like Amplify serve from the site root.
@@ -18,8 +19,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     base,
-    plugins: [react(), tailwindcss(), localEmailApiPlugin()],
+    plugins: [react(), tailwindcss(), localEmailApiPlugin(), e2eNetworkMocksPlugin()],
     server: {
+      port: 5173,
+      strictPort: true,
+      open: true,
       allowedHosts: true,
     },
   }

@@ -21,3 +21,19 @@ if (!ok) {
     `[${tag}] WARNING: Empty or non-HTTPS URL is normal for a local stub. CI runs ampx generate outputs before this check. If quiz email fails in production, set VITE_COMPLETE_ASSESSMENT_URL in Amplify Hosting to the completeAssessment Lambda Function URL.`,
   )
 }
+
+const cw = (j.custom && j.custom.calendlyWebhookFunctionUrl) || ''
+const cwOk = String(cw).trim().startsWith('https://')
+console.log(`[${tag}] calendlyWebhookFunctionUrl looks valid:`, cwOk)
+if (!cwOk) {
+  console.warn(
+    `[${tag}] WARNING: Empty or non-HTTPS Calendly webhook URL is normal for a local stub. After deploy, register this URL in Calendly and set the CALENDLY_WEBHOOK_SIGNING_KEY secret to match your subscription.`,
+  )
+}
+
+for (const key of ['networkMemberApiFunctionUrl', 'networkAdminApiFunctionUrl']) {
+  const value = (j.custom && j.custom[key]) || ''
+  const valid = String(value).trim().startsWith('https://')
+  console.log(`[${tag}] ${key} looks valid:`, valid)
+  if (!valid) console.warn(`[${tag}] WARNING: ${key} is absent locally; production Network persistence requires the generated HTTPS URL.`)
+}

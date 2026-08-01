@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   getCurrentUser,
   signIn,
@@ -19,8 +19,20 @@ const PASSWORD_HINT =
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const returnTo = searchParams.get('returnTo') || '/dashboard'
+  const isNetworkPath = location.pathname === '/network/login'
+  const returnTo =
+    searchParams.get('returnTo') ||
+    (isNetworkPath && searchParams.get('role') === 'admin'
+      ? '/network/admin'
+      : isNetworkPath
+        ? '/network/member'
+        : '/dashboard')
+  const isNetworkLogin =
+    isNetworkPath || searchParams.get('context') === 'network' || returnTo.startsWith('/network/')
+  const isNetworkAdminLogin =
+    isNetworkPath && (searchParams.get('role') === 'admin' || returnTo.startsWith('/network/admin'))
   const fromQuiz = searchParams.get('from') === 'quiz'
   const quizFlowExisting = searchParams.get('quizFlow') === 'existing'
   const magicLinkError = searchParams.get('magicLinkError') === '1'
@@ -273,11 +285,12 @@ export default function LoginPage() {
           className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-forest"
         >
           <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
-          CogCare
+          {isNetworkLogin ? 'Cogcare Cognition Network' : 'CogCare'}
         </Link>
 
         <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
-          {view !== 'confirmSignUp' &&
+          {!isNetworkLogin &&
+          view !== 'confirmSignUp' &&
           view !== 'forgotPassword' &&
           view !== 'confirmForgotPassword' ? (
             <div className="mb-6 flex gap-2 rounded-full border border-border bg-page p-1">
@@ -306,7 +319,20 @@ export default function LoginPage() {
             </div>
           ) : null}
 
-          <h1 className="font-serif text-2xl italic text-forest">{title}</h1>
+          <h1 className="font-serif text-2xl italic text-forest">
+            {isNetworkAdminLogin && view === 'signIn'
+              ? 'Network administrator sign in'
+              : isNetworkLogin && view === 'signIn'
+                ? 'Member sign in'
+                : title}
+          </h1>
+          {isNetworkLogin && view === 'signIn' ? (
+            <p className="mt-2 text-sm text-forest/80">
+              {isNetworkAdminLogin
+                ? 'Restricted operations access for authorized Cognition Network administrators.'
+                : 'Invitation-only access for members of the Cogcare Cognition Network.'}
+            </p>
+          ) : null}
           {view === 'signIn' && magicLinkError ? (
             <p
               className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900"

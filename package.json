@@ -14,10 +14,12 @@
     "deploy": "VITE_BASE_PATH=/cogcare/ npm run build && gh-pages -d dist",
     "sandbox": "ampx sandbox --outputs-out-dir src",
     "test:e2e": "playwright test",
+    "test": "node --test tests/*.test.js",
     "write:email-config": "node scripts/write-runtime-email-config.cjs",
     "verify:outputs": "node scripts/verify-amplify-outputs.cjs",
     "verify:quick": "npm run lint && npm run write:email-config && npm run build && npm run verify:outputs",
-    "verify": "npm run lint && npm run write:email-config && npm run build && npm run verify:outputs && npm run test:e2e"
+    "verify": "npm run lint && npm run write:email-config && npm run build && npm run verify:outputs && npm run test:e2e",
+    "verify:network-production": "node scripts/network-production-pilot.mjs"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.15.3",
@@ -25,19 +27,20 @@
     "@aws-sdk/client-sesv2": "^3.1031.0",
     "@fluentui/react-components": "^9.73.7",
     "aws-amplify": "^6.16.4",
+    "aws-jwt-verify": "5.1.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.14.1"
+    "react-router-dom": "7.18.2"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.22.0",
     "@aws-amplify/backend-cli": "^1.8.2",
     "@aws-amplify/backend-function": "^1.14.0",
     "@eslint/js": "^9.39.1",
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.1.18",
     "@types/aws-lambda": "^8.10.147",
     "@types/node": "^25.6.0",

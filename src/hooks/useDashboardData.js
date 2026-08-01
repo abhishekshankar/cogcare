@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { generateClient } from 'aws-amplify/data'
 import { fetchUserAttributes } from 'aws-amplify/auth'
 import { getUrl } from 'aws-amplify/storage'
 import { useSearchParams } from 'react-router-dom'
@@ -7,11 +6,14 @@ import { hasPendingNewPasswordFlag } from '../lib/authFlags'
 import { ensureSelfSubject } from '../lib/ensureSelfSubject.js'
 import { mergeGenericLovedOneSubjects } from '../lib/mergeGenericLovedOneSubjects.js'
 import { isGenericLovedOneDisplayName } from '../lib/subjectLabels.js'
+import { fetchConsultantDirectory } from '../services/consultantDirectoryService.js'
+import { getDataClient } from '../lib/dataClient.js'
+import { isE2eDashboardAuthBypass, E2E_NETWORK_MEMBER_EMAIL, E2E_NETWORK_MEMBER_SUB } from '../lib/e2eNetworkMocks.js'
 
-const client = generateClient()
 const BACKFILL_KEY = 'cogcare:subjectBackfillDone'
 
 async function listAllAssessments() {
+  const client = getDataClient()
   const all = []
   let nextToken = undefined
   for (;;) {
@@ -28,6 +30,7 @@ async function listAllAssessments() {
 }
 
 async function listAllSubjects() {
+  const client = getDataClient()
   const all = []
   let nextToken = undefined
   for (;;) {
@@ -44,6 +47,7 @@ async function listAllSubjects() {
 }
 
 async function listConsultAppointments() {
+  const client = getDataClient()
   const all = []
   let nextToken = undefined
   for (;;) {
@@ -63,6 +67,7 @@ async function listConsultAppointments() {
  * Backfill legacy assessments missing subjectId (idempotent per browser).
  */
 async function backfillAssessmentSubjects(assessments, ownerSub) {
+  const client = getDataClient()
   if (typeof localStorage === 'undefined') return assessments
   if (localStorage.getItem(BACKFILL_KEY) === '1') return assessments
   let changed = false
@@ -124,6 +129,10 @@ async function backfillAssessmentSubjects(assessments, ownerSub) {
  * Loads dashboard entities from Amplify Data + optional avatar preview URL.
  */
 export function useDashboardData() {
+  const client = useMemo(
+    () => (isE2eDashboardAuthBypass() ? null : getDataClient()),
+    [],
+  )
   const [searchParams, setSearchParams] = useSearchParams()
   const [email, setEmail] = useState('')
   const [profile, setProfile] = useState(null)
@@ -173,6 +182,16 @@ export function useDashboardData() {
       if (hasPendingNewPasswordFlag()) {
         return
       }
+      if (isE2eDashboardAuthBypass()) {
+        setSub(E2E_NETWORK_MEMBER_SUB)
+        setEmail(E2E_NETWORK_MEMBER_EMAIL)
+        setProfile(null)
+        setAssessments([])
+        setSubjects([])
+        setConsultants([])
+        setConsultAppointments([])
+        return
+      }
       const attrs = await fetchUserAttributes()
       const ownerSub = attrs.sub || ''
       setSub(ownerSub)
@@ -215,8 +234,7 @@ export function useDashboardData() {
 
       setAssessments(assess)
       setSubjects(subjList.filter((s) => !s.archivedAt))
-      const { data: cons } = await client.models.Consultant.list()
-      setConsultants(cons ?? [])
+      setConsultants(await fetchConsultantDirectory())
       setConsultAppointments(appts ?? [])
     } catch (err) {
       const msg =
@@ -226,7 +244,7 @@ export function useDashboardData() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [client])
 
   useEffect(() => {
     load()

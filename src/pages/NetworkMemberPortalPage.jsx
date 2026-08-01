@@ -88,8 +88,8 @@ export default function NetworkMemberPortalPage({ email }) {
           <Link to={NETWORK_PUBLIC_ROUTES.founding} className={networkPrimaryBtn}>
             Understand the Network
           </Link>
-          <Link to="/dashboard" className={networkSecondaryBtn}>
-            Back to dashboard
+          <Link to="/network" className={networkSecondaryBtn}>
+            Back to Network home
           </Link>
         </div>
       </section>
@@ -215,7 +215,7 @@ export default function NetworkMemberPortalPage({ email }) {
 
       <NetworkVentureCards
         ventureAssociations={profileForm.ventureAssociations}
-        memberPortalReturnTo="/dashboard/cognition-network"
+        memberPortalReturnTo="/network/member"
       />
 
       <section className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-profile-title">

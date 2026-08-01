@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom'
 import { confirmSignIn, signOut } from 'aws-amplify/auth'
-import { Brain, LogOut, Settings2, UserPlus, Users } from 'lucide-react'
+import { Brain, LogOut, Settings2, UserPlus } from 'lucide-react'
 import CreatePasswordCard from '../components/CreatePasswordCard'
 import { TabBar, TabBarLink } from '../components/bhi/TabBar'
 import BrainCreditTab from '../components/dashboard/BrainCreditTab'
@@ -9,8 +9,6 @@ import TestsTab from '../components/dashboard/TestsTab'
 import MoreTestsTab from '../components/dashboard/MoreTestsTab'
 import ConsultantsTab from '../components/dashboard/ConsultantsTab'
 import SettingsTab from '../components/dashboard/SettingsTab'
-import NetworkAdminPanel from '../components/dashboard/NetworkAdminPanel'
-import NetworkMemberPortalPage from './NetworkMemberPortalPage'
 import BookConsultPage from '../components/dashboard/BookConsultPage'
 import SubjectSwitcher from '../components/dashboard/SubjectSwitcher'
 import DashboardErrorBanner from '../components/dashboard/DashboardErrorBanner'
@@ -22,8 +20,6 @@ import { useDashboardData } from '../hooks/useDashboardData'
 import { clearPendingNewPasswordFlag, hasPendingNewPasswordFlag } from '../lib/authFlags'
 import { buildInitialAnswersFromSubject } from '../lib/persistDashboardAssessment.js'
 import { BHI_SUBJECT_QUESTION_IDS } from '../lib/bhiQuizConfig.js'
-import { useIsAdmin } from '../lib/useIsAdmin'
-import { fetchMemberConsultantByEmail } from '../services/networkMemberService.js'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -45,42 +41,6 @@ export default function DashboardPage() {
     load,
     avatarUrl,
   } = useDashboardData()
-
-  const { isAdmin, loading: adminLoading } = useIsAdmin()
-  const [isNetworkMember, setIsNetworkMember] = useState(false)
-  const [memberLoading, setMemberLoading] = useState(true)
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function run() {
-      if (loading) return
-
-      if (!email) {
-        if (!cancelled) {
-          setIsNetworkMember(false)
-          setMemberLoading(false)
-        }
-        return
-      }
-
-      if (!cancelled) setMemberLoading(true)
-
-      try {
-        const member = await fetchMemberConsultantByEmail(email)
-        if (!cancelled) setIsNetworkMember(Boolean(member))
-      } catch {
-        if (!cancelled) setIsNetworkMember(false)
-      } finally {
-        if (!cancelled) setMemberLoading(false)
-      }
-    }
-
-    run()
-    return () => {
-      cancelled = true
-    }
-  }, [email, loading])
 
   const [showPwdCard, setShowPwdCard] = useState(() => hasPendingNewPasswordFlag())
 
@@ -302,17 +262,6 @@ export default function DashboardPage() {
           <TabBarLink to="/dashboard/tests">My tests</TabBarLink>
           <TabBarLink to="/dashboard/more-tests">More tests</TabBarLink>
           <TabBarLink to="/dashboard/consultants">Consultations</TabBarLink>
-          {!adminLoading && isAdmin ? (
-            <TabBarLink to="/dashboard/network">Network</TabBarLink>
-          ) : null}
-          {!memberLoading && isNetworkMember ? (
-            <TabBarLink to="/dashboard/cognition-network">
-              <span className="inline-flex items-center gap-1">
-                <Users className="h-3.5 w-3.5" aria-hidden />
-                Cognition Network
-              </span>
-            </TabBarLink>
-          ) : null}
           <TabBarLink to="/dashboard/settings">
             <span className="inline-flex items-center gap-1">
               <Settings2 className="h-3.5 w-3.5" aria-hidden />
@@ -370,47 +319,6 @@ export default function DashboardPage() {
                     setActiveSubjectId={setActiveSubjectId}
                     onRefresh={load}
                   />
-                }
-              />
-              <Route
-                path="network"
-                element={
-                  isAdmin ? (
-                    <NetworkAdminPanel adminEmail={email} />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )
-                }
-              />
-              <Route
-                path="cognition-network"
-                element={
-                  memberLoading ? (
-                    <div className="flex min-h-[40vh] items-center justify-center text-sm text-forest" role="status">
-                      Loading Cognition Network…
-                    </div>
-                  ) : isNetworkMember ? (
-                    <NetworkMemberPortalPage email={email} />
-                  ) : (
-                    <div className="mx-auto max-w-xl rounded-3xl border border-border bg-white p-8 shadow-sm">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-clay">
-                        Invitation-only network
-                      </p>
-                      <h1 className="mt-3 font-serif text-3xl italic text-forest">
-                        This account is not yet a Network member
-                      </h1>
-                      <p className="mt-4 text-sm leading-relaxed text-forest/80">
-                        Sign in with the email address used in your personal invitation, then open
-                        the invitation link to complete membership.
-                      </p>
-                      <Link
-                        to="/network"
-                        className="mt-6 inline-flex text-sm font-semibold text-clay underline underline-offset-4"
-                      >
-                        Return to the Cognition Network
-                      </Link>
-                    </div>
-                  )
                 }
               />
               <Route

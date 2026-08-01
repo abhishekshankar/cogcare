@@ -10,8 +10,8 @@ import { resolveNetworkInviteToken } from '../src/lib/networkInvitationTokens.js
 test('network public routes match App.jsx paths', () => {
   assert.equal(NETWORK_PUBLIC_ROUTES.founding, '/network')
   assert.equal(NETWORK_PUBLIC_ROUTES.invite, '/network/invite')
-  assert.equal(NETWORK_PUBLIC_ROUTES.dashboardNetwork, '/dashboard/network')
-  assert.equal(NETWORK_PUBLIC_ROUTES.dashboardMemberPortal, '/dashboard/cognition-network')
+  assert.equal(NETWORK_PUBLIC_ROUTES.dashboardNetwork, '/network/admin')
+  assert.equal(NETWORK_PUBLIC_ROUTES.dashboardMemberPortal, '/network/member')
   assert.equal(consultantProfileRoute('dr-alex'), '/dr/dr-alex')
   assert.equal(consultantProfileRoute('a/b'), '/dr/a%2Fb')
 })

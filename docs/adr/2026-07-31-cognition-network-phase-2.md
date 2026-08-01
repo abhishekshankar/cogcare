@@ -14,11 +14,15 @@ Phase 1 delivered invitation-only founding onboarding, consent-gated public prof
 
 | Route | Purpose |
 |-------|---------|
-| `/dashboard/cognition-network` | Authenticated member portal (Cognito `ProtectedRoute`) |
+| `/network/login` | Network-branded authentication entry; shared Cognito identity only |
+| `/network/member` | Authenticated professional member workspace |
+| `/network/admin` | Authenticated administrator console (`admin` group only) |
 
-- Tab appears only when `findMemberConsultantByEmail(email)` returns a row with `networkCohort` set.
-- Admin invite tooling stays at `/dashboard/network` (admin group only).
-- Unauthenticated users redirect to login; non-members redirect to `/dashboard`.
+- Network members and administrators use a standalone Network shell, menu, and sign-out flow.
+- The care-recipient Cogcare dashboard contains no Network tabs or Network components.
+- Cognito remains shared infrastructure, but no care-recipient product navigation or dashboard is shared.
+- Old `/dashboard/cognition-network` and `/dashboard/network` links redirect to the standalone surfaces.
+- Membership remains consent-gated through `findMemberConsultantByEmail(email)`; administration remains Cognito-group-gated.
 
 ### Portal sections
 
@@ -76,7 +80,7 @@ Phase 1 delivered invitation-only founding onboarding, consent-gated public prof
 
 **Shared lib:** `lib/networkMemberProfile.js`, `lib/networkBriefings.js`, `lib/networkOpportunities.js`, `lib/networkContributions.js`, `lib/networkRoutes.js`
 
-**Frontend:** `src/pages/NetworkMemberPortalPage.jsx`, `src/hooks/useNetworkMember.js`, `src/services/networkMemberService.js`, `src/services/networkMemberContentService.js`, `src/lib/networkMemberLookup.js`
+**Frontend:** `src/pages/NetworkWorkspacePage.jsx`, `src/pages/NetworkMemberPortalPage.jsx`, `src/hooks/useNetworkMember.js`, `src/services/networkMemberService.js`, `src/services/networkMemberContentService.js`, `src/lib/networkMemberLookup.js`
 
 **Dev API:** `api/network-member-profile.js`, `api/network-member-opportunity-response.js`, `api/network-member-contributions.js`
 

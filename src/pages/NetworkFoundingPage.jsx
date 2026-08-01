@@ -28,7 +28,7 @@ import { useDocumentMeta } from '../lib/useDocumentMeta'
 import { resolveSafeReturnDestination } from '../../lib/networkReturnTo.js'
 
 const VOICES = ['Physicians', 'Researchers', 'Educators', 'Care leaders', 'Builders']
-const NETWORK_LOGIN_PATH = '/login?returnTo=%2Fdashboard%2Fcognition-network&context=network'
+const NETWORK_LOGIN_PATH = '/network/login'
 
 const PILLARS = [
   {

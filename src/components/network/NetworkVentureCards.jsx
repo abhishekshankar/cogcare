@@ -20,7 +20,7 @@ import {
  */
 export default function NetworkVentureCards({
   ventureAssociations,
-  memberPortalReturnTo = '/dashboard/cognition-network',
+  memberPortalReturnTo = '/network/member',
 }) {
   const cards = memberVentureCards(ventureAssociations, { memberPortalReturnTo })
 

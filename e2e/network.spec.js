@@ -19,12 +19,12 @@ test.describe('Cognition Network routes', () => {
     ).toBeVisible()
     await expect(page.getByRole('link', { name: 'Member sign in' })).toHaveAttribute(
       'href',
-      /returnTo=%2Fdashboard%2Fcognition-network/,
+      '/network/login',
     )
   })
 
   test('member sign-in is network branded and keeps the portal destination', async ({ page }) => {
-    await page.goto('/login?returnTo=%2Fdashboard%2Fcognition-network&context=network')
+    await page.goto('/network/login')
     await expect(page.getByRole('heading', { name: 'Member sign in' })).toBeVisible()
     await expect(page.getByText(/Invitation-only access/i)).toBeVisible()
     await expect(page.getByRole('button', { name: 'New here' })).toHaveCount(0)
@@ -38,7 +38,7 @@ test.describe('Cognition Network routes', () => {
   })
 
   test('dashboard network route redirects unauthenticated users to login', async ({ page }) => {
-    await page.goto('/dashboard/network')
+    await page.goto('/network/admin')
     await expect(page).toHaveURL(/\/login/)
   })
 })
@@ -130,7 +130,7 @@ test.describe('Cognition Network feedback API', () => {
 
 test.describe('Cognition Network member portal auth', () => {
   test('member portal redirects unauthenticated users to login', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(page).toHaveURL(/\/login/)
   })
 })
@@ -143,7 +143,7 @@ test.describe('Cognition Network member portal', () => {
   })
 
   test('authenticated member portal shows overview and private defaults', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(page.getByRole('heading', { name: /trusted circle advancing better cognitive care/i })).toBeVisible({
       timeout: 15_000,
     })
@@ -153,7 +153,7 @@ test.describe('Cognition Network member portal', () => {
   })
 
   test('member can express interest in a contribution opportunity', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(
       page.getByRole('heading', { name: 'Contribution opportunities', exact: true }),
     ).toBeVisible({
@@ -164,7 +164,7 @@ test.describe('Cognition Network member portal', () => {
   })
 
   test('member can decline a contribution opportunity quietly', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(
       page.getByRole('heading', { name: 'Contribution opportunities', exact: true }),
     ).toBeVisible({
@@ -175,7 +175,7 @@ test.describe('Cognition Network member portal', () => {
   })
 
   test('member portal feedback saves successfully', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(page.getByRole('heading', { name: /Share feedback/i })).toBeVisible({
       timeout: 15_000,
     })
@@ -185,7 +185,7 @@ test.describe('Cognition Network member portal', () => {
   })
 
   test('consent update keeps private visibility when public profile is unchecked', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(page.getByRole('heading', { name: /Profile & consent/i })).toBeVisible({ timeout: 15_000 })
     await page.locator('#member-public-profile').uncheck()
     await page.getByRole('button', { name: /Save profile & consent/i }).click()
@@ -194,7 +194,7 @@ test.describe('Cognition Network member portal', () => {
   })
 
   test('venture cards show cross-venture navigation with independence copy', async ({ page }) => {
-    await page.goto('/dashboard/cognition-network')
+    await page.goto('/network/member')
     await expect(page.getByRole('heading', { name: /Your venture associations/i })).toBeVisible({
       timeout: 15_000,
     })
@@ -221,7 +221,7 @@ test.describe('Cognition Network admin intelligence', () => {
   })
 
   test('admin network tab shows intelligence metrics', async ({ page }) => {
-    await page.goto('/dashboard/network')
+    await page.goto('/network/admin')
     await page.getByRole('tab', { name: /Intelligence/i }).click()
     await expect(page.getByRole('heading', { name: /Network intelligence/i })).toBeVisible({
       timeout: 15_000,

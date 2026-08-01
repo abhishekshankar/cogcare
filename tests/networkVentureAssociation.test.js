@@ -31,12 +31,12 @@ test('public venture associations require explicit name consent', () => {
 
 test('member venture cards include portable deep links with returnTo', () => {
   const cards = memberVentureCards(['cogtraining'], {
-    memberPortalReturnTo: '/dashboard/cognition-network',
+    memberPortalReturnTo: '/network/member',
   })
   assert.equal(cards.length, 1)
   const url = new URL(cards[0].entryUrl)
   assert.equal(url.origin, 'https://cogtraining.org')
-  assert.equal(url.searchParams.get('returnTo'), '/dashboard/cognition-network')
+  assert.equal(url.searchParams.get('returnTo'), '/network/member')
 })
 
 test('opportunities filter to member venture associations', () => {

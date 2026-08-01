@@ -18,19 +18,19 @@ test('buildVentureDeepLink adds returnTo without cross-domain state', () => {
   const url = buildVentureDeepLink({
     ventureId: 'cogtraining',
     path: '/cognition-network',
-    returnTo: 'https://cogcare.org/dashboard/cognition-network',
+    returnTo: 'https://cogcare.org/network/member',
   })
   const parsed = new URL(url)
   assert.equal(parsed.origin, 'https://cogtraining.org')
   assert.equal(parsed.pathname, '/cognition-network')
   assert.equal(
     parsed.searchParams.get('returnTo'),
-    'https://cogcare.org/dashboard/cognition-network',
+    'https://cogcare.org/network/member',
   )
 })
 
 test('hub URL points at CogCare network landing', () => {
-  const url = buildCognitionNetworkHubUrl('/dashboard/cognition-network')
+  const url = buildCognitionNetworkHubUrl('/network/member')
   assert.match(url, /^https:\/\/cogcare\.org\/network/)
   assert.match(url, /returnTo=/)
 })

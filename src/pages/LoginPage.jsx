@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   getCurrentUser,
   signIn,
@@ -19,10 +19,18 @@ const PASSWORD_HINT =
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const returnTo = searchParams.get('returnTo') || '/dashboard'
+  const isNetworkPath = location.pathname === '/network/login'
+  const returnTo =
+    searchParams.get('returnTo') ||
+    (isNetworkPath && searchParams.get('role') === 'admin'
+      ? '/network/admin'
+      : isNetworkPath
+        ? '/network/member'
+        : '/dashboard')
   const isNetworkLogin =
-    searchParams.get('context') === 'network' || returnTo === '/dashboard/cognition-network'
+    isNetworkPath || searchParams.get('context') === 'network' || returnTo.startsWith('/network/')
   const fromQuiz = searchParams.get('from') === 'quiz'
   const quizFlowExisting = searchParams.get('quizFlow') === 'existing'
   const magicLinkError = searchParams.get('magicLinkError') === '1'

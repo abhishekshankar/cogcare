@@ -6,9 +6,10 @@ import {
   NETWORK_OPPORTUNITIES,
 } from '../lib/networkOpportunities.js'
 
-test('opportunity responses accept interest or declined only', () => {
+test('opportunity responses accept interest, declined, or withdrawn only', () => {
   assert.equal(validateOpportunityResponse('interest').ok, true)
   assert.equal(validateOpportunityResponse('declined').ok, true)
+  assert.equal(validateOpportunityResponse('withdrawn').ok, true)
   assert.equal(validateOpportunityResponse('maybe').ok, false)
 })
 

@@ -64,7 +64,7 @@ export default function NetworkMemberPortalPage({ email }) {
   const [oppError, setOppError] = useState('')
   const [oppBusy, setOppBusy] = useState('')
 
-  if (loading) {
+  if (loading && !consultant) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite">
         <Loader2 className="h-6 w-6 animate-spin text-clay motion-reduce:animate-none" aria-hidden />
@@ -532,38 +532,60 @@ export default function NetworkMemberPortalPage({ email }) {
                 ) : null}
                 <p className={`mt-2 ${networkBodySm}`}>{opp.scope}</p>
                 <p className={`mt-2 ${networkCaption}`}>Time: {opp.timeCommitment}</p>
-                {response ? (
-                  <p className={`mt-4 ${networkBodySm}`} role="status">
+                {response && response.kind !== 'withdrawn' ? (
+                  <>
+                    <p className={`mt-4 ${networkBodySm}`} role="status">
+                      {response.kind === 'interest' ? (
+                        <span className="inline-flex items-center gap-1 text-forest-deep">
+                          <Check className="h-4 w-4" aria-hidden /> Interest recorded — we will follow up if needed.
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-ink-muted">
+                          <X className="h-4 w-4" aria-hidden /> Declined — no further action expected.
+                        </span>
+                      )}
+                    </p>
                     {response.kind === 'interest' ? (
-                      <span className="inline-flex items-center gap-1 text-forest-deep">
-                        <Check className="h-4 w-4" aria-hidden /> Interest recorded — we will follow up if needed.
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-ink-muted">
-                        <X className="h-4 w-4" aria-hidden /> Declined — no further action expected.
-                      </span>
-                    )}
-                  </p>
+                      <div className="mt-3">
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => handleOpportunityResponse(opp.id, 'withdrawn')}
+                          className={networkSecondaryBtn}
+                          aria-busy={busy}
+                        >
+                          Withdraw interest
+                        </button>
+                      </div>
+                    ) : null}
+                  </>
                 ) : (
-                  <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => handleOpportunityResponse(opp.id, 'interest')}
-                      className={networkPrimaryBtn}
-                      aria-busy={busy}
-                    >
-                      Express interest
-                    </button>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => handleOpportunityResponse(opp.id, 'declined')}
-                      className={networkSecondaryBtn}
-                    >
-                      Decline quietly
-                    </button>
-                  </div>
+                  <>
+                    {response?.kind === 'withdrawn' ? (
+                      <p className={`mt-4 ${networkBodySm}`} role="status">
+                        Withdrawn — you can express interest again if circumstances change.
+                      </p>
+                    ) : null}
+                    <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => handleOpportunityResponse(opp.id, 'interest')}
+                        className={networkPrimaryBtn}
+                        aria-busy={busy}
+                      >
+                        Express interest
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => handleOpportunityResponse(opp.id, 'declined')}
+                        className={networkSecondaryBtn}
+                      >
+                        Decline quietly
+                      </button>
+                    </div>
+                  </>
                 )}
               </li>
             )

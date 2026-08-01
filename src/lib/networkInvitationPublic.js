@@ -23,6 +23,14 @@ const E2E_MOCK_INVITATION = {
 export async function fetchNetworkInvitationByToken(rawToken) {
   const tokenHash = await hashNetworkInviteToken(rawToken)
   if (import.meta.env.VITE_E2E_NETWORK_MOCKS === '1') {
+    const publicUrl = import.meta.env.VITE_NETWORK_PUBLIC_DATA_URL
+    if (typeof publicUrl === 'string' && publicUrl.startsWith('http')) {
+      const res = await fetch(`${publicUrl}?token=${encodeURIComponent(rawToken)}`)
+      if (res.status === 404) return null
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body?.error || 'Could not load invitation.')
+      return body.invitation || null
+    }
     return tokenHash === E2E_INVITE_TOKEN_HASH ? E2E_MOCK_INVITATION : null
   }
 

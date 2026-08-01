@@ -96,6 +96,10 @@ async function fetchMemberConsultantDev(email) {
  */
 export async function fetchMemberConsultantByEmail(email) {
   if (isE2eDashboardAuthBypass()) {
+    if (shouldUseDevMemberProfileAdapter()) {
+      const dev = await fetchMemberConsultantDev(email)
+      if (dev) return dev
+    }
     const items = await fetchConsultantsViaE2eGraphql()
     return findMemberConsultantByEmail(items, email)
   }
@@ -172,7 +176,7 @@ export async function updateMemberProfile(email, form, consultantId) {
   if (!validation.ok) return validation
 
   if (shouldUseDevMemberProfileAdapter()) {
-    return updateMemberProfileDev(email, form, consultantId)
+    return updateMemberProfileDev(email, validation.value, consultantId)
   }
 
   return updateMemberProfileProduction(email, form, consultantId)

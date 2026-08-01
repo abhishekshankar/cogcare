@@ -4,14 +4,16 @@ import { fetchUserAttributes, signOut } from 'aws-amplify/auth'
 import { LogOut, Shield, Users } from 'lucide-react'
 import NetworkAdminPanel from '../components/dashboard/NetworkAdminPanel.jsx'
 import { networkBody, networkCard, networkCardPad, networkPage } from '../components/network/networkUi.js'
-import { E2E_NETWORK_MEMBER_EMAIL, isE2eDashboardAuthBypass } from '../lib/e2eNetworkMocks.js'
+import { E2E_NETWORK_MEMBER_EMAIL, getE2eNetworkSessionEmail, isE2eDashboardAuthBypass } from '../lib/e2eNetworkMocks.js'
 import { useIsAdmin } from '../lib/useIsAdmin.js'
 import NetworkMemberPortalPage from './NetworkMemberPortalPage.jsx'
 
 export default function NetworkWorkspacePage({ admin = false }) {
   const navigate = useNavigate()
   const { isAdmin, loading: adminLoading } = useIsAdmin()
-  const [email, setEmail] = useState(isE2eDashboardAuthBypass() ? E2E_NETWORK_MEMBER_EMAIL : '')
+  const [email, setEmail] = useState(
+    isE2eDashboardAuthBypass() ? getE2eNetworkSessionEmail() || E2E_NETWORK_MEMBER_EMAIL : '',
+  )
   const [identityLoading, setIdentityLoading] = useState(!isE2eDashboardAuthBypass())
 
   useEffect(() => {

@@ -13,6 +13,8 @@ const e2eMocksEnv = [
   `VITE_ACCEPT_NETWORK_INVITATION_URL=${baseURL}/__e2e__/accept-network-invitation`,
   `VITE_NETWORK_PUBLIC_DATA_URL=${baseURL}/__e2e__/network-public-data`,
   `VITE_UPDATE_NETWORK_MEMBER_PROFILE_URL=${baseURL}/__e2e__/update-network-member-profile`,
+  `VITE_NETWORK_MEMBER_API_URL=${baseURL}/__e2e__/network-member-api`,
+  `VITE_NETWORK_ADMIN_API_URL=${baseURL}/__e2e__/network-admin-api`,
 ].join(' ')
 
 export default defineConfig({

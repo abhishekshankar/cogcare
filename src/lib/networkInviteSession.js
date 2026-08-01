@@ -1,4 +1,5 @@
 import { fetchAuthSession } from 'aws-amplify/auth'
+import { E2E_NETWORK_MEMBER_EMAIL, getE2eNetworkSessionEmail } from './e2eNetworkMocks.js'
 
 /** @returns {Promise<string | null>} Bearer token for accept-network-invitation Lambda. */
 export async function fetchNetworkInviteAuthToken() {
@@ -17,7 +18,7 @@ export async function fetchNetworkInviteAuthToken() {
 /** @returns {Promise<string | null>} Lowercase email for the signed-in invitee, if any. */
 export async function fetchNetworkInviteSessionEmail() {
   if (import.meta.env.VITE_E2E_NETWORK_MOCKS === '1') {
-    return 'founder@example.com'
+    return getE2eNetworkSessionEmail() || E2E_NETWORK_MEMBER_EMAIL
   }
 
   try {

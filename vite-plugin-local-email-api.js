@@ -60,6 +60,16 @@ export function localEmailApiPlugin() {
 
       server.middlewares.use(async (req, res, next) => {
         const pathname = (req.url || '').split('?')[0]
+        if (process.env.COGCARE_E2E_MOCKS === '1') {
+          const e2eOwned = new Set([
+            '/api/network-member-profile',
+            '/api/network-member-opportunity-response',
+            '/api/network-member-contributions',
+          ])
+          if (e2eOwned.has(pathname)) {
+            return next()
+          }
+        }
         const handlerByPath = {
           '/api/send-quiz-email': 'send-quiz-email.js',
           '/api/network-feedback': 'submit-network-feedback.js',

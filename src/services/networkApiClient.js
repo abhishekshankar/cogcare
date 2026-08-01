@@ -1,5 +1,6 @@
-import { fetchAuthSession } from 'aws-amplify/auth'
+import { fetchAuthSession, signOut } from 'aws-amplify/auth'
 import amplifyOutputs from '../amplify_outputs.json' with { type: 'json' }
+import { isE2eNetworkMocksEnabled } from '../lib/e2eNetworkMocks.js'
 
 export function getNetworkApiUrl(kind) {
   const envName = kind === 'admin' ? 'VITE_NETWORK_ADMIN_API_URL' : 'VITE_NETWORK_MEMBER_API_URL'
@@ -13,16 +14,35 @@ export function getNetworkApiUrl(kind) {
   return typeof generated === 'string' && generated.trim().startsWith('http') ? generated.trim() : ''
 }
 
+function isE2eNetworkApiUrl(url) {
+  return typeof url === 'string' && url.includes('/__e2e__/network-')
+}
+
 export async function callNetworkApi(kind, payload) {
   const url = getNetworkApiUrl(kind)
   if (!url) throw new Error(`Network ${kind} service is not configured.`)
-  const session = await fetchAuthSession()
-  const token = session.tokens?.idToken?.toString()
-  if (!token) throw new Error('Please sign in again.')
+  let token = ''
+  if (isE2eNetworkMocksEnabled() && isE2eNetworkApiUrl(url)) {
+    token = 'e2e-network-token'
+  } else {
+    const session = await fetchAuthSession()
+    token = session.tokens?.idToken?.toString() || ''
+    if (!token) throw new Error('Please sign in again.')
+  }
   const response = await fetch(url, { method: 'POST', headers: {
     'content-type': 'application/json', authorization: `Bearer ${token}`,
   }, body: JSON.stringify(payload) })
   const body = await response.json().catch(() => ({}))
+  if (response.status === 401) {
+    // Stale/expired session mid-portal-use: recover by signing out and returning to login,
+    // rather than leaving the physician staring at a broken workspace.
+    if (typeof window !== 'undefined') {
+      await signOut().catch(() => {})
+      const returnTo = `${window.location.pathname}${window.location.search}`
+      window.location.assign(`/network/login?returnTo=${encodeURIComponent(returnTo)}`)
+    }
+    throw new Error('Your session expired. Please sign in again.')
+  }
   if (!response.ok) throw new Error(typeof body.error === 'string' ? body.error : `Network service failed (${response.status}).`)
   return body
 }

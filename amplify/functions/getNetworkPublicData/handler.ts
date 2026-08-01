@@ -57,6 +57,15 @@ export const handler: Handler = async (event) => {
   if (typeof query.token === 'string' && query.token.trim()) {
     const invitation = (await client.models.NetworkInvitation.get({ tokenHash: hashToken(query.token.trim()) })).data
     if (!invitation) return reply(404, { error: 'Invitation not found.' })
+    // Terminal states never render the onboarding form, so stop returning the invitee's
+    // email/name/note once the link can no longer be acted on (revoked/accepted/expired links
+    // otherwise disclose PII indefinitely to anyone who still holds the URL).
+    const expiredByDate = Boolean(invitation.expiresAt && new Date(invitation.expiresAt) <= new Date())
+    if (invitation.status === 'revoked' || invitation.status === 'accepted' || invitation.status === 'expired' || expiredByDate) {
+      return reply(200, {
+        invitation: { status: expiredByDate ? 'expired' : invitation.status, consultantSlug: invitation.consultantSlug },
+      })
+    }
     return reply(200, {
       invitation: {
         email: invitation.email,

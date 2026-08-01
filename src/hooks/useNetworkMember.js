@@ -44,10 +44,20 @@ export function useNetworkMember(email) {
       ])
       setConsultant(member)
       setProfileForm(consultantToMemberProfileForm(member))
-      setBriefings(workspace?.briefings ?? fetchMemberBriefings(email))
       const ventures = consultantToMemberProfileForm(member).ventureAssociations
-      const mappedOpportunities = workspace?.opportunities?.map((item) => ({ ...item, why: item.rationale, brand: item.venture }))
-      setOpportunities(mappedOpportunities ? filterOpportunitiesForVentures(mappedOpportunities, ventures) : fetchMemberOpportunities(email, ventures))
+      setBriefings(
+        workspace && Object.prototype.hasOwnProperty.call(workspace, 'briefings')
+          ? workspace.briefings
+          : fetchMemberBriefings(email),
+      )
+      const mappedOpportunities = workspace && Object.prototype.hasOwnProperty.call(workspace, 'opportunities')
+        ? workspace.opportunities?.map((item) => ({ ...item, why: item.rationale, brand: item.venture }))
+        : null
+      setOpportunities(
+        mappedOpportunities
+          ? filterOpportunitiesForVentures(mappedOpportunities, ventures)
+          : fetchMemberOpportunities(email, ventures),
+      )
       setOpportunityResponses(responses.map((item) => ({ ...item, kind: item.kind ?? (item.response === 'interested' ? 'interest' : item.response) })))
       setContributions(recorded)
     } catch (err) {
@@ -83,10 +93,20 @@ export function useNetworkMember(email) {
         setWorkspace(workspace)
         setConsultant(member)
         setProfileForm(consultantToMemberProfileForm(member))
-        setBriefings(workspace?.briefings ?? fetchMemberBriefings(email))
         const ventures = consultantToMemberProfileForm(member).ventureAssociations
-        const mappedOpportunities = workspace?.opportunities?.map((item) => ({ ...item, why: item.rationale, brand: item.venture }))
-        setOpportunities(mappedOpportunities ? filterOpportunitiesForVentures(mappedOpportunities, ventures) : fetchMemberOpportunities(email, ventures))
+        setBriefings(
+          workspace && Object.prototype.hasOwnProperty.call(workspace, 'briefings')
+            ? workspace.briefings
+            : fetchMemberBriefings(email),
+        )
+        const mappedOpportunities = workspace && Object.prototype.hasOwnProperty.call(workspace, 'opportunities')
+          ? workspace.opportunities?.map((item) => ({ ...item, why: item.rationale, brand: item.venture }))
+          : null
+        setOpportunities(
+          mappedOpportunities
+            ? filterOpportunitiesForVentures(mappedOpportunities, ventures)
+            : fetchMemberOpportunities(email, ventures),
+        )
         setOpportunityResponses(responses.map((item) => ({ ...item, kind: item.kind ?? (item.response === 'interested' ? 'interest' : item.response) })))
         setContributions(recorded)
       } catch (err) {

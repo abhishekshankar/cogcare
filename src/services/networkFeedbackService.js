@@ -2,6 +2,7 @@ import {
   NETWORK_FEEDBACK_CONTEXT_ONBOARDING,
 } from '../../lib/networkFeedbackTypes.js'
 import { validateNetworkFeedbackPayload } from '../../lib/networkFeedback.js'
+import { isE2eNetworkMocksEnabled } from '../lib/e2eNetworkMocks.js'
 import { callNetworkApi, getNetworkApiUrl } from './networkApiClient.js'
 
 /**
@@ -63,6 +64,15 @@ export async function submitNetworkFeedback(input) {
   const validation = validateNetworkFeedbackPayload(input)
   if (!validation.ok) {
     return validation
+  }
+
+  const memberApiUrl = getNetworkApiUrl('member')
+  const useMemberApi =
+    memberApiUrl &&
+    (!isE2eNetworkMocksEnabled() || memberApiUrl.includes('/__e2e__/network-member-api'))
+
+  if (useMemberApi) {
+    return submitNetworkFeedbackProduction(validation.value)
   }
 
   if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {

@@ -15,6 +15,7 @@ import {
   hasNetworkCommunicationConsent,
   isPublishedNow,
   matchesNetworkAudience,
+  resolveEventRsvpResponse,
   safeJsonBody,
 } from '../../../lib/networkApiValidation.js'
 
@@ -153,7 +154,15 @@ export const handler: Handler = async (event) => {
     const networkEvent = (await db.models.NetworkEvent.get({ id: eventId.value })).data
     if (!networkEvent || networkEvent.status !== 'published') return reply(404, { error: 'Event not found.' })
     const prior = (await db.models.NetworkEventResponse.list({ filter: { and: [{ memberId: { eq: memberId } }, { eventId: { eq: eventId.value } }] }, limit: 2 })).data?.[0]
-    const values = { memberId, eventId: eventId.value, response: response.value, respondedAt: new Date().toISOString() }
+    let resolvedResponse = response.value
+    if (resolvedResponse === 'attending' && typeof networkEvent.capacity === 'number') {
+      const attending = (await db.models.NetworkEventResponse.list({
+        filter: { and: [{ eventId: { eq: eventId.value } }, { response: { eq: 'attending' } }] }, limit: 500,
+      })).data ?? []
+      const attendingExcludingSelf = attending.filter((x) => x.memberId !== memberId).length
+      resolvedResponse = resolveEventRsvpResponse(networkEvent, response.value, attendingExcludingSelf)
+    }
+    const values = { memberId, eventId: eventId.value, response: resolvedResponse, respondedAt: new Date().toISOString() }
     const result = prior ? await db.models.NetworkEventResponse.update({ id: prior.id, ...values }) : await db.models.NetworkEventResponse.create(values)
     return result.data ? reply(200, { ok: true, eventResponse: result.data }) : reply(500, { error: 'Could not save your response.' })
   }

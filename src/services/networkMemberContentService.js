@@ -15,8 +15,15 @@ const e2eOpportunityResponses = new Map()
 /** @type {Map<string, import('../../lib/networkContributions.js').NetworkContribution[]>} */
 const e2eContributions = new Map()
 
+function isE2eMemberApiConfigured() {
+  const url = getNetworkApiUrl('member')
+  return Boolean(url && url.includes('/__e2e__/network-member-api'))
+}
+
 export async function fetchMemberWorkspace() {
-  if (!getNetworkApiUrl('member') || isE2eNetworkMocksEnabled()) return null
+  const url = getNetworkApiUrl('member')
+  if (!url) return null
+  if (isE2eNetworkMocksEnabled() && !isE2eMemberApiConfigured()) return null
   const body = await callNetworkApi('member', { operation: 'workspace' })
   return body.workspace ?? null
 }
@@ -97,7 +104,9 @@ export async function fetchOpportunityResponses(email) {
  * @returns {Promise<{ ok: true, response: object } | { ok: false, error: string }>}
  */
 export async function submitOpportunityResponse(email, opportunityId, kind) {
-  if (getNetworkApiUrl('member') && !isE2eNetworkMocksEnabled()) {
+  const memberApiUrl = getNetworkApiUrl('member')
+  const useRealApi = memberApiUrl && (!isE2eNetworkMocksEnabled() || isE2eMemberApiConfigured())
+  if (useRealApi) {
     const response = kind === 'interest' ? 'interested' : kind
     try {
       const body = await callNetworkApi('member', { operation: 'respondOpportunity', opportunityId, response })

@@ -33,10 +33,12 @@ export default function ProtectedRoute({ children }) {
 
   if (state === 'unauthenticated') {
     const returnTo = location.pathname + location.search
-    const loginPath = location.pathname.startsWith('/network/') ? '/network/login' : '/login'
+    const isNetwork = location.pathname.startsWith('/network/')
+    const loginPath = isNetwork ? '/network/login' : '/login'
+    const roleParam = location.pathname === '/network/admin' ? '&role=admin' : ''
     return (
       <Navigate
-        to={`${loginPath}?returnTo=${encodeURIComponent(returnTo)}`}
+        to={`${loginPath}?returnTo=${encodeURIComponent(returnTo)}${roleParam}`}
         replace
       />
     )

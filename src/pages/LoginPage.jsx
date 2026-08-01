@@ -31,6 +31,8 @@ export default function LoginPage() {
         : '/dashboard')
   const isNetworkLogin =
     isNetworkPath || searchParams.get('context') === 'network' || returnTo.startsWith('/network/')
+  const isNetworkAdminLogin =
+    isNetworkPath && (searchParams.get('role') === 'admin' || returnTo.startsWith('/network/admin'))
   const fromQuiz = searchParams.get('from') === 'quiz'
   const quizFlowExisting = searchParams.get('quizFlow') === 'existing'
   const magicLinkError = searchParams.get('magicLinkError') === '1'
@@ -318,11 +320,17 @@ export default function LoginPage() {
           ) : null}
 
           <h1 className="font-serif text-2xl italic text-forest">
-            {isNetworkLogin && view === 'signIn' ? 'Member sign in' : title}
+            {isNetworkAdminLogin && view === 'signIn'
+              ? 'Network administrator sign in'
+              : isNetworkLogin && view === 'signIn'
+                ? 'Member sign in'
+                : title}
           </h1>
           {isNetworkLogin && view === 'signIn' ? (
             <p className="mt-2 text-sm text-forest/80">
-              Invitation-only access for members of the Cogcare Cognition Network.
+              {isNetworkAdminLogin
+                ? 'Restricted operations access for authorized Cognition Network administrators.'
+                : 'Invitation-only access for members of the Cogcare Cognition Network.'}
             </p>
           ) : null}
           {view === 'signIn' && magicLinkError ? (

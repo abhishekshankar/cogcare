@@ -87,3 +87,7 @@ Existing native controls and standalone Network shell remain. Empty collections 
 ## Non-goals
 
 Clinical collaboration, patient records, care delivery, medical advice, public social networking, automatic email delivery, and inferred endorsements are explicitly outside the Network platform.
+
+## Security verification note
+
+Production dependency remediation on 2026-08-01 upgraded all fixable audited packages and pinned `react-router-dom` to the latest published `7.18.2`. npm still reports `GHSA-qwww-vcr4-c8h2` for React Router's RSC/server-action mode; no fixed published release exists as of this date. Cogcare is a Vite client-side SPA and does not enable React Router RSC, framework mode, server actions, or action routes, so the vulnerable execution path is absent. Recheck and upgrade when an upstream fixed release is published.

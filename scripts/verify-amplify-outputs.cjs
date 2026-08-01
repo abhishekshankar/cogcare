@@ -30,3 +30,10 @@ if (!cwOk) {
     `[${tag}] WARNING: Empty or non-HTTPS Calendly webhook URL is normal for a local stub. After deploy, register this URL in Calendly and set the CALENDLY_WEBHOOK_SIGNING_KEY secret to match your subscription.`,
   )
 }
+
+for (const key of ['networkMemberApiFunctionUrl', 'networkAdminApiFunctionUrl']) {
+  const value = (j.custom && j.custom[key]) || ''
+  const valid = String(value).trim().startsWith('https://')
+  console.log(`[${tag}] ${key} looks valid:`, valid)
+  if (!valid) console.warn(`[${tag}] WARNING: ${key} is absent locally; production Network persistence requires the generated HTTPS URL.`)
+}

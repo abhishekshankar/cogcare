@@ -16,6 +16,7 @@ import { hasRecordedContributions } from '../../lib/networkContributions.js'
 import { useNetworkMember } from '../hooks/useNetworkMember.js'
 import NetworkOnboardingFeedback from '../components/network/NetworkOnboardingFeedback.jsx'
 import NetworkVentureCards from '../components/network/NetworkVentureCards.jsx'
+import NetworkInstitutionalMemberSections from '../components/network/NetworkInstitutionalMemberSections.jsx'
 import { NETWORK_FEEDBACK_CONTEXT_MEMBER_PORTAL } from '../../lib/networkFeedbackTypes.js'
 import {
   networkBody,
@@ -47,6 +48,7 @@ export default function NetworkMemberPortalPage({ email }) {
     opportunities,
     contributions,
     opportunityResponses,
+    workspace,
     profileForm,
     setProfileForm,
     loading,
@@ -54,6 +56,7 @@ export default function NetworkMemberPortalPage({ email }) {
     saving,
     saveProfile,
     respondToOpportunity,
+    load,
   } = useNetworkMember(email)
 
   const [profileError, setProfileError] = useState('')
@@ -247,7 +250,7 @@ export default function NetworkMemberPortalPage({ email }) {
             </p>
           </div>
         </div>
-        <ul className={`mt-6 ${networkStackTight}`}>
+        {briefings.length ? <ul className={`mt-6 ${networkStackTight}`}>
           {briefings.map((b) => (
             <li key={b.id} className={`${networkPanel} p-5`}>
               <p className={networkEyebrow}>{b.publishedAt}</p>
@@ -255,7 +258,7 @@ export default function NetworkMemberPortalPage({ email }) {
               <p className={`mt-2 ${networkBodySm}`}>{b.summary}</p>
             </li>
           ))}
-        </ul>
+        </ul> : <p className={`mt-6 ${networkBodySm}`}>No briefings have been published for members yet.</p>}
       </section>
 
       {hasVentures ? (
@@ -501,7 +504,7 @@ export default function NetworkMemberPortalPage({ email }) {
             </h2>
             <p className={`mt-2 ${networkBodySm}`}>
               Optional asks scoped to your venture associations. Express interest or decline quietly — neither
-              implies endorsement. Responses are saved in this browser session only until persistence ships.
+              implies endorsement. Your response is saved privately and can be withdrawn later.
             </p>
           </div>
         </div>
@@ -585,9 +588,9 @@ export default function NetworkMemberPortalPage({ email }) {
           <ul className={`mt-6 ${networkStackTight}`}>
             {contributions.map((c) => (
               <li key={c.id} className={`${networkPanel} p-5`}>
-                <p className={networkEyebrow}>{c.recordedAt}</p>
+                <p className={networkEyebrow}>{c.recordedAt || c.verifiedAt}</p>
                 <h3 className="mt-2 font-serif text-lg text-ink">{c.title}</h3>
-                {c.recognition ? <p className={`mt-2 ${networkBodySm}`}>{c.recognition}</p> : null}
+                {c.recognition || c.description ? <p className={`mt-2 ${networkBodySm}`}>{c.recognition || c.description}</p> : null}
               </li>
             ))}
           </ul>
@@ -598,6 +601,12 @@ export default function NetworkMemberPortalPage({ email }) {
           </p>
         )}
       </section>
+
+      <NetworkInstitutionalMemberSections
+        workspace={workspace}
+        onRefresh={load}
+        communicationsConsent={profileForm.communicationsConsent}
+      />
 
       <div id="feedback">
         <NetworkOnboardingFeedback

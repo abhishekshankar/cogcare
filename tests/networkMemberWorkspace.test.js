@@ -6,7 +6,7 @@ test('memberWorkspaceSectionNav includes core sections', () => {
   const sections = memberWorkspaceSectionNav({ hasVentures: false })
   assert.deepEqual(
     sections.map((s) => s.id),
-    ['overview', 'briefings', 'profile', 'opportunities', 'activity', 'feedback'],
+    ['overview', 'briefings', 'profile', 'opportunities', 'activity', 'institution', 'feedback'],
   )
 })
 

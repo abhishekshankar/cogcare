@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import NetworkInviteAdminTab from './NetworkInviteAdminTab'
 import NetworkIntelligencePanel from './NetworkIntelligencePanel'
+import NetworkOperationsAdmin from './NetworkOperationsAdmin'
 
 const TABS = [
   { id: 'invitations', label: 'Invitations' },
   { id: 'intelligence', label: 'Intelligence' },
+  { id: 'operations', label: 'Operations' },
 ]
 
 /**
@@ -47,8 +49,10 @@ export default function NetworkAdminPanel({ adminEmail }) {
       >
         {tab === 'invitations' ? (
           <NetworkInviteAdminTab adminEmail={adminEmail} />
-        ) : (
+        ) : tab === 'intelligence' ? (
           <NetworkIntelligencePanel />
+        ) : (
+          <NetworkOperationsAdmin />
         )}
       </div>
     </div>

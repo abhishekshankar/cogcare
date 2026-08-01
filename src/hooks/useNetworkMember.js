@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { fetchMemberConsultantByEmail, updateMemberProfile } from '../services/networkMemberService.js'
 import {
   fetchMemberBriefings,
+  fetchMemberWorkspace,
   fetchMemberContributions,
   fetchMemberOpportunities,
   fetchOpportunityResponses,
   submitOpportunityResponse,
 } from '../services/networkMemberContentService.js'
 import { consultantToMemberProfileForm } from '../../lib/networkMemberProfile.js'
+import { filterOpportunitiesForVentures } from '../../lib/networkVentureAssociation.js'
 
 /**
  * @param {string} email
@@ -18,6 +20,7 @@ export function useNetworkMember(email) {
   const [opportunities, setOpportunities] = useState([])
   const [contributions, setContributions] = useState([])
   const [opportunityResponses, setOpportunityResponses] = useState([])
+  const [workspace, setWorkspace] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -33,17 +36,19 @@ export function useNetworkMember(email) {
     setLoading(true)
     setError('')
     try {
-      const [member, responses, recorded] = await Promise.all([
-        fetchMemberConsultantByEmail(email),
-        fetchOpportunityResponses(email),
-        fetchMemberContributions(email),
+      const member = await fetchMemberConsultantByEmail(email)
+      const workspace = await fetchMemberWorkspace()
+      setWorkspace(workspace)
+      const [responses, recorded] = workspace ? [workspace.responses ?? [], workspace.contributions ?? []] : await Promise.all([
+        fetchOpportunityResponses(email), fetchMemberContributions(email),
       ])
       setConsultant(member)
       setProfileForm(consultantToMemberProfileForm(member))
-      setBriefings(fetchMemberBriefings(email))
+      setBriefings(workspace?.briefings ?? fetchMemberBriefings(email))
       const ventures = consultantToMemberProfileForm(member).ventureAssociations
-      setOpportunities(fetchMemberOpportunities(email, ventures))
-      setOpportunityResponses(responses)
+      const mappedOpportunities = workspace?.opportunities?.map((item) => ({ ...item, why: item.rationale, brand: item.venture }))
+      setOpportunities(mappedOpportunities ? filterOpportunitiesForVentures(mappedOpportunities, ventures) : fetchMemberOpportunities(email, ventures))
+      setOpportunityResponses(responses.map((item) => ({ ...item, kind: item.kind ?? (item.response === 'interested' ? 'interest' : item.response) })))
       setContributions(recorded)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load your network portal.')
@@ -69,18 +74,20 @@ export function useNetworkMember(email) {
       }
 
       try {
-        const [member, responses, recorded] = await Promise.all([
-          fetchMemberConsultantByEmail(email),
-          fetchOpportunityResponses(email),
-          fetchMemberContributions(email),
+        const member = await fetchMemberConsultantByEmail(email)
+        const workspace = await fetchMemberWorkspace()
+        const [responses, recorded] = workspace ? [workspace.responses ?? [], workspace.contributions ?? []] : await Promise.all([
+          fetchOpportunityResponses(email), fetchMemberContributions(email),
         ])
         if (cancelled) return
+        setWorkspace(workspace)
         setConsultant(member)
         setProfileForm(consultantToMemberProfileForm(member))
-        setBriefings(fetchMemberBriefings(email))
+        setBriefings(workspace?.briefings ?? fetchMemberBriefings(email))
         const ventures = consultantToMemberProfileForm(member).ventureAssociations
-        setOpportunities(fetchMemberOpportunities(email, ventures))
-        setOpportunityResponses(responses)
+        const mappedOpportunities = workspace?.opportunities?.map((item) => ({ ...item, why: item.rationale, brand: item.venture }))
+        setOpportunities(mappedOpportunities ? filterOpportunitiesForVentures(mappedOpportunities, ventures) : fetchMemberOpportunities(email, ventures))
+        setOpportunityResponses(responses.map((item) => ({ ...item, kind: item.kind ?? (item.response === 'interested' ? 'interest' : item.response) })))
         setContributions(recorded)
       } catch (err) {
         if (!cancelled) {
@@ -144,6 +151,7 @@ export function useNetworkMember(email) {
     opportunities,
     contributions,
     opportunityResponses,
+    workspace,
     profileForm,
     setProfileForm,
     loading,

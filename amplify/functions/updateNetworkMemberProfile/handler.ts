@@ -6,6 +6,7 @@ import { CognitoJwtVerifier } from 'aws-jwt-verify'
 import type { Schema } from '../../data/resource'
 import { memberProfilePatchFromValidated, validateNetworkMemberProfile } from '../../../lib/networkMemberProfile.js'
 import { findMemberConsultantByEmail } from '../../../src/lib/networkMemberLookup.js'
+import { consentChanges } from '../../../lib/networkApiValidation.js'
 
 const verifier = CognitoJwtVerifier.create({
   userPoolId: process.env.USER_POOL_ID!,
@@ -38,7 +39,7 @@ async function verifySessionEmail(event: { headers?: Record<string, string | und
     if (!email) {
       return { ok: false as const, status: 401, error: 'Could not read your signed-in email.' }
     }
-    return { ok: true as const, email }
+    return { ok: true as const, email, sub: claims.sub }
   } catch {
     return { ok: false as const, status: 401, error: 'Your sign-in session is invalid or expired.' }
   }
@@ -99,6 +100,28 @@ export const handler: Handler = async (event) => {
   })
   if (!updated.data || updated.errors?.length) {
     return reply(500, { error: 'Could not save your profile.' })
+  }
+  const changes = consentChanges(existing, updated.data)
+  if (Object.keys(changes).length) {
+    const audit = await client.models.NetworkConsentEvent.create({
+      memberId: consultantId,
+      memberEmail: session.email,
+      actorSub: session.sub,
+      changesJson: JSON.stringify(changes),
+      occurredAt: new Date().toISOString(),
+    })
+    if (!audit.data || audit.errors?.length) {
+      // Amplify Data does not expose a multi-model transaction. Compensate immediately so
+      // a consent change is never reported successful without its append-only evidence.
+      await client.models.Consultant.update({
+        id: consultantId,
+        profileVisibility: existing.profileVisibility,
+        publicNameConsentAt: existing.publicNameConsentAt,
+        communicationPreference: existing.communicationPreference,
+        disclosureAcknowledgedAt: existing.disclosureAcknowledgedAt,
+      })
+      return reply(500, { error: 'Could not preserve consent history; your consent settings were not saved.' })
+    }
   }
   return reply(200, { ok: true, consultant: updated.data })
 }

@@ -1,4 +1,4 @@
-import base from '../amplify_outputs.json'
+import base from '../amplify_outputs.json' with { type: 'json' }
 
 /**
  * Merged Amplify client config: committed `amplify_outputs.json` plus optional
@@ -60,6 +60,16 @@ export function getMergedAmplifyOutputs() {
   if (import.meta.env.VITE_SEND_NETWORK_INVITATION_URL) {
     o.custom = o.custom || {}
     o.custom.sendNetworkInvitationFunctionUrl = import.meta.env.VITE_SEND_NETWORK_INVITATION_URL.trim()
+  }
+
+  if (import.meta.env.VITE_NETWORK_MEMBER_API_URL) {
+    o.custom = o.custom || {}
+    o.custom.networkMemberApiFunctionUrl = import.meta.env.VITE_NETWORK_MEMBER_API_URL.trim()
+  }
+
+  if (import.meta.env.VITE_NETWORK_ADMIN_API_URL) {
+    o.custom = o.custom || {}
+    o.custom.networkAdminApiFunctionUrl = import.meta.env.VITE_NETWORK_ADMIN_API_URL.trim()
   }
 
   return o

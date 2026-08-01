@@ -7,12 +7,19 @@ import {
 import { sortContributionsNewestFirst } from '../../lib/networkContributions.js'
 import { filterOpportunitiesForVentures } from '../../lib/networkVentureAssociation.js'
 import { isE2eNetworkMocksEnabled } from '../lib/e2eNetworkMocks.js'
+import { callNetworkApi, getNetworkApiUrl } from './networkApiClient.js'
 
 /** @type {Map<string, { opportunityId: string, kind: string, respondedAt: string }[]>} */
 const e2eOpportunityResponses = new Map()
 
 /** @type {Map<string, import('../../lib/networkContributions.js').NetworkContribution[]>} */
 const e2eContributions = new Map()
+
+export async function fetchMemberWorkspace() {
+  if (!getNetworkApiUrl('member') || isE2eNetworkMocksEnabled()) return null
+  const body = await callNetworkApi('member', { operation: 'workspace' })
+  return body.workspace ?? null
+}
 
 /**
  * @param {string} email
@@ -90,6 +97,15 @@ export async function fetchOpportunityResponses(email) {
  * @returns {Promise<{ ok: true, response: object } | { ok: false, error: string }>}
  */
 export async function submitOpportunityResponse(email, opportunityId, kind) {
+  if (getNetworkApiUrl('member') && !isE2eNetworkMocksEnabled()) {
+    const response = kind === 'interest' ? 'interested' : kind
+    try {
+      const body = await callNetworkApi('member', { operation: 'respondOpportunity', opportunityId, response })
+      return { ok: true, response: { ...body.response, kind: body.response?.response === 'interested' ? 'interest' : body.response?.response } }
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : 'Could not save your response.' }
+    }
+  }
   const validation = validateOpportunityResponse(kind)
   if (!validation.ok) return validation
 

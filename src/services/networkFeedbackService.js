@@ -2,17 +2,7 @@ import {
   NETWORK_FEEDBACK_CONTEXT_ONBOARDING,
 } from '../../lib/networkFeedbackTypes.js'
 import { validateNetworkFeedbackPayload } from '../../lib/networkFeedback.js'
-
-/**
- * @returns {string}
- */
-function getNetworkFeedbackPersistenceUrl() {
-  const fromEnv = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_SUBMIT_NETWORK_FEEDBACK_URL : ''
-  if (typeof fromEnv === 'string' && fromEnv.trim().startsWith('http')) {
-    return fromEnv.trim()
-  }
-  return ''
-}
+import { callNetworkApi, getNetworkApiUrl } from './networkApiClient.js'
 
 /**
  * Dev-only: POST to Vite middleware `/api/network-feedback`.
@@ -51,12 +41,13 @@ async function submitNetworkFeedbackDev(payload) {
  * @returns {Promise<import('../../lib/networkFeedbackTypes.js').NetworkFeedbackSubmitResult>}
  */
 async function submitNetworkFeedbackProduction(payload) {
-  const configuredUrl = getNetworkFeedbackPersistenceUrl()
-  if (configuredUrl) {
-    // 🎀 production persistence ceiling — no NetworkFeedback Amplify model or Lambda writer
-    // exists yet. Do not POST here or report success without a deployed, authenticated handler.
-    // When Phase 2 adds one, replace this block with a signed fetch to configuredUrl.
-    void configuredUrl
+  if (getNetworkApiUrl('member')) {
+    try {
+      const body = await callNetworkApi('member', { operation: 'submitFeedback', message: payload.message, category: payload.context })
+      return { ok: true, channel: 'local', value: payload, id: body.feedback?.id }
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : 'Could not save feedback.' }
+    }
   }
 
   return { ok: true, channel: 'mailto', value: payload }

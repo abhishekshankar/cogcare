@@ -36,6 +36,13 @@ export default function NetworkOperationsAdmin() {
     finally { setBusy(false) }
   }
 
+  async function recomputeMetrics() {
+    setBusy(true); setError(''); setNotice('')
+    try { await callNetworkApi('admin', { operation: 'recomputeMetrics' }); setNotice('Privacy-minimized outcome metrics refreshed.'); await load() }
+    catch (err) { setError(err instanceof Error ? err.message : 'Could not refresh metrics.') }
+    finally { setBusy(false) }
+  }
+
   const counts = dashboard ? [
     ['Published briefings', dashboard.briefings.filter((x) => x.status === 'published').length],
     ['Open opportunities', dashboard.opportunities.filter((x) => x.status === 'published').length],
@@ -49,12 +56,13 @@ export default function NetworkOperationsAdmin() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div><h2 id="network-operations-title" className={networkSectionTitle}>Institution operations</h2>
           <p className={`mt-2 ${networkBodySm}`}>Publish only reviewed professional material. Counts are operational records, not member rankings.</p></div>
-        <button type="button" className={networkSecondaryBtn} onClick={load} disabled={busy}><RefreshCw className="h-4 w-4" aria-hidden />Refresh</button>
+        <div className="flex flex-wrap gap-2"><button type="button" className={networkSecondaryBtn} onClick={recomputeMetrics} disabled={busy}>Refresh outcome metrics</button><button type="button" className={networkSecondaryBtn} onClick={load} disabled={busy}><RefreshCw className="h-4 w-4" aria-hidden />Refresh</button></div>
       </div>
       {error ? <p className="mt-4 rounded-xl border border-error-border bg-error-bg px-4 py-3 text-sm text-error" role="alert">{error}</p> : null}
       {notice ? <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-forest" role="status">{notice}</p> : null}
       {busy && !dashboard ? <p className="mt-6 inline-flex items-center gap-2 text-sm text-forest" role="status"><Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />Loading records…</p> : null}
       <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{counts.map(([label, value]) => <Count key={label} label={label} value={value} />)}</dl>
+      {dashboard?.metrics?.length ? <div className="mt-6"><h3 className={networkLabel}>Privacy-minimized outcome report</h3><dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{dashboard.metrics.map((metric) => <Count key={metric.id} label={metric.metric.replaceAll('_', ' ')} value={metric.value} />)}</dl></div> : null}
     </section>
 
     <div className="grid gap-6 lg:grid-cols-2">

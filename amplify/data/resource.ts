@@ -330,6 +330,8 @@ const schema = a.schema({
     .model({
       memberId: a.string().required(),
       kind: a.string().required(),
+      subject: a.string().required(),
+      message: a.string().required(),
       subjectId: a.string(),
       status: a.string().required(),
       consentCheckedAt: a.datetime(),

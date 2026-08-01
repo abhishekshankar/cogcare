@@ -73,6 +73,7 @@ backend.networkMemberApi.addEnvironment('USER_POOL_ID', backend.auth.resources.u
 backend.networkMemberApi.addEnvironment('USER_POOL_CLIENT_ID', backend.auth.resources.userPoolClient.userPoolClientId)
 backend.networkAdminApi.addEnvironment('USER_POOL_ID', backend.auth.resources.userPool.userPoolId)
 backend.networkAdminApi.addEnvironment('USER_POOL_CLIENT_ID', backend.auth.resources.userPoolClient.userPoolClientId)
+backend.networkAdminApi.addEnvironment('APP_BASE_URL', process.env.APP_BASE_URL ?? 'http://localhost:5173')
 
 // CloudFormation AllowMethods only allows GET|PUT|HEAD|POST|PATCH|DELETE|* — not OPTIONS.
 // Use * so browsers’ CORS preflight (OPTIONS) is allowed; listing OPTIONS fails validation.

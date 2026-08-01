@@ -30,7 +30,7 @@ Amplify models have no broad authenticated-member access. Lambda resources recei
 | `NetworkInitiative` / `NetworkProposal` | Institution-led work and member ideas | Proposal starts submitted; admin reviews without promising adoption |
 | `NetworkEvent` / `NetworkEventResponse` | Controlled salon/event and RSVP | No public attendee list or social mechanics |
 | `NetworkMemberPreference` | Topic and cadence choices | Non-none cadence requires current communication consent |
-| `NetworkNotification` | Delivery ledger | Queueing rechecks current communication consent; no automatic send in this phase |
+| `NetworkNotification` | Consent-enforced message and delivery ledger | Queueing and dispatch independently recheck current communication consent |
 | `NetworkMetric` | Privacy-minimized outcome aggregate | No raw member activity stream or ranking |
 
 ## API contracts
@@ -39,7 +39,7 @@ Both APIs are `POST` JSON operation endpoints and return `Cache-Control: no-stor
 
 Member operations: `workspace`, `respondOpportunity`, `submitFeedback`, `decideAttribution`, `submitProposal`, `respondEvent`, `savePreferences`, `decideIntroduction`.
 
-Admin operations: `dashboard`, `saveBriefing`, `saveOpportunity`, `recordContribution`, `recordImpact`, `requestAttribution`, `createIntroduction`, `saveInitiative`, `saveEvent`, `reviewProposal`, `queueNotification`.
+Admin operations: `dashboard`, `saveBriefing`, `saveOpportunity`, `recordContribution`, `recordImpact`, `requestAttribution`, `createIntroduction`, `saveInitiative`, `saveEvent`, `reviewProposal`, `queueNotification`, `dispatchNotification`, `recomputeMetrics`.
 
 Unknown operations, malformed JSON, invalid enums, overlong text, and PHI/diagnostic language are rejected. The member API scopes every owned read/write by the server-resolved membership id. Admin dashboard outputs remove feedback email and opportunity-response email/note.
 
@@ -51,7 +51,7 @@ Unknown operations, malformed JSON, invalid enums, overlong text, and PHI/diagno
 - Introduction: each party independently moves its consent from `pending` to `accepted|declined`; only two accepts produce `consented`.
 - Proposal: `submitted → under_review → accepted|declined`.
 - Event: `draft → published → closed|archived`; RSVP is `attending|declined|waitlist|withdrawn`.
-- Notification: `queued` is a ledger state, not proof of delivery. Sending is a separately gated production operation.
+- Notification: `queued → sent`; dispatch re-fetches the member and cancels with `cancelled_no_consent` when current consent is absent. `sentAt` is proof recorded after the provider accepts delivery.
 
 ## Consent and safety
 

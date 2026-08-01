@@ -163,13 +163,62 @@ export const handler: Handler = async (event) => {
 
   if (operation === 'queueNotification') {
     const memberId = required(body, 'memberId', 128), kind = required(body, 'kind', 80)
-    if (!memberId.ok || !kind.ok) return reply(400, { error: (!memberId.ok ? memberId : kind).error })
+    const subject = required(body, 'subject', 180), message = required(body, 'message', 3000)
+    if (!memberId.ok || !kind.ok || !subject.ok || !message.ok) return reply(400, { error: (!memberId.ok ? memberId : !kind.ok ? kind : !subject.ok ? subject : message).error })
     const member = (await db.models.Consultant.get({ id: memberId.value })).data
     if (!member || !hasNetworkCommunicationConsent(member)) return reply(409, { error: 'Member has not consented to network communications.' })
-    const result = await db.models.NetworkNotification.create({ memberId: memberId.value, kind: kind.value,
+    const result = await db.models.NetworkNotification.create({ memberId: memberId.value, kind: kind.value, subject: subject.value, message: message.value,
       subjectId: typeof body.subjectId === 'string' ? body.subjectId.slice(0, 128) : undefined,
       status: 'queued', consentCheckedAt: now, createdAt: now })
     return result.data ? reply(201, { ok: true, notification: result.data }) : reply(500, { error: 'Could not queue notification.' })
+  }
+
+  if (operation === 'dispatchNotification') {
+    const id = required(body, 'id', 128)
+    if (!id.ok) return reply(400, { error: id.error })
+    const notification = (await db.models.NetworkNotification.get({ id: id.value })).data
+    if (!notification || notification.status !== 'queued') return reply(404, { error: 'Queued notification not found.' })
+    const member = (await db.models.Consultant.get({ id: notification.memberId })).data
+    if (!member || !member.contactEmail || !hasNetworkCommunicationConsent(member)) {
+      await db.models.NetworkNotification.update({ id: notification.id, status: 'cancelled_no_consent', consentCheckedAt: now })
+      return reply(409, { error: 'Delivery cancelled because current communication consent is absent.' })
+    }
+    const apiKey = process.env.BREVO_API_KEY, senderEmail = process.env.BREVO_SENDER_EMAIL
+    if (!apiKey || !senderEmail) return reply(503, { error: 'Network email delivery is not configured.' })
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'content-type': 'application/json', 'api-key': apiKey },
+      body: JSON.stringify({ sender: { name: process.env.BREVO_SENDER_NAME || 'CogCare Cognition Network', email: senderEmail },
+        to: [{ email: member.contactEmail, name: member.name }], subject: notification.subject,
+        textContent: `${notification.message}\n\nOpen your private Network workspace: ${(process.env.APP_BASE_URL || 'https://cogcare.org').replace(/\/$/, '')}/network/member\n\nYou receive this only because Network communications are enabled. You can turn them off in Profile & consent.` }) })
+    if (!response.ok) return reply(502, { error: 'Notification delivery failed; it remains queued.' })
+    const updated = await db.models.NetworkNotification.update({ id: notification.id, status: 'sent', consentCheckedAt: now, sentAt: now })
+    return updated.data ? reply(200, { ok: true, notification: updated.data }) : reply(500, { error: 'Delivery succeeded but the delivery ledger could not be updated.' })
+  }
+
+  if (operation === 'recomputeMetrics') {
+    const period = now.slice(0, 7)
+    const [responses, feedback, contributions, impacts, proposals, eventResponses, attributions, introductions] = await Promise.all([
+      db.models.NetworkOpportunityResponse.list({ limit: 1000 }), db.models.NetworkFeedback.list({ limit: 1000 }),
+      db.models.NetworkContribution.list({ limit: 1000 }), db.models.NetworkImpact.list({ limit: 1000 }),
+      db.models.NetworkProposal.list({ limit: 1000 }), db.models.NetworkEventResponse.list({ limit: 1000 }),
+      db.models.AttributionApproval.list({ limit: 1000 }), db.models.NetworkIntroduction.list({ limit: 1000 }),
+    ])
+    const entries = [
+      ['opportunity_responses', responses.data?.length ?? 0], ['feedback_submissions', feedback.data?.length ?? 0],
+      ['verified_contributions', contributions.data?.filter((x) => x.status === 'verified').length ?? 0],
+      ['verified_impacts', impacts.data?.filter((x) => x.status === 'verified').length ?? 0],
+      ['member_proposals', proposals.data?.length ?? 0], ['event_responses', eventResponses.data?.length ?? 0],
+      ['approved_attributions', attributions.data?.filter((x) => x.status === 'approved').length ?? 0],
+      ['consented_introductions', introductions.data?.filter((x) => x.status === 'consented').length ?? 0],
+    ] as const
+    const saved = []
+    for (const [metric, value] of entries) {
+      const prior = (await db.models.NetworkMetric.list({ filter: { and: [{ period: { eq: period } }, { metric: { eq: metric } }] }, limit: 2 })).data?.[0]
+      const result = prior
+        ? await db.models.NetworkMetric.update({ id: prior.id, value, computedAt: now })
+        : await db.models.NetworkMetric.create({ period, metric, value, computedAt: now })
+      if (result.data) saved.push(result.data)
+    }
+    return reply(200, { ok: true, metrics: saved })
   }
 
   return reply(400, { error: 'Unknown operation.' })

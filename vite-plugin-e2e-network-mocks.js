@@ -286,6 +286,8 @@ function applyE2eScenario(scenario) {
     ]
   } else if (scenario === 'api-401') {
     e2eRuntimeControls.memberApiFault = 401
+  } else if (scenario === 'api-403') {
+    e2eRuntimeControls.memberApiFault = 403
   } else if (scenario === 'api-500') {
     e2eRuntimeControls.memberApiFault = 500
   } else if (scenario === 'api-slow') {
@@ -409,6 +411,9 @@ async function handleE2eMemberApi(body) {
   }
   if (e2eRuntimeControls.memberApiFault === 401) {
     return { error: 'A valid Cognition Network member session is required.', status: 401 }
+  }
+  if (e2eRuntimeControls.memberApiFault === 403) {
+    return { error: 'Cognition Network membership is required.', status: 403 }
   }
   if (e2eRuntimeControls.memberApiFault === 500) {
     return { error: 'Could not complete request.', status: 500 }

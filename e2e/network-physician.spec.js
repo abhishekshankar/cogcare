@@ -377,6 +377,14 @@ test.describe('Physician — API resilience and session', () => {
     await expect(page).toHaveURL(/\/network\/login/, { timeout: 15_000 })
   })
 
+  test('PHYS-API-04 authenticated non-member is denied without losing the session', async ({ page, request }) => {
+    await resetNetworkE2eState(request, 'api-403')
+    await page.addInitScript(memberAuthInitScript)
+    await page.goto('/network/member')
+    await expect(page.getByRole('heading', { name: 'No membership record found' })).toBeVisible({ timeout: 15_000 })
+    await expect(page).toHaveURL(/\/network\/member/)
+  })
+
   test('PHYS-SESSION-01 sign out clears access; deep link requires login', async ({ browser }) => {
     const context = await browser.newContext()
     const page = await context.newPage()

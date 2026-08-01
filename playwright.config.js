@@ -12,6 +12,7 @@ const e2eMocksEnv = [
   'VITE_GRAPHQL_API_KEY=e2e-key',
   `VITE_ACCEPT_NETWORK_INVITATION_URL=${baseURL}/__e2e__/accept-network-invitation`,
   `VITE_NETWORK_PUBLIC_DATA_URL=${baseURL}/__e2e__/network-public-data`,
+  `VITE_UPDATE_NETWORK_MEMBER_PROFILE_URL=${baseURL}/__e2e__/update-network-member-profile`,
 ].join(' ')
 
 export default defineConfig({

@@ -134,10 +134,66 @@ export function e2eNetworkMocksPlugin() {
 
         if (pathname === '/__e2e__/network-public-data' && req.method === 'GET') {
           const url = new URL(req.url || '', 'http://localhost')
+          if (url.searchParams.get('directory') === '1') {
+            return sendJson(res, 200, {
+              consultants: [
+                {
+                  id: e2eMemberConsultant.id,
+                  name: e2eMemberConsultant.name,
+                  title: e2eMemberConsultant.title,
+                  bio: e2eMemberConsultant.bio,
+                  bookingUrl: e2eMemberConsultant.bookingUrl,
+                  isActive: true,
+                  profileVisibility: 'public',
+                  publicNameConsentAt: '2026-07-01T00:00:00.000Z',
+                },
+              ],
+            })
+          }
           if (url.searchParams.get('token') === E2E_INVITE_TOKEN) {
             return sendJson(res, 200, { invitation: MOCK_INVITATION })
           }
           return sendJson(res, 404, { error: 'Not found.' })
+        }
+
+        if (pathname === '/__e2e__/update-network-member-profile' && req.method === 'GET') {
+          return sendJson(res, 200, { ok: true, consultant: e2eMemberConsultant })
+        }
+
+        if (
+          pathname === '/__e2e__/update-network-member-profile' &&
+          req.method === 'POST'
+        ) {
+          const raw = await readRequestBody(req)
+          let body = {}
+          try {
+            body = raw ? JSON.parse(raw) : {}
+          } catch {
+            body = {}
+          }
+          const validation = validateNetworkMemberProfile(body.form || {})
+          if (!validation.ok) {
+            return sendJson(res, 400, { error: validation.error })
+          }
+          const patch = memberProfilePatchFromValidated(validation.value)
+          e2eMemberConsultant = {
+            ...e2eMemberConsultant,
+            ...patch,
+            contactEmail: e2eMemberConsultant.contactEmail,
+          }
+          return sendJson(res, 200, { ok: true, consultant: e2eMemberConsultant })
+        }
+
+        if (pathname === '/api/network-member-profile' && req.method === 'GET') {
+          const url = new URL(req.url || '', 'http://localhost')
+          const email = (url.searchParams.get('email') || '').trim().toLowerCase()
+          if (!email) {
+            return sendJson(res, 400, { error: 'email query parameter is required.' })
+          }
+          if (email !== e2eMemberConsultant.contactEmail?.toLowerCase()) {
+            return sendJson(res, 404, { error: 'No membership record found.' })
+          }
+          return sendJson(res, 200, { ok: true, consultant: e2eMemberConsultant })
         }
 
         if (pathname === '/api/network-member-profile' && req.method === 'POST') {

@@ -73,7 +73,7 @@ https://{venture-origin}{path}?returnTo={encoded-return-url}
 |-----|------------------|
 | Intelligence requires live Amplify `NetworkInvitation` + `Consultant` | Admin must be in Cognito `admin` group; deploy backend first |
 | Opportunity response aggregates in intelligence | Not persisted centrally — intelligence uses invitation + member fields only |
-| `updateNetworkMemberProfile` Lambda | Dev adapter only; production profile saves are in-memory ceiling |
+| `updateNetworkMemberProfile` Lambda | Production GET (membership read) + POST (profile save) via function URL with JWT; dev store when no URL |
 | Automated invitation email | Copy-link + preview only (Phase 1–2 behavior) |
 
 ## Rollout checklist (human gate items not done by agents)

@@ -21,3 +21,11 @@ test('known opportunities are clearly scoped', () => {
     assert.doesNotMatch(opp.scope, /PHI/i)
   }
 })
+
+test('known opportunities explain why the ask exists', () => {
+  for (const opp of NETWORK_OPPORTUNITIES) {
+    assert.ok(opp.why && opp.why.length > 0, `${opp.id} is missing a "why"`)
+    assert.doesNotMatch(opp.why, /diagnos/i)
+    assert.doesNotMatch(opp.why, /PHI/i)
+  }
+})

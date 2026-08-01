@@ -61,7 +61,7 @@ Each page states independence / no-endorsement language and does **not** imply s
 
 - `sendNetworkInvitation` Lambda + automated Brevo sends
 - `NetworkFeedback` / contribution persistence in Amplify
-- `updateNetworkMemberProfile` production Lambda
+- ~~`updateNetworkMemberProfile` production Lambda~~ (profile POST shipped; member GET added in Phase 4)
 - Cross-domain session, SSO, or shared cookies
 - Public publishing of unapproved venture names on sibling sites
 - PHI, diagnosis, or medical advice in network fields
@@ -81,6 +81,8 @@ Each page states independence / no-endorsement language and does **not** imply s
 **Runbook:** [cognition-network-phase-3-runbook.md](../cognition-network-phase-3-runbook.md)
 
 **Prior ADRs:** [Phase 1](./2026-07-31-cognition-network-phase-1.md) · [Phase 2](./2026-07-31-cognition-network-phase-2.md)
+
+**Next ADR:** [Phase 4 — member experience specification](./2026-08-01-cognition-network-phase-4-member-experience.md)
 
 ## Consequences
 

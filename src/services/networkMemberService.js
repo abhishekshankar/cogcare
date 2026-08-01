@@ -1,12 +1,10 @@
 import {
-  memberProfilePatchFromValidated,
   validateNetworkMemberProfile,
 } from '../../lib/networkMemberProfile.js'
 import { findMemberConsultantByEmail } from '../lib/networkMemberLookup.js'
-import { isE2eDashboardAuthBypass } from '../lib/e2eNetworkMocks.js'
+import { isE2eDashboardAuthBypass, isE2eNetworkMocksEnabled } from '../lib/e2eNetworkMocks.js'
 import { fetchAuthSession } from 'aws-amplify/auth'
 import { getMergedAmplifyOutputs } from '../lib/amplifyOutputs.js'
-import { getDataClient } from '../lib/dataClient.js'
 
 async function fetchConsultantsViaE2eGraphql() {
   const url = import.meta.env.VITE_GRAPHQL_URL
@@ -29,7 +27,7 @@ async function fetchConsultantsViaE2eGraphql() {
 /**
  * @returns {string}
  */
-function getMemberProfileUpdateUrl() {
+function getMemberProfileFunctionUrl() {
   const fromEnv = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_UPDATE_NETWORK_MEMBER_PROFILE_URL : ''
   if (typeof fromEnv === 'string' && fromEnv.trim().startsWith('http')) {
     return fromEnv.trim()
@@ -37,6 +35,59 @@ function getMemberProfileUpdateUrl() {
   const generated = getMergedAmplifyOutputs()?.custom?.updateNetworkMemberProfileFunctionUrl
   if (typeof generated === 'string' && generated.trim().startsWith('http')) return generated.trim()
   return ''
+}
+
+function shouldUseDevMemberProfileAdapter() {
+  return (
+    typeof import.meta !== 'undefined' &&
+    import.meta.env?.DEV &&
+    (isE2eNetworkMocksEnabled() || !getMemberProfileFunctionUrl())
+  )
+}
+
+/**
+ * Authenticated GET — email is derived from the JWT server-side; never sent from the client.
+ *
+ * @returns {Promise<object | null>}
+ */
+async function fetchMemberConsultantViaMembershipEndpoint() {
+  const configuredUrl = getMemberProfileFunctionUrl()
+  if (!configuredUrl) {
+    throw new Error('Membership lookup is temporarily unavailable.')
+  }
+
+  const session = await fetchAuthSession()
+  const idToken = session.tokens?.idToken?.toString()
+  if (!idToken) return null
+
+  const res = await fetch(configuredUrl, {
+    method: 'GET',
+    headers: { authorization: `Bearer ${idToken}` },
+  })
+  const body = await res.json().catch(() => ({}))
+  if (res.status === 404) return null
+  if (!res.ok) {
+    const msg = typeof body?.error === 'string' ? body.error : `Could not load membership (${res.status}).`
+    throw new Error(msg)
+  }
+  return body?.consultant ?? null
+}
+
+/**
+ * Local dev store — email is accepted only in Vite dev; production never uses this path.
+ *
+ * @param {string} email
+ * @returns {Promise<object | null>}
+ */
+async function fetchMemberConsultantDev(email) {
+  const res = await fetch(`/api/network-member-profile?email=${encodeURIComponent(email)}`)
+  const body = await res.json().catch(() => ({}))
+  if (res.status === 404) return null
+  if (!res.ok) {
+    const msg = typeof body?.error === 'string' ? body.error : `Could not load membership (${res.status}).`
+    throw new Error(msg)
+  }
+  return body?.consultant ?? null
 }
 
 /**
@@ -49,8 +100,15 @@ export async function fetchMemberConsultantByEmail(email) {
     return findMemberConsultantByEmail(items, email)
   }
 
-  const { data } = await getDataClient().models.Consultant.list({ limit: 200 })
-  return findMemberConsultantByEmail(data ?? [], email)
+  if (getMemberProfileFunctionUrl() && !shouldUseDevMemberProfileAdapter()) {
+    return fetchMemberConsultantViaMembershipEndpoint()
+  }
+
+  if (shouldUseDevMemberProfileAdapter()) {
+    return fetchMemberConsultantDev(email)
+  }
+
+  throw new Error('Membership lookup is temporarily unavailable.')
 }
 
 /**
@@ -74,15 +132,13 @@ async function updateMemberProfileDev(email, form, consultantId) {
 }
 
 /**
- * Production adapter — no authenticated Lambda writer yet.
- *
  * @param {string} email
  * @param {object} form
  * @param {string} consultantId
  * @returns {Promise<{ ok: true, consultant: object } | { ok: false, error: string }>}
  */
 async function updateMemberProfileProduction(email, form, consultantId) {
-  const configuredUrl = getMemberProfileUpdateUrl()
+  const configuredUrl = getMemberProfileFunctionUrl()
   const validation = validateNetworkMemberProfile(form)
   if (!validation.ok) return validation
   if (!configuredUrl) {
@@ -115,7 +171,7 @@ export async function updateMemberProfile(email, form, consultantId) {
   const validation = validateNetworkMemberProfile(form)
   if (!validation.ok) return validation
 
-  if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
+  if (shouldUseDevMemberProfileAdapter()) {
     return updateMemberProfileDev(email, form, consultantId)
   }
 

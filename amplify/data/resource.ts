@@ -115,7 +115,6 @@ const schema = a.schema({
       disclosureAcknowledgedAt: a.datetime(),
     })
     .authorization((allow) => [
-      allow.authenticated().to(['read']),
       allow.groups(['admin']).to(['create', 'read', 'update', 'delete']),
     ]),
 

@@ -30,7 +30,7 @@ Phase 1 delivered invitation-only founding onboarding, consent-gated public prof
 2. **Cognition briefings** — static editorial cards (`lib/networkBriefings.js`); not clinical guidance.
 3. **Profile & consent** — independent controls reusing `validateNetworkMemberProfile` (post-join variant of onboarding rules).
 4. **Participation mode** — passive / active / selective; passive private is first-class.
-5. **Contribution opportunities** — scoped optional asks with interest / decline actions.
+5. **Contribution opportunities** — scoped optional asks with interest / decline actions (why + time + scope; see [Phase 4](./2026-08-01-cognition-network-phase-4-member-experience.md)).
 6. **Activity & recognition** — **only** from recorded contributions (`lib/networkContributions.js`); empty state when none.
 7. **Compact feedback** — reuses `NetworkOnboardingFeedback` with `member_portal` context.
 
@@ -38,8 +38,8 @@ Phase 1 delivered invitation-only founding onboarding, consent-gated public prof
 
 | Concern | Phase 2 approach |
 |---------|------------------|
-| Read own `Consultant` | Amplify `Consultant.list` + `findMemberConsultantByEmail` (authenticated read already authorized) |
-| Update own profile/consent | **Typed adapter** `networkMemberService.js` — dev `POST /api/network-member-profile`; production ponytail until `updateNetworkMemberProfile` Lambda ships |
+| Read own `Consultant` | Authenticated `GET` on `updateNetworkMemberProfileFunctionUrl` (JWT email, server-side query); E2E GraphQL mock; dev `GET /api/network-member-profile` |
+| Update own profile/consent | `networkMemberService.js` — dev `POST /api/network-member-profile`; production `POST` on `updateNetworkMemberProfile` Lambda function URL (JWT) |
 | Briefings | Static lib seed (no PHI) |
 | Opportunities / responses | Static lib seed + dev adapter `networkMemberContentService.js` |
 | Contributions | Dev store only; production returns empty until recorded-contribution writer exists |
@@ -61,7 +61,7 @@ Phase 1 delivered invitation-only founding onboarding, consent-gated public prof
 
 ### Explicitly out of scope (Phase 2)
 
-- `updateNetworkMemberProfile` production Lambda
+- ~~`updateNetworkMemberProfile` production Lambda~~ (shipped in Phase 3 backend; member read GET added in Phase 4)
 - `NetworkFeedback` / contribution persistence in Amplify
 - Member-to-member directory browsing
 - Automated Brevo sends
@@ -71,7 +71,7 @@ Phase 1 delivered invitation-only founding onboarding, consent-gated public prof
 
 | Phase 2 (keep or replace) | Phase 3 direction |
 |---------------------------|-------------------|
-| Profile update dev adapter | Authenticated `updateNetworkMemberProfile` Lambda (JWT email = `contactEmail`) |
+| Profile update dev adapter | ~~Authenticated `updateNetworkMemberProfile` Lambda~~ (shipped); Phase 4 adds GET-my-membership on same URL |
 | Static briefings | CMS or admin-published briefing model |
 | Static opportunities | Admin-scoped opportunity model + recorded contributions |
 | `VITE_E2E_NETWORK_MOCKS` auth bypass | CI sandbox fixtures with real Cognition Network models |

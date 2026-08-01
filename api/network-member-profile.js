@@ -24,10 +24,31 @@ async function writeStore(store) {
 }
 
 /**
- * @param {{ method?: string, body?: Record<string, unknown> }} req
+ * @param {{ method?: string, body?: Record<string, unknown>, query?: Record<string, string | string[] | undefined> }} req
  * @param {{ status: (code: number) => { json: (data: unknown) => void } }} res
  */
 export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    const rawEmail = req.query?.email
+    const email =
+      typeof rawEmail === 'string'
+        ? rawEmail.trim().toLowerCase()
+        : Array.isArray(rawEmail)
+          ? String(rawEmail[0] || '').trim().toLowerCase()
+          : ''
+    if (!email) {
+      return res.status(400).json({ error: 'email query parameter is required.' })
+    }
+
+    const store = await readStore()
+    const profiles = store.profiles && typeof store.profiles === 'object' ? store.profiles : {}
+    const consultant = profiles[email]
+    if (!consultant || !findMemberConsultantByEmail([consultant], email)) {
+      return res.status(404).json({ error: 'No membership record found.' })
+    }
+    return res.status(200).json({ ok: true, consultant })
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }

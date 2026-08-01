@@ -24,6 +24,36 @@ export const handler: Handler = async (event) => {
   const query = event.queryStringParameters || {}
   const client = await getDataClient()
 
+  if (query.directory === '1') {
+    const rows = (await client.models.Consultant.list({ limit: 200 })).data ?? []
+    const consultants = rows
+      .filter((c) => {
+        const visibility = c.profileVisibility || 'public'
+        return c.isActive !== false && visibility !== 'private' && Boolean(c.publicNameConsentAt)
+      })
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        title: c.title,
+        credentials: c.credentials,
+        bio: c.bio,
+        photoUrl: c.photoUrl,
+        bookingUrl: c.bookingUrl,
+        contactEmail: c.bookingUrl ? undefined : 'hello@cogcare.org',
+        affiliation: c.affiliation,
+        licensedStates: c.licensedStates,
+        locationCity: c.locationCity,
+        locationState: c.locationState,
+        organization: c.organization,
+        professionalUrl: c.professionalUrl,
+        isActive: c.isActive,
+        profileVisibility: c.profileVisibility,
+        publicNameConsentAt: c.publicNameConsentAt,
+      }))
+    return reply(200, { consultants })
+  }
+
   if (typeof query.token === 'string' && query.token.trim()) {
     const invitation = (await client.models.NetworkInvitation.get({ tokenHash: hashToken(query.token.trim()) })).data
     if (!invitation) return reply(404, { error: 'Invitation not found.' })
@@ -77,5 +107,5 @@ export const handler: Handler = async (event) => {
     })
   }
 
-  return reply(400, { error: 'token or slug is required.' })
+  return reply(400, { error: 'token, slug, or directory is required.' })
 }

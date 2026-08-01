@@ -155,7 +155,7 @@ test.describe('Cognition Network member portal', () => {
   test('member can express interest in a contribution opportunity', async ({ page }) => {
     await page.goto('/network/member')
     await expect(
-      page.getByRole('heading', { name: 'Contribution opportunities', exact: true }),
+      page.getByRole('heading', { name: 'Matched contribution opportunities', exact: true }),
     ).toBeVisible({
       timeout: 15_000,
     })
@@ -166,7 +166,7 @@ test.describe('Cognition Network member portal', () => {
   test('member can decline a contribution opportunity quietly', async ({ page }) => {
     await page.goto('/network/member')
     await expect(
-      page.getByRole('heading', { name: 'Contribution opportunities', exact: true }),
+      page.getByRole('heading', { name: 'Matched contribution opportunities', exact: true }),
     ).toBeVisible({
       timeout: 15_000,
     })
@@ -200,6 +200,41 @@ test.describe('Cognition Network member portal', () => {
     })
     await expect(page.getByText(/does not carry over/i).first()).toBeVisible()
     await expect(page.getByText(/not employment, clinical endorsement/i).first()).toBeVisible()
+  })
+
+  test('workspace section navigation jumps to each portal section', async ({ page }) => {
+    await page.goto('/network/member')
+    const sectionNav = page.getByRole('navigation', { name: 'Member workspace sections' })
+    await expect(sectionNav).toBeVisible({ timeout: 15_000 })
+
+    for (const [label, targetId] of [
+      ['Overview', 'overview'],
+      ['Briefings', 'briefings'],
+      ['Profile & consent', 'profile'],
+      ['Matched opportunities', 'opportunities'],
+      ['Activity', 'activity'],
+      ['Feedback', 'feedback'],
+    ]) {
+      const link = sectionNav.getByRole('link', { name: label })
+      await expect(link).toHaveAttribute('href', `#${targetId}`)
+      await expect(page.locator(`#${targetId}`)).toHaveCount(1)
+    }
+  })
+
+  test('contribution opportunities explain why the ask exists', async ({ page }) => {
+    await page.goto('/network/member')
+    await expect(
+      page.getByRole('heading', { name: 'Matched contribution opportunities', exact: true }),
+    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Why:').first()).toBeVisible()
+  })
+
+  test('member portal shows no normal Cogcare patient dashboard navigation', async ({ page }) => {
+    await page.goto('/network/member')
+    await expect(page.getByRole('heading', { name: /Profile & consent/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('link', { name: 'My tests' })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: 'More tests' })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: 'Consultations' })).toHaveCount(0)
   })
 })
 

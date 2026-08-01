@@ -8,11 +8,8 @@ import {
   validateNetworkMemberProfile,
 } from '../../lib/networkMemberProfile.js'
 import { NETWORK_BRANDS, brandLabel, parseBrandsJson, roleLabel } from '../../lib/networkConstants.js'
-import {
-  NETWORK_CORE_PROMISE,
-  NETWORK_PASSIVE_PRIVATE,
-  NETWORK_PRIVACY_DEFAULT,
-} from '../../lib/networkIntro.js'
+import { NETWORK_CORE_PROMISE, NETWORK_PASSIVE_PRIVATE, NETWORK_PRIVACY_DEFAULT } from '../../lib/networkIntro.js'
+import { memberWorkspaceSectionNav } from '../../lib/networkMemberWorkspace.js'
 import { NETWORK_PUBLIC_DISCLAIMER, NETWORK_PROFILE_BIO_HINT } from '../lib/consultantVisibility.js'
 import { NETWORK_PUBLIC_ROUTES } from '../../lib/networkRoutes.js'
 import { hasRecordedContributions } from '../../lib/networkContributions.js'
@@ -146,6 +143,12 @@ export default function NetworkMemberPortalPage({ email }) {
         ? 'Directory only'
         : 'Private — no public listing'
 
+  const hasVentures = profileForm.ventureAssociations.length > 0
+  const workspaceSections = memberWorkspaceSectionNav({ hasVentures })
+  const isPassive = profileForm.participationMode === 'passive'
+  const matchedOpportunityCount = opportunities.length
+  const recordedContributionCount = contributions.length
+
   return (
     <div className={networkStack}>
       {error ? (
@@ -154,15 +157,37 @@ export default function NetworkMemberPortalPage({ email }) {
         </div>
       ) : null}
 
-      <section className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-overview-title">
-        <p className={networkEyebrow}>Cognition Network member portal</p>
+      <nav
+        aria-label="Member workspace sections"
+        className="sticky top-0 z-10 flex gap-2 overflow-x-auto rounded-2xl border border-border bg-page/95 px-4 py-3 backdrop-blur"
+      >
+        {workspaceSections.map((section) => (
+          <a
+            key={section.id}
+            href={`#${section.id}`}
+            className="shrink-0 rounded-full border border-border bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-forest hover:bg-surface"
+          >
+            {section.label}
+          </a>
+        ))}
+      </nav>
+
+      <section id="overview" className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-overview-title">
+        <p className={networkEyebrow}>Cognition Network member workspace</p>
         <h1 id="network-member-overview-title" className={`mt-3 ${networkDisplaySm}`}>
           {NETWORK_CORE_PROMISE}
         </h1>
         <p className={`mt-4 ${networkBody}`}>
-          Welcome, {consultant.name}. This is your private overview — not a public profile and not an
-          endorsement of any venture.
+          Welcome, {consultant.name}. This is your private professional workspace — not a patient dashboard,
+          not a social feed, and not a public endorsement of any venture.
         </p>
+
+        {isPassive ? (
+          <div className={`mt-6 ${networkPanel} p-4`} role="status">
+            <p className={networkLabel}>Passive membership</p>
+            <p className={`mt-2 ${networkBodySm}`}>{NETWORK_PASSIVE_PRIVATE}</p>
+          </div>
+        ) : null}
 
         <dl className="mt-6 grid gap-4 sm:grid-cols-2">
           <div className={`${networkPanel} p-4`}>
@@ -185,12 +210,32 @@ export default function NetworkMemberPortalPage({ email }) {
             <dt className={networkLabel}>Visibility</dt>
             <dd className="mt-1 text-sm text-ink">{visibilityLabel}</dd>
           </div>
+          <div className={`${networkPanel} p-4`}>
+            <dt className={networkLabel}>Matched opportunities</dt>
+            <dd className="mt-1 text-sm text-ink">
+              {matchedOpportunityCount
+                ? `${matchedOpportunityCount} scoped ask${matchedOpportunityCount === 1 ? '' : 's'} for your ventures`
+                : 'None for your current venture associations'}
+            </dd>
+          </div>
+          <div className={`${networkPanel} p-4`}>
+            <dt className={networkLabel}>Recorded contributions</dt>
+            <dd className="mt-1 text-sm text-ink">
+              {recordedContributionCount
+                ? `${recordedContributionCount} verified on file`
+                : 'None recorded — membership alone does not create activity'}
+            </dd>
+          </div>
         </dl>
 
-        <p className={`mt-6 ${networkCaption}`}>{NETWORK_PUBLIC_DISCLAIMER}</p>
+        <p className={`mt-6 ${networkCaption}`}>
+          Use the section links above to review briefings, adjust consent, respond to optional asks, or
+          leave everything unchanged.
+        </p>
+        <p className={`mt-2 ${networkCaption}`}>{NETWORK_PUBLIC_DISCLAIMER}</p>
       </section>
 
-      <section className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-briefings-title">
+      <section id="briefings" className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-briefings-title">
         <div className="flex items-start gap-3">
           <BookOpen className="mt-0.5 h-5 w-5 shrink-0 text-clay" aria-hidden />
           <div>
@@ -213,12 +258,16 @@ export default function NetworkMemberPortalPage({ email }) {
         </ul>
       </section>
 
-      <NetworkVentureCards
-        ventureAssociations={profileForm.ventureAssociations}
-        memberPortalReturnTo="/network/member"
-      />
+      {hasVentures ? (
+        <div id="ventures">
+          <NetworkVentureCards
+            ventureAssociations={profileForm.ventureAssociations}
+            memberPortalReturnTo="/network/member"
+          />
+        </div>
+      ) : null}
 
-      <section className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-profile-title">
+      <section id="profile" className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-profile-title">
         <div className="flex items-start gap-3">
           <Shield className="mt-0.5 h-5 w-5 shrink-0 text-clay" aria-hidden />
           <div>
@@ -443,15 +492,16 @@ export default function NetworkMemberPortalPage({ email }) {
         </form>
       </section>
 
-      <section className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-opportunities-title">
+      <section id="opportunities" className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-opportunities-title">
         <div className="flex items-start gap-3">
           <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-clay" aria-hidden />
           <div>
             <h2 id="network-member-opportunities-title" className={networkSectionTitle}>
-              Contribution opportunities
+              Matched contribution opportunities
             </h2>
             <p className={`mt-2 ${networkBodySm}`}>
-              Optional, clearly scoped asks. Express interest or decline quietly — neither implies endorsement.
+              Optional asks scoped to your venture associations. Express interest or decline quietly — neither
+              implies endorsement. Responses are saved in this browser session only until persistence ships.
             </p>
           </div>
         </div>
@@ -462,6 +512,7 @@ export default function NetworkMemberPortalPage({ email }) {
           </p>
         ) : null}
 
+        {opportunities.length ? (
         <ul className={`mt-6 ${networkStackTight}`}>
           {opportunities.map((opp) => {
             const response = responseByOpp[opp.id]
@@ -470,6 +521,12 @@ export default function NetworkMemberPortalPage({ email }) {
               <li key={opp.id} className={`${networkPanel} p-5`}>
                 <p className={networkEyebrow}>{brandLabel(opp.brand)}</p>
                 <h3 className="mt-2 font-serif text-lg text-ink">{opp.title}</h3>
+                {opp.why ? (
+                  <p className={`mt-2 ${networkBodySm}`}>
+                    <span className={networkLabel}>Why: </span>
+                    {opp.why}
+                  </p>
+                ) : null}
                 <p className={`mt-2 ${networkBodySm}`}>{opp.scope}</p>
                 <p className={`mt-2 ${networkCaption}`}>Time: {opp.timeCommitment}</p>
                 {response ? (
@@ -509,11 +566,17 @@ export default function NetworkMemberPortalPage({ email }) {
             )
           })}
         </ul>
+        ) : (
+          <p className={`mt-6 ${networkBodySm}`}>
+            No opportunities match your current venture associations. You can add associations under Profile
+            & consent, or remain passive — both are valid.
+          </p>
+        )}
       </section>
 
-      <section className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-activity-title">
+      <section id="activity" className={`${networkCard} ${networkCardPad}`} aria-labelledby="network-member-activity-title">
         <h2 id="network-member-activity-title" className={networkSectionTitle}>
-          Activity & recognition
+          Verified contributions & impact
         </h2>
         <p className={`mt-2 ${networkBodySm}`}>
           Only contributions we have recorded appear here — we do not infer participation from membership alone.
@@ -536,11 +599,13 @@ export default function NetworkMemberPortalPage({ email }) {
         )}
       </section>
 
-      <NetworkOnboardingFeedback
-        memberEmail={email}
-        slug={consultant.slug}
-        feedbackContext={NETWORK_FEEDBACK_CONTEXT_MEMBER_PORTAL}
-      />
+      <div id="feedback">
+        <NetworkOnboardingFeedback
+          memberEmail={email}
+          slug={consultant.slug}
+          feedbackContext={NETWORK_FEEDBACK_CONTEXT_MEMBER_PORTAL}
+        />
+      </div>
 
       {brands.length && consultant.slug && profileForm.publicProfileConsent ? (
         <p className={networkCaption}>

@@ -5,6 +5,7 @@ import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtim
 import { CognitoJwtVerifier } from 'aws-jwt-verify'
 import type { Schema } from '../../data/resource'
 import { memberProfilePatchFromValidated, validateNetworkMemberProfile } from '../../../lib/networkMemberProfile.js'
+import { findMemberConsultantByEmail } from '../../../src/lib/networkMemberLookup.js'
 
 const verifier = CognitoJwtVerifier.create({
   userPoolId: process.env.USER_POOL_ID!,
@@ -23,23 +24,52 @@ async function getDataClient() {
   return dataClient
 }
 
-const headers = { 'Content-Type': 'application/json' }
+const headers = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
 const reply = (statusCode: number, body: object) => ({ statusCode, headers, body: JSON.stringify(body) })
 
-export const handler: Handler = async (event) => {
-  if (event.requestContext?.http?.method === 'OPTIONS') return { statusCode: 204, headers, body: '' }
-  if (event.requestContext?.http?.method !== 'POST') return reply(405, { error: 'Method not allowed.' })
-
+async function verifySessionEmail(event: { headers?: Record<string, string | undefined> }) {
   const authHeader = event.headers?.authorization || event.headers?.Authorization || ''
   const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
-  let claims: Record<string, unknown>
+  if (!bearer) return { ok: false as const, status: 401, error: 'Sign in required.' }
+
   try {
-    claims = await verifier.verify(bearer)
+    const claims = await verifier.verify(bearer)
+    const email = typeof claims.email === 'string' ? claims.email.trim().toLowerCase() : ''
+    if (!email) {
+      return { ok: false as const, status: 401, error: 'Could not read your signed-in email.' }
+    }
+    return { ok: true as const, email }
   } catch {
-    return reply(401, { error: 'Your sign-in session is invalid or expired.' })
+    return { ok: false as const, status: 401, error: 'Your sign-in session is invalid or expired.' }
   }
-  const email = typeof claims.email === 'string' ? claims.email.trim().toLowerCase() : ''
-  if (!email) return reply(401, { error: 'Could not read your signed-in email.' })
+}
+
+async function fetchMemberConsultantForEmail(email: string) {
+  const client = await getDataClient()
+  const rows =
+    (
+      await client.models.Consultant.list({
+        filter: { contactEmail: { eq: email } },
+        limit: 5,
+      })
+    ).data ?? []
+  return findMemberConsultantByEmail(rows, email)
+}
+
+export const handler: Handler = async (event) => {
+  const method = event.requestContext?.http?.method
+  if (method === 'OPTIONS') return { statusCode: 204, headers, body: '' }
+
+  const session = await verifySessionEmail(event)
+  if (!session.ok) return reply(session.status, { error: session.error })
+
+  if (method === 'GET') {
+    const consultant = await fetchMemberConsultantForEmail(session.email)
+    if (!consultant) return reply(404, { error: 'No membership record found.' })
+    return reply(200, { ok: true, consultant })
+  }
+
+  if (method !== 'POST') return reply(405, { error: 'Method not allowed.' })
 
   let body: { consultantId?: string; form?: Record<string, unknown> }
   try {
@@ -55,7 +85,11 @@ export const handler: Handler = async (event) => {
 
   const client = await getDataClient()
   const existing = (await client.models.Consultant.get({ id: consultantId })).data
-  if (!existing || existing.contactEmail?.trim().toLowerCase() !== email || !existing.networkCohort) {
+  if (
+    !existing ||
+    existing.contactEmail?.trim().toLowerCase() !== session.email ||
+    !existing.networkCohort
+  ) {
     return reply(403, { error: 'Could not verify your membership record.' })
   }
 

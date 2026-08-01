@@ -6,7 +6,7 @@ import { hasPendingNewPasswordFlag } from '../lib/authFlags'
 import { ensureSelfSubject } from '../lib/ensureSelfSubject.js'
 import { mergeGenericLovedOneSubjects } from '../lib/mergeGenericLovedOneSubjects.js'
 import { isGenericLovedOneDisplayName } from '../lib/subjectLabels.js'
-import { filterForAudience } from '../lib/consultantVisibility.js'
+import { fetchConsultantDirectory } from '../services/consultantDirectoryService.js'
 import { getDataClient } from '../lib/dataClient.js'
 import { isE2eDashboardAuthBypass, E2E_NETWORK_MEMBER_EMAIL, E2E_NETWORK_MEMBER_SUB } from '../lib/e2eNetworkMocks.js'
 
@@ -234,8 +234,7 @@ export function useDashboardData() {
 
       setAssessments(assess)
       setSubjects(subjList.filter((s) => !s.archivedAt))
-      const { data: cons } = await client.models.Consultant.list()
-      setConsultants(filterForAudience(cons ?? [], 'directory'))
+      setConsultants(await fetchConsultantDirectory())
       setConsultAppointments(appts ?? [])
     } catch (err) {
       const msg =

@@ -39,12 +39,12 @@ async function identity(event: { headers?: Record<string, string | undefined> })
   try {
     const claims = await verifier.verify(auth.startsWith('Bearer ') ? auth.slice(7).trim() : '')
     const email = typeof claims.email === 'string' ? claims.email.trim().toLowerCase() : ''
-    if (!email) return null
+    if (!email) return { authenticated: false as const, actor: null }
     const db = await client()
     const rows = (await db.models.Consultant.list({ filter: { contactEmail: { eq: email } }, limit: 5 })).data ?? []
     const member = findMemberConsultantByEmail(rows, email)
-    return member ? { email, sub: claims.sub, member } : null
-  } catch { return null }
+    return { authenticated: true as const, actor: member ? { email, sub: claims.sub, member } : null }
+  } catch { return { authenticated: false as const, actor: null } }
 }
 
 async function listForMember(model: any, memberId: string) {
@@ -55,8 +55,10 @@ export const handler: Handler = async (event) => {
   const method = event.requestContext?.http?.method
   if (method === 'OPTIONS') return { statusCode: 204, headers, body: '' }
   if (method !== 'POST') return reply(405, { error: 'Method not allowed.' })
-  const actor = await identity(event)
-  if (!actor) return reply(401, { error: 'A valid Cognition Network member session is required.' })
+  const identityResult = await identity(event)
+  if (!identityResult.authenticated) return reply(401, { error: 'A valid Cognition Network member session is required.' })
+  if (!identityResult.actor) return reply(403, { error: 'Cognition Network membership is required.' })
+  const actor = identityResult.actor
   const parsed = safeJsonBody(event.body)
   if (!parsed.ok) return reply(400, { error: parsed.error })
   const body = parsed.value as Record<string, unknown>

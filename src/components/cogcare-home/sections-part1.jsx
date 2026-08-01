@@ -123,7 +123,7 @@ function Nav({ onPrimaryCta, authIdentity }) {
             onClick={onPrimaryCta}
             style={{ padding: '10px 16px', fontSize: 10, whiteSpace: 'nowrap', letterSpacing: '0.1em' }}
           >
-            Take Brain Health Index
+            Take Brain Health Quiz
           </BtnPrimary>
         </div>
       </div>

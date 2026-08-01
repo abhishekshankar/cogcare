@@ -58,7 +58,7 @@ async function createConsultant(adminToken, email, suffix) {
   const data = await graph(adminToken, `mutation Create($input: CreateConsultantInput!) { createConsultant(input: $input) { id } }`, {
     input: { name: `Network Pilot ${suffix}`, contactEmail: email, networkCohort: 'controlled-pilot',
       networkRoleCategory: 'physician', networkBrandsJson: '["cogcare"]', ventureAssociationsJson: '["cogcare"]',
-      participationMode: 'passive', profileVisibility: 'private', communicationPreference: 'email', isActive: true },
+      participationMode: 'passive', profileVisibility: 'private', communicationPreference: suffix === 'One' ? 'email' : 'none', isActive: true },
   })
   cleanupRecords.push(['Consultant', data.createConsultant.id])
   return data.createConsultant.id
@@ -106,6 +106,10 @@ try {
   cleanupRecords.push(['NetworkIntroduction', introduction.id])
   const notification = (await api(adminUrl, adminToken, 'queueNotification', { memberId: memberIds[0], kind: 'controlled_pilot', subject: 'Controlled pilot — do not send', message: 'Automated verification ledger only.', subjectId: briefing.id })).notification
   cleanupRecords.push(['NetworkNotification', notification.id])
+  let consentRefused = false
+  try { await api(adminUrl, adminToken, 'queueNotification', { memberId: memberIds[1], kind: 'controlled_pilot', subject: 'Must be refused', message: 'No consent.' }) }
+  catch { consentRefused = true }
+  if (!consentRefused) throw new Error('Notification queue did not enforce communication consent.')
 
   const workspace = (await api(memberUrl, memberTokens[0], 'workspace')).workspace
   if (!workspace.briefings.some(({ id }) => id === briefing.id) || !workspace.opportunities.some(({ id }) => id === opportunity.id)) throw new Error('Targeted published content did not reach the member workspace.')
@@ -126,13 +130,16 @@ try {
 
   const dashboard = (await api(adminUrl, adminToken, 'dashboard')).dashboard
   if (!dashboard.responses.some(({ id }) => id === response.id) || dashboard.feedback.find(({ id }) => id === feedback.id)?.memberEmail) throw new Error('Admin privacy-minimized dashboard verification failed.')
-  console.log(JSON.stringify({ ok: true, runId, checks: 18, communicationsSent: 0 }))
+  const metrics = (await api(adminUrl, adminToken, 'recomputeMetrics')).metrics
+  if (metrics.length !== 8) throw new Error('Privacy-minimized metric recomputation was incomplete.')
+  console.log(JSON.stringify({ ok: true, runId, checks: 20, communicationsSent: 0 }))
 } finally {
   if (adminToken) {
     for (const [model, id] of cleanupRecords.reverse()) {
       try { await removeRecord(adminToken, model, id) }
       catch { removeControlledRecordDirectly(model, id) }
     }
+    try { await api(adminUrl, adminToken, 'recomputeMetrics') } catch { /* backend may predate metrics during staged deploy */ }
   }
   for (const username of cleanupUsers) {
     try { await cognito.send(new AdminDeleteUserCommand({ UserPoolId: poolId, Username: username })) } catch { /* best effort */ }

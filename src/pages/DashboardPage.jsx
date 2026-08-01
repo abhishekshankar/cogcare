@@ -392,7 +392,24 @@ export default function DashboardPage() {
                   ) : isNetworkMember ? (
                     <NetworkMemberPortalPage email={email} />
                   ) : (
-                    <Navigate to="/dashboard" replace />
+                    <div className="mx-auto max-w-xl rounded-3xl border border-border bg-white p-8 shadow-sm">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-clay">
+                        Invitation-only network
+                      </p>
+                      <h1 className="mt-3 font-serif text-3xl italic text-forest">
+                        This account is not yet a Network member
+                      </h1>
+                      <p className="mt-4 text-sm leading-relaxed text-forest/80">
+                        Sign in with the email address used in your personal invitation, then open
+                        the invitation link to complete membership.
+                      </p>
+                      <Link
+                        to="/network"
+                        className="mt-6 inline-flex text-sm font-semibold text-clay underline underline-offset-4"
+                      >
+                        Return to the Cognition Network
+                      </Link>
+                    </div>
                   )
                 }
               />

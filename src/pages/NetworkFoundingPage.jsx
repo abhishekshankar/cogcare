@@ -28,6 +28,7 @@ import { useDocumentMeta } from '../lib/useDocumentMeta'
 import { resolveSafeReturnDestination } from '../../lib/networkReturnTo.js'
 
 const VOICES = ['Physicians', 'Researchers', 'Educators', 'Care leaders', 'Builders']
+const NETWORK_LOGIN_PATH = '/login?returnTo=%2Fdashboard%2Fcognition-network&context=network'
 
 const PILLARS = [
   {
@@ -71,7 +72,7 @@ export default function NetworkFoundingPage() {
             CogCare
           </Link>
           <nav aria-label="Network account">
-            <Link to="/login" className={networkSecondaryBtn}>
+            <Link to={NETWORK_LOGIN_PATH} className={networkSecondaryBtn}>
               Member sign in
             </Link>
           </nav>
@@ -167,7 +168,7 @@ export default function NetworkFoundingPage() {
                   </code>
                   .
                 </p>
-                <Link to="/login" className={`mt-8 w-full ${networkPrimaryBtn}`}>
+                <Link to={NETWORK_LOGIN_PATH} className={`mt-8 w-full ${networkPrimaryBtn}`}>
                   Sign in to continue
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>

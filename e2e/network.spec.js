@@ -17,6 +17,17 @@ test.describe('Cognition Network routes', () => {
     await expect(
       page.getByText(/separate, recorded approval/i).first(),
     ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Member sign in' })).toHaveAttribute(
+      'href',
+      /returnTo=%2Fdashboard%2Fcognition-network/,
+    )
+  })
+
+  test('member sign-in is network branded and keeps the portal destination', async ({ page }) => {
+    await page.goto('/login?returnTo=%2Fdashboard%2Fcognition-network&context=network')
+    await expect(page.getByRole('heading', { name: 'Member sign in' })).toBeVisible()
+    await expect(page.getByText(/Invitation-only access/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: 'New here' })).toHaveCount(0)
   })
 
   test('consultant profile route shows not found for unknown slug', async ({ page }) => {

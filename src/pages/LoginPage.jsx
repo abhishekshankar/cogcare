@@ -21,6 +21,8 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const returnTo = searchParams.get('returnTo') || '/dashboard'
+  const isNetworkLogin =
+    searchParams.get('context') === 'network' || returnTo === '/dashboard/cognition-network'
   const fromQuiz = searchParams.get('from') === 'quiz'
   const quizFlowExisting = searchParams.get('quizFlow') === 'existing'
   const magicLinkError = searchParams.get('magicLinkError') === '1'
@@ -273,11 +275,12 @@ export default function LoginPage() {
           className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-forest"
         >
           <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
-          CogCare
+          {isNetworkLogin ? 'Cogcare Cognition Network' : 'CogCare'}
         </Link>
 
         <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
-          {view !== 'confirmSignUp' &&
+          {!isNetworkLogin &&
+          view !== 'confirmSignUp' &&
           view !== 'forgotPassword' &&
           view !== 'confirmForgotPassword' ? (
             <div className="mb-6 flex gap-2 rounded-full border border-border bg-page p-1">
@@ -306,7 +309,14 @@ export default function LoginPage() {
             </div>
           ) : null}
 
-          <h1 className="font-serif text-2xl italic text-forest">{title}</h1>
+          <h1 className="font-serif text-2xl italic text-forest">
+            {isNetworkLogin && view === 'signIn' ? 'Member sign in' : title}
+          </h1>
+          {isNetworkLogin && view === 'signIn' ? (
+            <p className="mt-2 text-sm text-forest/80">
+              Invitation-only access for members of the Cogcare Cognition Network.
+            </p>
+          ) : null}
           {view === 'signIn' && magicLinkError ? (
             <p
               className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900"

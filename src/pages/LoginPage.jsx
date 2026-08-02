@@ -285,7 +285,7 @@ export default function LoginPage() {
           className="mb-10 inline-flex items-center gap-2 font-serif text-lg italic text-forest"
         >
           <Brain className="h-5 w-5 text-clay" strokeWidth={1.5} aria-hidden />
-          {isNetworkLogin ? 'Cogcare Cognition Network' : 'CogCare'}
+          {isNetworkLogin ? 'Cognition Network' : 'CogCare'}
         </Link>
 
         <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
@@ -330,7 +330,7 @@ export default function LoginPage() {
             <p className="mt-2 text-sm text-forest/80">
               {isNetworkAdminLogin
                 ? 'Restricted operations access for authorized Cognition Network administrators.'
-                : 'Invitation-only access for members of the Cogcare Cognition Network.'}
+                : 'Invitation-only access for Cognition Network members.'}
             </p>
           ) : null}
           {view === 'signIn' && magicLinkError ? (

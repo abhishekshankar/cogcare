@@ -58,7 +58,7 @@ export default function NetworkFoundingPage() {
   const returnDest = resolveSafeReturnDestination(searchParams.get('returnTo'))
 
   useDocumentMeta({
-    title: 'The Cogcare Cognition Network',
+    title: 'Cognition Network',
     description: `${NETWORK_CORE_PROMISE} ${NETWORK_HERO_SUPPORT}`,
     canonical:
       typeof window !== 'undefined' ? `${window.location.origin}/network` : 'https://cogcare.org/network',
@@ -95,7 +95,7 @@ export default function NetworkFoundingPage() {
         <section className="border-b border-border">
           <div className="mx-auto max-w-5xl px-4 py-20 sm:px-6 sm:py-28">
             <p className={networkEyebrow}>Founding launch</p>
-            <h1 className={`mt-5 max-w-3xl ${networkDisplayLg}`}>The Cogcare Cognition Network</h1>
+            <h1 className={`mt-5 max-w-3xl ${networkDisplayLg}`}>Cognition Network</h1>
             <p className="mt-6 max-w-2xl font-serif text-xl italic leading-snug text-ink sm:text-2xl">
               {NETWORK_CORE_PROMISE}
             </p>

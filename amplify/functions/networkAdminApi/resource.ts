@@ -8,7 +8,7 @@ export const networkAdminApi = defineFunction({
   environment: {
     BREVO_API_KEY: secret('BREVO_API_KEY'),
     BREVO_SENDER_EMAIL: secret('BREVO_SENDER_EMAIL'),
-    BREVO_SENDER_NAME: 'CogCare Cognition Network',
+    BREVO_SENDER_NAME: 'Cognition Network',
   },
   bundling: { minify: false },
 })

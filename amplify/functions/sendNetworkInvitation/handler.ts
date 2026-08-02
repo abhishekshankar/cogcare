@@ -63,9 +63,9 @@ export const handler: Handler = async (event) => {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'api-key': apiKey },
     body: JSON.stringify({
-      sender: { name: process.env.BREVO_SENDER_NAME || 'CogCare', email: senderEmail },
+      sender: { name: process.env.BREVO_SENDER_NAME || 'Cognition Network', email: senderEmail },
       to: [{ email: to }],
-      subject: 'CogCare Cognition Network — founding invitation',
+      subject: 'Cognition Network — founding invitation',
       htmlContent,
     }),
   })

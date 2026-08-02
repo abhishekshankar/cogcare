@@ -2,7 +2,7 @@
 
 **Status:** Accepted (Phase 1 complete)  
 **Date:** 2026-07-31  
-**Scope:** Invitation-only founding cohort for The Cogcare Cognition Network across CogCare, Cogtraining, and Neuro Second Opinion.
+**Scope:** Invitation-only founding cohort for Cognition Network across CogCare, Cogtraining, and Neuro Second Opinion.
 
 ## Context
 

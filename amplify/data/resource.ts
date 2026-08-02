@@ -121,7 +121,7 @@ const schema = a.schema({
     ]),
 
   /**
-   * Invitation-only onboarding for The Cogcare Cognition Network.
+   * Invitation-only onboarding for Cognition Network.
    * PK = sha256(rawToken). Public read via API key for invite landing pages.
    */
   NetworkInvitation: a

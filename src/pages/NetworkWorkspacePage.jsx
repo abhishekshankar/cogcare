@@ -36,7 +36,7 @@ export default function NetworkWorkspacePage({ admin = false }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <Link to="/network" className="flex items-center gap-2 font-serif text-lg italic text-forest">
             {admin ? <Shield className="h-5 w-5 text-clay" aria-hidden /> : <Users className="h-5 w-5 text-clay" aria-hidden />}
-            Cogcare Cognition Network
+            Cognition Network
           </Link>
           <div className="flex items-center gap-4">
             <span className="hidden text-xs text-ink-muted sm:inline">{email}</span>

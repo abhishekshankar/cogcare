@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import NetworkFoundingPage from './pages/NetworkFoundingPage'
 import NetworkInvitePage from './pages/NetworkInvitePage'
 import NetworkWorkspacePage from './pages/NetworkWorkspacePage'
+import NetworkWaitlistPage from './pages/NetworkWaitlistPage'
 import ConsultantProfilePage from './pages/ConsultantProfilePage'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/network" element={<NetworkFoundingPage />} />
+        <Route path="/network/request-invite" element={<NetworkWaitlistPage />} />
         <Route path="/network/invite/:token" element={<NetworkInvitePage />} />
         <Route path="/network/invite" element={<NetworkInvitePage />} />
         <Route path="/network/login" element={<LoginPage />} />

@@ -1,9 +1,10 @@
 import type { Handler } from 'aws-lambda'
-import { createHash } from 'crypto'
+import { createHash, randomBytes } from 'crypto'
 import { Amplify } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/data'
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime'
 import type { Schema } from '../../data/resource'
+import { generateWaitlistCode, validateWaitlistRequest } from '../../../lib/networkWaitlist.js'
 
 let dataClient: ReturnType<typeof generateClient<Schema>> | null = null
 async function getDataClient() {
@@ -23,6 +24,40 @@ const hashToken = (raw: string) => createHash('sha256').update(raw, 'utf8').dige
 export const handler: Handler = async (event) => {
   const query = event.queryStringParameters || {}
   const client = await getDataClient()
+
+  if (event.requestContext?.http?.method === 'POST') {
+    let input: unknown
+    try {
+      input = JSON.parse(event.body || '{}')
+    } catch {
+      return reply(400, { error: 'Invalid request body.' })
+    }
+
+    try {
+      const request = validateWaitlistRequest(input)
+      const emailHash = hashToken(request.email)
+      const existing = (await client.models.NetworkWaitlistRequest.get({ emailHash })).data
+      if (existing) return reply(200, { waitlistCode: existing.waitlistCode, status: existing.status })
+
+      const now = new Date().toISOString()
+      const waitlistCode = generateWaitlistCode(randomBytes(6))
+      const { errors } = await client.models.NetworkWaitlistRequest.create({
+        emailHash,
+        waitlistCode,
+        ...request,
+        source: typeof (input as { source?: unknown }).source === 'string'
+          ? String((input as { source?: string }).source).slice(0, 100)
+          : 'network-request-invite',
+        status: 'waiting',
+        consentAt: now,
+        createdAt: now,
+      })
+      if (errors?.length) throw new Error(errors.map((error) => error.message).join('; '))
+      return reply(201, { waitlistCode, status: 'waiting' })
+    } catch (error) {
+      return reply(400, { error: error instanceof Error ? error.message : 'Could not join the waitlist.' })
+    }
+  }
 
   if (query.directory === '1') {
     const rows = (await client.models.Consultant.list({ limit: 200 })).data ?? []

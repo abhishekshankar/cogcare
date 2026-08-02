@@ -147,6 +147,26 @@ const schema = a.schema({
       allow.groups(['admin']).to(['create', 'read', 'update', 'delete']),
     ]),
 
+  /** Public invite requests. Contact details are readable only by Network administrators. */
+  NetworkWaitlistRequest: a
+    .model({
+      emailHash: a.string().required(),
+      waitlistCode: a.string().required(),
+      name: a.string().required(),
+      email: a.string().required(),
+      roleCategory: a.string().required(),
+      organization: a.string(),
+      location: a.string(),
+      professionalUrl: a.string(),
+      interest: a.string().required(),
+      source: a.string(),
+      status: a.string().required(),
+      consentAt: a.datetime().required(),
+      createdAt: a.datetime().required(),
+    })
+    .identifier(['emailHash'])
+    .authorization((allow) => [allow.groups(['admin']).to(['read', 'update', 'delete'])]),
+
   /** Editorial material visible to members only after an administrator publishes it. */
   NetworkBriefing: a
     .model({
@@ -376,7 +396,7 @@ const schema = a.schema({
   allow.resource(calendlyWebhook).to(['mutate', 'query']),
   allow.resource(acceptNetworkInvitation).to(['mutate', 'query']),
   allow.resource(updateNetworkMemberProfile).to(['mutate', 'query']),
-  allow.resource(getNetworkPublicData).to(['query']),
+  allow.resource(getNetworkPublicData).to(['mutate', 'query']),
   allow.resource(networkMemberApi).to(['mutate', 'query']),
   allow.resource(networkAdminApi).to(['mutate', 'query']),
   allow.resource(verifyAuthChallengeResponse).to(['mutate', 'query']),

@@ -117,9 +117,10 @@ export default function NetworkFoundingPage() {
               ))}
             </div>
             <div className="mt-10">
-              <a href={`#${NETWORK_INTRO_SECTION_ID}`} className={networkSecondaryBtn}>
-                {NETWORK_SECONDARY_ACTION}
-              </a>
+              <div className="flex flex-wrap gap-3">
+                <Link to="/network/request-invite" className={networkPrimaryBtn}>Request an invitation<ArrowRight className="h-4 w-4" aria-hidden /></Link>
+                <a href={`#${NETWORK_INTRO_SECTION_ID}`} className={networkSecondaryBtn}>{NETWORK_SECONDARY_ACTION}</a>
+              </div>
             </div>
           </div>
         </section>

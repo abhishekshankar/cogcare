@@ -63,7 +63,7 @@ export default function NetworkInvitePage() {
       : 'Accept your Cognition Network invitation',
     description: acceptanceResult
       ? 'Your founding Cognition Network membership is confirmed.'
-      : `${NETWORK_CORE_PROMISE} Complete your founding network profile for The Cogcare Cognition Network.`,
+      : `${NETWORK_CORE_PROMISE} Complete your founding profile for Cognition Network.`,
   })
 
   useEffect(() => {

@@ -17,7 +17,7 @@ test.describe.configure({ mode: 'serial' })
 test.describe('Cognition Network — public landing and auth separation', () => {
   test('AUTO-NET-PUB-01 founding landing page loads', async ({ page }) => {
     await page.goto('/network')
-    await expect(page.getByRole('heading', { name: /Cogcare Cognition Network/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Cognition Network', exact: true })).toBeVisible()
     await expect(
       page.getByText('A trusted circle advancing better cognitive care.', { exact: true }).first(),
     ).toBeVisible()

@@ -186,7 +186,7 @@ export const handler: Handler = async (event) => {
     const apiKey = process.env.BREVO_API_KEY, senderEmail = process.env.BREVO_SENDER_EMAIL
     if (!apiKey || !senderEmail) return reply(503, { error: 'Network email delivery is not configured.' })
     const response = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'content-type': 'application/json', 'api-key': apiKey },
-      body: JSON.stringify({ sender: { name: process.env.BREVO_SENDER_NAME || 'CogCare Cognition Network', email: senderEmail },
+      body: JSON.stringify({ sender: { name: process.env.BREVO_SENDER_NAME || 'Cognition Network', email: senderEmail },
         to: [{ email: member.contactEmail, name: member.name }], subject: notification.subject,
         textContent: `${notification.message}\n\nOpen your private Network workspace: ${(process.env.APP_BASE_URL || 'https://cogcare.org').replace(/\/$/, '')}/network/member\n\nYou receive this only because Network communications are enabled. You can turn them off in Profile & consent.` }) })
     if (!response.ok) return reply(502, { error: 'Notification delivery failed; it remains queued.' })

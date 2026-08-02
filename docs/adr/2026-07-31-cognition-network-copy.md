@@ -24,7 +24,7 @@
 
 ## Product name & tagline
 
-- **Product:** The Cogcare Cognition Network  
+- **Product:** Cognition Network
 - **Core promise:** A trusted circle advancing better cognitive care.  
 - **Eyebrow (recurring):** Invitation only · No fee  
 - **Primary action:** Review your invitation.  
@@ -39,7 +39,7 @@
 
 **Hero eyebrow:** Founding launch  
 
-**H1:** The Cogcare Cognition Network  
+**H1:** Cognition Network
 
 **Core promise (serif italic):** A trusted circle advancing better cognitive care.
 
@@ -228,9 +228,9 @@ This profile is shared at the member’s request as part of the Cognition Networ
 
 **Subject (future Brevo):** Cognition Network — founding invitation  
 **Eyebrow:** Invitation only · No fee  
-**H1:** The Cogcare Cognition Network  
+**H1:** Cognition Network
 **Core promise (italic):** A trusted circle advancing better cognitive care.  
-**Body:** {inviter} has invited you to join the founding launch of The Cogcare Cognition Network, bringing together clinicians, researchers, educators, care leaders, technologists, and public-health voices.  
+**Body:** {inviter} has invited you to join the founding launch of Cognition Network, bringing together clinicians, researchers, educators, care leaders, technologists, and public-health voices.
 **Role line:** We are inviting you as a {role} in our founding cohort.  
 **Brands line:** This invitation spans {brands}.  
 **Closing:** Membership is invitation-only and carries no fee. You may join privately and choose whether any profile information is published.  

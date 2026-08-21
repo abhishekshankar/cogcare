@@ -13,6 +13,7 @@ import {
   Mission,
   FAQ,
   Newsletter,
+  CogtrainingModule,
   Footer,
 } from './sections-part2.jsx'
 
@@ -53,6 +54,7 @@ export default function CogcareHome({ onTakeAssessment, authIdentity }) {
       <Mission />
       <FAQ />
       <Newsletter />
+      <CogtrainingModule />
       <Footer />
     </div>
   )

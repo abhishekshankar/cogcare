@@ -57,6 +57,11 @@ export default function NetworkWorkspacePage({ admin = false }) {
           <Link className="text-xs uppercase tracking-[0.12em] text-ink-muted" to="/network">
             About the Network
           </Link>
+          {isAdmin ? (
+            <Link className="text-xs uppercase tracking-[0.12em] text-clay" to="/network/admin">
+              Administration
+            </Link>
+          ) : null}
         </nav>
       </header>
 
@@ -71,7 +76,7 @@ export default function NetworkWorkspacePage({ admin = false }) {
         ) : admin ? (
           <NetworkAdminPanel adminEmail={email} />
         ) : (
-          <NetworkMemberPortalPage email={email} />
+          <NetworkMemberPortalPage email={email} isAdmin={isAdmin} />
         )}
       </main>
     </div>

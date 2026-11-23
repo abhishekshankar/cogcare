@@ -498,4 +498,44 @@ function Footer() {
   );
 }
 
-export { Testimonials, Science, Mission, FAQ, Newsletter, Footer }
+function CogtrainingModule() {
+  return (
+    <section aria-labelledby="cogtraining-module-title" style={{ padding: '0 0 72px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24,
+          flexWrap: 'wrap', padding: '28px 32px',
+          background: 'white', border: '1px solid var(--color-sand)', borderRadius: 28,
+          boxShadow: '0 12px 32px rgba(29, 61, 53, 0.06)'
+        }}>
+          <div style={{ maxWidth: 660 }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+              letterSpacing: '0.2em', color: 'var(--color-clay)', marginBottom: 8
+            }}>A companion from the CogCare family</div>
+            <h2 id="cogtraining-module-title" style={{
+              fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(1.35rem, 2.5vw, 1.8rem)',
+              fontStyle: 'italic', fontWeight: 400, color: 'var(--color-forest)', marginBottom: 8
+            }}>Cogtraining: practical cognitive-care training</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--color-text-secondary)', margin: 0 }}>
+              Build the knowledge and confidence to support people living with cognitive change — at home, at work, and in care settings.
+            </p>
+          </div>
+          <a
+            href="https://cogtraining.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10, flexShrink: 0,
+              padding: '13px 20px', borderRadius: 9999, background: 'var(--color-forest)', color: 'white',
+              fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none'
+            }}
+          >Explore Cogtraining <Ico.arrowRight size={15} aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export { Testimonials, Science, Mission, FAQ, Newsletter, Footer, CogtrainingModule }

@@ -1,0 +1,603 @@
+// Behavioral neurology telehealth — clinical core schema (PostgreSQL).
+// FHIR mapping is intentional but not implemented; see model comments.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Shared enums (mirror src/enums; keep values UPPER_SNAKE) ---
+
+enum SexAssignedAtBirth {
+  MALE
+  FEMALE
+  INTERSEX
+  UNKNOWN
+}
+
+enum Handedness {
+  RIGHT
+  LEFT
+  AMBIDEXTROUS
+  UNKNOWN
+}
+
+enum ChiefConcern {
+  MEMORY
+  LANGUAGE
+  BEHAVIOR
+  VISUOSPATIAL
+  MOVEMENT
+  EXECUTIVE
+  OTHER
+}
+
+enum ApoeAllele {
+  E2
+  E3
+  E4
+}
+
+enum SyndromeCode {
+  AMNESTIC_MCI
+  NON_AMNESTIC_SINGLE_DOMAIN_MCI
+  NON_AMNESTIC_MULTI_DOMAIN_MCI
+  DEMENTIA_MILD
+  DEMENTIA_MODERATE
+  DEMENTIA_SEVERE
+  BVFTD
+  SVPPA
+  NFVPPA
+  LVPPA
+  POSTERIOR_CORTICAL_ATROPHY
+  CORTICOBASAL_SYNDROME
+  PRIMARY_PROGRESSIVE_APRAXIA_OF_SPEECH
+  BEHAVIORAL_SYNDROME_NOS
+  FUNCTIONAL_COGNITIVE_DISORDER
+}
+
+enum EtiologyCode {
+  ALZHEIMERS_DISEASE
+  FTD_TAU
+  FTD_TDP
+  DLB
+  PARKINSONS_DISEASE_DEMENTIA
+  VASCULAR_COGNITIVE_IMPAIRMENT
+  MIXED_AD_VASCULAR
+  TRAUMATIC_BRAIN_INJURY
+  AUTOIMMUNE_LIMBIC_ENCEPHALITIS
+  NPH
+  CJD
+  MS_RELATED
+  EPILEPSY_RELATED
+  PRIMARY_PSYCHIATRIC
+  FUNCTIONAL
+  UNKNOWN
+}
+
+enum EtiologyConfidence {
+  SUSPECTED
+  PROBABLE
+  POSSIBLE
+  ESTABLISHED_BY_BIOMARKER
+  ESTABLISHED_BY_PATHOLOGY
+}
+
+enum ClinicalStage {
+  MCI
+  MILD_DEMENTIA
+  MODERATE_DEMENTIA
+  SEVERE_DEMENTIA
+  NOT_STAGED
+}
+
+enum WorkupKind {
+  COGNITIVE_ASSESSMENT
+  NEUROIMAGING
+  FLUID_BIOMARKER
+  GENETIC
+  EEG
+  OTHER
+}
+
+enum HypothesisPolarity {
+  SUPPORTS
+  WEAKENS
+  NEUTRAL
+}
+
+enum ImagingModality {
+  MRI
+  CT
+  FDG_PET
+  AMYLOID_PET
+  TAU_PET
+  DATSCAN
+}
+
+enum FluidSource {
+  CSF
+  PLASMA
+  SERUM
+}
+
+/// Canonical analyte codes for eligibility rules and reporting.
+enum FluidAnalyteCode {
+  CSF_ABETA42
+  CSF_ABETA40
+  CSF_ABETA42_ABETA40_RATIO
+  CSF_PTAU181
+  CSF_PTAU217
+  CSF_TTAU
+  PLASMA_PTAU217
+  PLASMA_NFL
+  OTHER
+}
+
+enum CognitiveDomain {
+  EPISODIC_MEMORY
+  SEMANTIC_MEMORY
+  WORKING_MEMORY
+  ATTENTION
+  PROCESSING_SPEED
+  LANGUAGE_COMPREHENSION
+  LANGUAGE_PRODUCTION
+  LANGUAGE_NAMING
+  LANGUAGE_REPETITION
+  VISUOSPATIAL
+  EXECUTIVE
+  SOCIAL_COGNITION
+}
+
+enum CognitiveSeverity {
+  INTACT
+  SUBTLE
+  MILD
+  MODERATE
+  SEVERE
+}
+
+enum NpiqDomain {
+  DELUSIONS
+  HALLUCINATIONS
+  AGITATION_AGGRESSION
+  DEPRESSION_DYSPHORIA
+  ANXIETY
+  ELATION_EUPHORIA
+  APATHY_INDIFERENCE
+  DISINHIBITION
+  IRRITABILITY_LABILITY
+  MOTOR_DISTURBANCE
+  NIGHTTIME_BEHAVIORS
+  APPETITE_EATING
+}
+
+enum ReferralSpecialty {
+  NEUROLOGY
+  PSYCHIATRY
+  GERIATRICS
+  SPEECH_THERAPY
+  OCCUPATIONAL_THERAPY
+  SOCIAL_WORK
+  PALLIATIVE_CARE
+  OTHER
+}
+
+enum ReferralStatus {
+  PENDING
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum DrivingStatus {
+  DRIVING_UNRESTRICTED
+  DRIVING_WITH_CONDITIONS
+  ADVISED_TO_STOP
+  FORMALLY_REVOKED
+}
+
+enum AdvanceDirectivesStatus {
+  NONE_DOCUMENTED
+  DISCUSSED
+  DOCUMENTED
+  UPDATED
+}
+
+enum CapacityDomain {
+  MEDICAL
+  FINANCIAL
+  DRIVING
+}
+
+enum DmtPauseResumeKind {
+  PAUSE
+  RESUME
+}
+
+enum AnticoagulationStatus {
+  NONE
+  ON_ANTICOAGULATION
+  CONTRAINDICATED_UNKNOWN
+}
+
+enum GeneticTestType {
+  PANEL
+  SINGLE_GENE
+  WHOLE_EXOME
+  PHARMACOGENOMICS
+  OTHER
+}
+
+// FHIR: Patient
+model Patient {
+  id                       String   @id @default(cuid())
+  dob                      DateTime @db.Date
+  sexAssignedAtBirth       SexAssignedAtBirth
+  handedness               Handedness
+  primaryLanguage          String
+  educationYears           Int
+  presentingComplaintText  String
+  chiefConcern             ChiefConcern
+  referralSource           String
+  apoeAllele1              ApoeAllele?
+  apoeAllele2              ApoeAllele?
+  anticoagulationStatus    AnticoagulationStatus @default(NONE)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  familyHistory      FamilyHistoryEntry[]
+  syndromes          PatientSyndrome[]
+  etiologies         PatientEtiology[]
+  etiologyStages     PatientEtiologyStage[]
+  symptomProfiles    SymptomProfile[]
+  workups            Workup[]
+  caregivers         Caregiver[]
+  referrals          Referral[]
+  medications        Medication[]
+  dmtCourses         DmtCourse[]
+  safetyFlags        SafetyFlags?
+  capacityDeterminations CapacityDetermination[]
+  clinicalEvents     ClinicalEvent[]
+}
+
+// FHIR: FamilyMemberHistory (one row per relative)
+model FamilyHistoryEntry {
+  id            String   @id @default(cuid())
+  patientId     String
+  relation      String
+  condition     String
+  ageOfOnset    Int?
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+// FHIR: Condition (phenotype / syndrome assignment)
+model PatientSyndrome {
+  id                String       @id @default(cuid())
+  patientId         String
+  syndrome          SyndromeCode
+  /// JSON map of cognitive domain -> involvement descriptor; validated in Zod at app layer.
+  domainInvolvement Json
+  patient           Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, syndrome])
+  @@index([patientId])
+}
+
+// FHIR: Condition + Evidence (etiologic hypothesis)
+model PatientEtiology {
+  id          String             @id @default(cuid())
+  patientId   String
+  etiology    EtiologyCode
+  confidence  EtiologyConfidence
+  rationale   String
+  patient     Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  workups     Workup[]
+
+  @@unique([patientId, etiology])
+  @@index([patientId])
+}
+
+// FHIR: Observation (staging); historical rows — current = latest effectiveAt per (patient, etiology).
+model PatientEtiologyStage {
+  id           String        @id @default(cuid())
+  patientId    String
+  etiology     EtiologyCode
+  stage        ClinicalStage
+  effectiveAt  DateTime
+  rationale    String?
+  patient      Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, etiology, effectiveAt])
+}
+
+// FHIR: DiagnosticReport / Observation (polymorphic workup root)
+model Workup {
+  id                 String             @id @default(cuid())
+  patientId          String
+  kind               WorkupKind
+  /// When the study/visit occurred (clinical date; store as UTC midnight if time unknown).
+  performedAt        DateTime
+  patientEtiologyId  String?
+  hypothesisPolarity HypothesisPolarity?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  patient         Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientEtiology PatientEtiology? @relation(fields: [patientEtiologyId], references: [id], onDelete: SetNull)
+
+  cognitiveAssessment CognitiveAssessmentWorkup?
+  neuroimaging        NeuroimagingWorkup?
+  fluidBiomarker      FluidBiomarkerWorkup?
+  genetic             GeneticWorkup?
+  eeg                 EegWorkup?
+  other               OtherWorkup?
+
+  dmtAriaMriRefs DmtAriaMriRef[]
+
+  @@index([patientId])
+  @@index([patientEtiologyId])
+}
+
+// FHIR: Observation (assessment battery)
+model CognitiveAssessmentWorkup {
+  workupId           String   @id
+  instrument         String
+  administrationDate DateTime @db.Date
+  domainSubscores    Json
+  totalScore         Float?
+  interpreterUsed    Boolean  @default(false)
+  interpreterLanguage String?
+
+  workup Workup @relation(fields: [workupId], references: [id], onDelete: Cascade)
+}
+
+// FHIR: ImagingStudy + DiagnosticReport
+model NeuroimagingWorkup {
+  workupId              String          @id
+  modality              ImagingModality
+  studyDate             DateTime        @db.Date
+  findingsStructured    Json?
+  radiologistImpression String
+
+  workup Workup @relation(fields: [workupId], references: [id], onDelete: Cascade)
+}
+
+// FHIR: Observation (lab)
+model FluidBiomarkerWorkup {
+  workupId       String           @id
+  source         FluidSource
+  analyteCode    FluidAnalyteCode
+  analyteLabel   String?
+  units          String
+  referenceRange String?
+  result         String
+  labName        String
+
+  workup Workup @relation(fields: [workupId], references: [id], onDelete: Cascade)
+}
+
+// FHIR: Observation (genomics)
+model GeneticWorkup {
+  workupId     String          @id
+  testType     GeneticTestType
+  genesCovered String
+  resultsJson  Json
+
+  workup Workup @relation(fields: [workupId], references: [id], onDelete: Cascade)
+}
+
+model EegWorkup {
+  workupId String @id
+  summary  String
+
+  workup Workup @relation(fields: [workupId], references: [id], onDelete: Cascade)
+}
+
+model OtherWorkup {
+  workupId    String @id
+  title       String
+  description String
+
+  workup Workup @relation(fields: [workupId], references: [id], onDelete: Cascade)
+}
+
+// FHIR: QuestionnaireResponse / Observation panel
+model SymptomProfile {
+  id         String   @id @default(cuid())
+  patientId  String
+  capturedAt DateTime
+  /// Instrument codes or plain labels for iADL items.
+  iadl       Json
+  badl       Json
+  patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  cognitiveScores CognitiveDomainScore[]
+  npiqScores      NpiqDomainScore[]
+
+  @@index([patientId, capturedAt])
+}
+
+// FHIR: Observation (per domain)
+model CognitiveDomainScore {
+  id                 String            @id @default(cuid())
+  symptomProfileId   String
+  domain             CognitiveDomain
+  severity           CognitiveSeverity
+  quantitativeScore  Float?
+  instrumentRef      String?
+  symptomProfile     SymptomProfile    @relation(fields: [symptomProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([symptomProfileId, domain])
+}
+
+// FHIR: Observation (NPI-Q domain scores)
+model NpiqDomainScore {
+  id               String         @id @default(cuid())
+  symptomProfileId String
+  domain           NpiqDomain
+  frequency        Int
+  severity         Int
+  /// frequency × severity (NPI-Q); stored for audit consistency.
+  product          Int
+  symptomProfile   SymptomProfile @relation(fields: [symptomProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([symptomProfileId, domain])
+}
+
+// FHIR: RelatedPerson
+model Caregiver {
+  id         String  @id @default(cuid())
+  patientId  String
+  relation   String
+  cohabiting Boolean @default(false)
+  isPrimary  Boolean @default(false)
+  patient    Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  burdenSnapshots CaregiverBurdenSnapshot[]
+
+  @@index([patientId])
+}
+
+// FHIR: Observation (assessment)
+model CaregiverBurdenSnapshot {
+  id          String    @id @default(cuid())
+  caregiverId String
+  assessedAt  DateTime
+  zbi12Score  Int
+  caregiver   Caregiver @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+
+  @@index([caregiverId, assessedAt])
+}
+
+// FHIR: ServiceRequest / EpisodeOfCare referral
+model Referral {
+  id        String            @id @default(cuid())
+  patientId String
+  specialty ReferralSpecialty
+  status    ReferralStatus
+  date      DateTime          @db.Date
+  reason    String
+  patient   Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+// FHIR: MedicationKnowledge (catalog)
+model DrugCatalog {
+  id                         String       @id @default(cuid())
+  code                       String       @unique
+  name                       String
+  class                      String
+  typicalAntipsychotic       Boolean      @default(false)
+  d2AntagonistHighRiskForDlb Boolean      @default(false)
+  anticholinergicBurdenScore Float        @default(0)
+  dlbCaution                 Boolean      @default(false)
+  medications                Medication[]
+}
+
+// FHIR: MedicationStatement
+model Medication {
+  id            String      @id @default(cuid())
+  patientId     String
+  drugCatalogId String
+  dose          String
+  indication    String
+  startDate     DateTime?   @db.Date
+  stopDate      DateTime?   @db.Date
+  patient       Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  drug          DrugCatalog @relation(fields: [drugCatalogId], references: [id])
+
+  @@index([patientId])
+}
+
+// FHIR: CarePlan / MedicationAdministration (infusions)
+model DmtCourse {
+  id        String   @id @default(cuid())
+  patientId String
+  label     String
+  startedAt DateTime?
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  infusions    DmtInfusion[]
+  ariaMriRefs  DmtAriaMriRef[]
+  pauseEvents  DmtPauseResumeEvent[]
+
+  @@index([patientId])
+}
+
+model DmtInfusion {
+  id          String    @id @default(cuid())
+  dmtCourseId String
+  infusionAt  DateTime
+  dmtCourse   DmtCourse @relation(fields: [dmtCourseId], references: [id], onDelete: Cascade)
+
+  @@index([dmtCourseId, infusionAt])
+}
+
+model DmtAriaMriRef {
+  id          String    @id @default(cuid())
+  dmtCourseId String
+  workupId    String
+  label       String?
+  dmtCourse   DmtCourse @relation(fields: [dmtCourseId], references: [id], onDelete: Cascade)
+  workup      Workup    @relation(fields: [workupId], references: [id], onDelete: Cascade)
+
+  @@index([dmtCourseId])
+}
+
+model DmtPauseResumeEvent {
+  id          String           @id @default(cuid())
+  dmtCourseId String
+  occurredAt  DateTime
+  kind        DmtPauseResumeKind
+  reason      String
+  dmtCourse   DmtCourse        @relation(fields: [dmtCourseId], references: [id], onDelete: Cascade)
+
+  @@index([dmtCourseId, occurredAt])
+}
+
+// FHIR: Flag / RiskAssessment + Consent
+model SafetyFlags {
+  id                     String                  @id @default(cuid())
+  patientId              String                  @unique
+  drivingStatus          DrivingStatus
+  wanderingRisk          Boolean                 @default(false)
+  wanderingIncidentsJson Json?
+  firearmsInHome         Boolean                 @default(false)
+  advanceDirectives      AdvanceDirectivesStatus @default(NONE_DOCUMENTED)
+  patient                Patient                 @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+// FHIR: Consent / Observation
+model CapacityDetermination {
+  id           String         @id @default(cuid())
+  patientId    String
+  domain       CapacityDomain
+  determinedAt DateTime
+  capable      Boolean
+  evaluator    String
+  rationale    String
+  patient      Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, domain])
+}
+
+// FHIR: Provenance / AuditEvent (clinical actions)
+model ClinicalEvent {
+  id         String   @id @default(cuid())
+  patientId  String
+  eventType  String
+  payloadJson Json
+  rationale  String?
+  createdAt  DateTime @default(now())
+  patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, createdAt])
+}

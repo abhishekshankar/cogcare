@@ -39,9 +39,9 @@ import {
 } from '../components/network/networkUi.js'
 
 /**
- * @param {{ email: string }} props
+ * @param {{ email: string, isAdmin?: boolean }} props
  */
-export default function NetworkMemberPortalPage({ email }) {
+export default function NetworkMemberPortalPage({ email, isAdmin = false }) {
   const {
     consultant,
     briefings,
@@ -84,6 +84,18 @@ export default function NetworkMemberPortalPage({ email }) {
           This portal is for invited Cognition Network members. If you have a founding invitation, accept it
           first — or sign in with the email your invitation was sent to.
         </p>
+        {isAdmin ? (
+          <div className={`mt-5 ${networkPanel} p-4`} role="status">
+            <p className={networkLabel}>You are signed in as a Network administrator</p>
+            <p className={`mt-2 ${networkBodySm}`}>
+              This administrator account does not also have a member profile. Use Administration to send
+              invitations, review members, and manage the network.
+            </p>
+            <Link to="/network/admin" className="mt-3 inline-flex text-sm font-semibold text-forest underline underline-offset-4">
+              Open Administration
+            </Link>
+          </div>
+        ) : null}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Link to={NETWORK_PUBLIC_ROUTES.founding} className={networkPrimaryBtn}>
             Understand the Network
